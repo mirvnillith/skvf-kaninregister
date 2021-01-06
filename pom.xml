@@ -85,6 +85,11 @@
 				</configuration>
 			</plugin>
 		</plugins>
+      <resources>
+        <resource>
+          <directory>.github/workflows</directory>
+        </resource>
+      </resources>
 	</build>
 	
 	<dependencies>
