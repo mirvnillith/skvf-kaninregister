@@ -16,31 +16,73 @@
     
     <properties>
     	<java.version>11</java.version>
+    	<maven.deploy.skip>true</maven.deploy.skip>
+    	<main.class>se.skvf.kaninregister.Application</main.class>
+    	<jar.file>${project.build.finalName}.jar</jar.file>
 	</properties>
 	
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>se.skvf.kaninregister.Application</mainClass>
-						</manifest>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-				</configuration>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <mainClass>${main.class}</mainClass>
+                </configuration>
+                  <executions>
+                    <execution>
+                      <goals>
+                        <goal>repackage</goal>
+                      </goals>
+                    </execution>
+                </executions>
+            </plugin>
+	        <plugin>
+	            <artifactId>maven-resources-plugin</artifactId>
+	            <executions>
+	                <execution>
+	                    <id>copy-resource-one</id>
+	                    <phase>package</phase>
+	                    <goals>
+	                        <goal>copy-resources</goal>
+	                    </goals>
+	                    <configuration>
+	                        <outputDirectory>target/docker</outputDirectory>
+	                        <resources>
+	                            <resource>
+	                                <directory>src/main/docker</directory>
+	                            </resource>
+	                            <resource>
+	                                <directory>target</directory>
+	                                <include>${jar.file}</include>
+	                            </resource>
+	                        </resources>
+	                    </configuration>
+	                </execution>
+	           </executions>
+	        </plugin>
+	        <plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.13</version>
 				<executions>
 					<execution>
-						<id>assembly</id>
-						<phase>package</phase>
+						<id>default</id>
 						<goals>
-							<goal>single</goal>
+							<goal>build</goal>
+							<goal>push</goal>
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<repository>mirvnillith/skvf-kaninregister</repository>
+					<tag>${project.version}</tag>
+					<contextDirectory>target/docker</contextDirectory>
+					<buildArgs>
+						<JAR_FILE>${jar.file}</JAR_FILE>
+					</buildArgs>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

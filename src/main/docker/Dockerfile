@@ -1,3 +1,6 @@
 FROM openjdk:11
-COPY target/*-with-dependencies.jar app.jar
+
+ARG JAR_FILE
+COPY ${JAR_FILE} app.jar
+
 ENTRYPOINT ["java","-jar","/app.jar"]
