@@ -1,0 +1,4 @@
+skvf:
+ google:
+  credentials: "${GOOGLE_CREDENTIALS}"
+  folder: "${GOOGLE_FOLDER}"
