@@ -1,10 +1,16 @@
 package se.skvf.kaninregister.drive;
 
+import static java.lang.Math.max;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -12,6 +18,8 @@ import java.util.function.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.google.api.services.sheets.v4.model.AppendCellsRequest;
+import com.google.api.services.sheets.v4.model.BatchGetValuesResponse;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
 import com.google.api.services.sheets.v4.model.CellData;
 import com.google.api.services.sheets.v4.model.CellFormat;
@@ -24,7 +32,6 @@ import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.RowData;
 import com.google.api.services.sheets.v4.model.SheetProperties;
 import com.google.api.services.sheets.v4.model.TextFormat;
-import com.google.api.services.sheets.v4.model.UpdateCellsRequest;
 import com.google.api.services.sheets.v4.model.UpdateSheetPropertiesRequest;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
@@ -34,7 +41,7 @@ public class GoogleSheet {
 			.setGridProperties(new GridProperties().setFrozenRowCount(1));
 	private static final CellData BOLD_CELL = new CellData()
 			.setUserEnteredFormat(new CellFormat().setTextFormat(new TextFormat().setBold(true)));
-	private static final String TOP_ROW = "!1:1";
+	private static final String TOP_ROW = "1:1";
 
 	private static final Log LOG = LogFactory.getLog(GoogleSheet.class);
 	
@@ -50,8 +57,8 @@ public class GoogleSheet {
 
 	public String getColumn(String columnName) throws IOException {
 
-		ValueRange data = spreadsheet.api.spreadsheets().values()
-				.get(spreadsheet.id, name + TOP_ROW)
+		ValueRange data = spreadsheet.getApi().spreadsheets().values()
+				.get(spreadsheet.id, range(TOP_ROW))
 				.execute();
 		if (data.getValues() == null || data.getValues().isEmpty()) {
 			formatHeaders();
@@ -67,6 +74,10 @@ public class GoogleSheet {
 
 			return createColumn(columnName, row.size());
 		}
+	}
+
+	private String range(String a1Range) {
+		return "'" + name + "'!" + a1Range;
 	}
 
 	private void formatHeaders() throws IOException {
@@ -94,8 +105,8 @@ public class GoogleSheet {
 		
 		ValueRange title = new ValueRange()
 				.setValues(singletonList(singletonList(columnName)));
-		spreadsheet.api.spreadsheets().values()
-				.update(spreadsheet.id, name + headerCell(columnIndex), title)
+		spreadsheet.getApi().spreadsheets().values()
+				.update(spreadsheet.id, range(headerCell(columnIndex)), title)
 				.setValueInputOption("RAW")
 				.execute();
 		
@@ -104,7 +115,7 @@ public class GoogleSheet {
 	}
 
 	private static String headerCell(int columnIndex) {
-		return "!" + column(columnIndex) + "1:" + column(columnIndex) + "1";
+		return column(columnIndex) + "1:" + column(columnIndex) + "1";
 	}
 
 	private static String column(int columnIndex) {
@@ -128,31 +139,133 @@ public class GoogleSheet {
 		return name + " (" + id + ") in " + spreadsheet;
 	}
 
-	public int removeRows(String column, Predicate<String> filter) throws IOException {
+	public Collection<Map<String, String>> findRows(String idColumn, Collection<String> ids) throws IOException {
 		
-		ValueRange data = spreadsheet.api.spreadsheets().values()
-				.get(spreadsheet.id, name + "!" + column + ":" + column)
+		Map<String, Predicate<String>> filter = new HashMap<>();
+		filter.put(idColumn, ids::contains);
+		return findRows(filter);
+	}
+	
+	public Collection<Map<String, String>> findRows(Map<String, Predicate<String>> filters) throws IOException {
+		
+		List<String> ranges = filters.keySet().stream()
+				.map(this::columnRange)
+				.collect(toList());
+		
+		BatchGetValuesResponse data = spreadsheet.getApi().spreadsheets().values()
+				.batchGet(spreadsheet.id)
+				.setMajorDimension("COLUMNS")
+				.setRanges(ranges)
 				.execute();
+
+		Map<String, List<Object>> columnData = new HashMap<>();
+		int index = 0;
+		int rowCount = 0;
+		for (String column : filters.keySet()) {
+			List<Object> values = data.getValueRanges().get(index).getValues().get(0);
+			values.remove(0);
+			columnData.put(column, values);
+			index++;
+			rowCount = max(rowCount, values.size());
+		}
 		
-		for (int i=0;i<data.getValues().size();i++) {
-			if (filter.test(data.getValues().get(i).get(0).toString())) {
-				removeRow(i);
-				return removeRows(column, filter) + 1;
+		List<Integer> rowIndex = new ArrayList<>();
+		for (int i=0;i<rowCount;i++) {
+			if (match(columnData, i, filters)) {
+				rowIndex.add(i);
 			}
 		}
 		
-		return 0;
+		return getRows(rowIndex);
+	}
+	
+	private boolean match(Map<String, List<Object>> columnData, int index, Map<String, Predicate<String>> filters) {
+		
+		for (Map.Entry<String, Predicate<String>> filter : filters.entrySet()) {
+			List<Object> values = columnData.get(filter.getKey());
+			String value = "";
+			if (index < values.size() && values.get(index) != null) {
+				value = values.get(index).toString();
+			}
+			if (!filter.getValue().test(value)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private List<Map<String, String>> getRows(List<Integer> rowIndex) throws IOException {
+		
+		if (rowIndex.isEmpty()) {
+			return emptyList();
+		}
+		
+		List<String> ranges = rowIndex.stream()
+				.map(this::rowRange)
+				.collect(toList());
+		
+		BatchGetValuesResponse data = spreadsheet.getApi().spreadsheets().values()
+				.batchGet(spreadsheet.id)
+				.setMajorDimension("ROWS")
+				.setRanges(ranges)
+				.execute();
+		return data.getValueRanges().stream()
+				.map(vr -> vr.getValues().get(0))
+				.map(GoogleSheet::map)
+				.collect(toList());
+	}
+
+	private static Map<String, String> map(List<Object> row) {
+		Map<String, String> map = new HashMap<>();
+		char column = 'A';
+		for (Object value : row) {
+			if (value != null) {
+				map.put(Character.toString(column), value.toString());
+			}
+			column++;
+		}
+		return map;
+	}
+	
+	private String rowRange(int idx) {
+		return range((idx + 2) + ":" + (idx + 2));
+	}
+
+	public boolean removeRow(String idColumn, String id) throws IOException {
+		
+		ValueRange data = spreadsheet.getApi().spreadsheets().values()
+				.get(spreadsheet.id, columnRange(idColumn))
+				.setMajorDimension("ROWS")
+				.execute();
+		
+		List<Object> ids = data.getValues().stream()
+				.map(l -> l.get(0))
+				.collect(toList());
+		ids.remove(0);
+		for (int i = 0; i < ids.size(); i++) {
+			if (id.equals(ids.get(i).toString())) {
+				removeRow(i);
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	private String columnRange(String column) {
+		return range(column + ":" + column);
 	}
 
 	private void removeRow(int rowIndex) throws IOException {
 		
 		GridRange row = new GridRange()
-				.setStartRowIndex(rowIndex)
-				.setEndRowIndex(rowIndex + 1);
+				.setSheetId(id)
+				.setStartRowIndex(rowIndex + 2)
+				.setEndRowIndex(rowIndex + 3);
 		update(new Request().setDeleteRange(new DeleteRangeRequest()
 				.setRange(row)
 				.setShiftDimension("ROWS")));
-		LOG.info("Removed row " + (rowIndex + 1) + " from " + this);
+		LOG.info("Removed row " + (rowIndex + 2) + " from " + this);
 	}
 
 	public void addRow(String idColumn, Map<String, String> data) throws IOException {
@@ -176,32 +289,17 @@ public class GoogleSheet {
 					.setUserEnteredValue(new ExtendedValue().setStringValue(defaultString(v)));
 		});
 		
-		int rowIndex = findFirstEmptyRow(idColumn);
-		GridRange rowColumns = new GridRange()
-				.setStartRowIndex(rowIndex)
-				.setEndRowIndex(rowIndex + 1)
-				.setStartColumnIndex(firstColumn)
-				.setEndColumnIndex(lastColumn + 1);
-		
-		UpdateCellsRequest update = new UpdateCellsRequest()
-				.setRange(rowColumns)
+		AppendCellsRequest append = new AppendCellsRequest()
+				.setSheetId(id)
 				.setRows(singletonList(new RowData().setValues(asList(cells))))
 				.setFields("userEnteredValue.stringValue");
 		
-		update(new Request().setUpdateCells(update));
+		update(new Request().setAppendCells(append));
 	}
 
 	private void update(Request... requests) throws IOException {
 		BatchUpdateSpreadsheetRequest batch = new BatchUpdateSpreadsheetRequest()
 				.setRequests(asList(requests));
-		spreadsheet.api.spreadsheets().batchUpdate(spreadsheet.id, batch).execute();
-	}
-
-	private int findFirstEmptyRow(String idColumn) throws IOException {
-		
-		ValueRange data = spreadsheet.api.spreadsheets().values()
-				.get(spreadsheet.id, name + "!" + idColumn + ":" + idColumn)
-				.execute();
-		return data.getValues().size();
+		spreadsheet.getApi().spreadsheets().batchUpdate(spreadsheet.id, batch).execute();
 	}
 }

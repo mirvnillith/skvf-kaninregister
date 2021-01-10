@@ -40,4 +40,20 @@ public class Bunny extends Entity {
 		map.put("Ägare", owner);
 		map.put("Namn", name);
 	}
+
+	@Override
+	public String toString() {
+		return super.toString() + ": " + name + "@" + owner;
+	}
+
+	public static Bunny from(Map<String, String> map) {
+		return new Bunny().fromMap(map);
+	}
+
+	protected Bunny fromMap(Map<String, String> map) {
+		super.fromMap(map);
+		owner = map.get("Ägare");
+		name = map.get("Namn");
+		return this;
+	}
 }

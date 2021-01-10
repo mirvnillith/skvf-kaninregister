@@ -45,6 +45,7 @@ public class GoogleDrive {
 	private String folder;
 	private Drive drive;
 	private Sheets sheets;
+	private long lastSheets;
 
 	@Value("${skvf.google.credentials}")
 	public void setJsonCredentials(String jsonCredentials) {
@@ -74,6 +75,19 @@ public class GoogleDrive {
 		sheets = new Sheets.Builder(httpTransport, JSON_FACTORY, credential)
 				.setApplicationName(APPLICATION_NAME)
 				.build();
+		lastSheets = System.currentTimeMillis();
+	}
+
+	public synchronized Sheets getSheets() {
+		long sinceLast = System.currentTimeMillis() - lastSheets;
+		if (sinceLast < 1000) {
+			try {
+				Thread.sleep(1000 - sinceLast);
+			} catch (InterruptedException ignored) {
+			}
+		}
+		lastSheets = System.currentTimeMillis();
+		return sheets;
 	}
 
 	public GoogleSpreadsheet getSpreadsheet(String name) throws IOException {
@@ -81,7 +95,7 @@ public class GoogleDrive {
 		if (id == null) {
 			id = createSpreadheet(name);
 		}
-		return new GoogleSpreadsheet(id, name, sheets);
+		return new GoogleSpreadsheet(this, id, name);
 	}
 
 	private String createSpreadheet(String name) throws IOException {

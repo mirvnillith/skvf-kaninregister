@@ -40,4 +40,20 @@ public class Owner extends Entity {
 		map.put("Förnamn", firstName);
 		map.put("Efternamn", lastName);
 	}
+	
+	public static Owner from(Map<String, String> map) {
+		return new Owner().fromMap(map);
+	}
+	
+	protected Owner fromMap(Map<String, String> map) {
+		super.fromMap(map);
+		firstName = map.get("Förnamn");
+		lastName = map.get("Efternamn");
+		return this;
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString()+": "+firstName+" "+lastName;
+	}
 }

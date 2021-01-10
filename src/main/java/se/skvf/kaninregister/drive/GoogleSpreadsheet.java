@@ -4,7 +4,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,18 +23,22 @@ public class GoogleSpreadsheet {
 
 	private static final Object DEFAULT_SHEET = "Sheet1";
 	
+	private final GoogleDrive drive;
 	final String id;
 	private final String name;
-	final Sheets api;
 	
-	GoogleSpreadsheet(String id, String name, Sheets api) {
+	GoogleSpreadsheet(GoogleDrive drive, String id, String name) {
 		this.id = id;
 		this.name = name;
-		this.api = api;
+		this.drive = drive;
 	}
-
+	
+	public Sheets getApi() {
+		return drive.getSheets();
+	}
+	
 	public GoogleSheet getSheet(String sheetName) throws IOException {
-		Spreadsheet spreadsheet = api.spreadsheets().get(id)
+		Spreadsheet spreadsheet = getApi().spreadsheets().get(id)
 				.setFields("sheets(properties)")
 				.execute();
 		
@@ -58,7 +61,7 @@ public class GoogleSpreadsheet {
 	private void createSheet(String sheetName) throws IOException {
 		AddSheetRequest add = new AddSheetRequest()
 				.setProperties(new SheetProperties().setTitle(sheetName));
-		api.spreadsheets().batchUpdate(id, new BatchUpdateSpreadsheetRequest()
+		getApi().spreadsheets().batchUpdate(id, new BatchUpdateSpreadsheetRequest()
 				.setRequests(asList(new Request().setAddSheet(add))))
 				.execute();
 	}
@@ -76,7 +79,7 @@ public class GoogleSpreadsheet {
 		request.setUpdateSheetProperties(renameSheet);
 		BatchUpdateSpreadsheetRequest batch = new BatchUpdateSpreadsheetRequest();
 		batch.setRequests(singletonList(request));
-		api.spreadsheets().batchUpdate(id, batch).execute();
+		getApi().spreadsheets().batchUpdate(id, batch).execute();
 		
 		LOG.info(originalName + " renamed to " + name);
 		
