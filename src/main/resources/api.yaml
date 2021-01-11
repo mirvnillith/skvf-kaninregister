@@ -1,0 +1,298 @@
+openapi: 3.0.0
+info:
+  title: SKVF Kaninregister API
+  description: API for managing bunnies and their owners/breeders
+  version: "0.1"
+
+tags:
+  - name: BunnyRegistry
+    description: Registry of bunnies and owners/breeders
+    
+paths:
+  /owners:
+    post:
+      tags: [BunnyRegistry]
+      operationId: createOwner
+      summary: Creates a new owner.
+      requestBody:
+        description: Owner to create, without ID
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/OwnerDTO'
+      responses:
+        '200':
+          description: Owner created
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/OwnerDTO'
+        '400':
+          description: Incoming OwnerDTO must not contain an ID
+    get:
+      tags: [BunnyRegistry]
+      operationId: getOwners
+      summary: Returns a list of owners.
+      responses:
+        '200':
+          description: List of owners
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/OwnersList'
+  /owners/{id}:
+    get:
+      tags: [BunnyRegistry]
+      operationId: getOwner
+      summary: Returns an owner
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Owner
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/OwnerDTO'
+    put:
+      tags: [BunnyRegistry]
+      operationId: updateOwner
+      summary: Updates an existing owner.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Owner to update, missing fields are unchanged
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/OwnerDTO'
+      responses:
+        '200':
+          description: Owner updated
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/OwnerDTO'
+        '400':
+          description: If incoming OwnerDTO has an ID, it must match the path
+  /owners/{id}/bunnies:
+    post:
+      tags: [BunnyRegistry]
+      operationId: createBunny
+      summary: Creates a new owned bunny.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Bunny to create, without ID
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/BunnyDTO'
+      responses:
+        '200':
+          description: Bunny created
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/BunnyDTO'
+        '400':
+          description: Incoming BunnyDTO must not have an ID and if it has an owner, it must match the path
+    get:
+      tags: [BunnyRegistry]
+      operationId: getOwnerBunnies
+      summary: Returns the bunnies of an owner
+      description: All bunnies
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of bunnies
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/BunnyList'
+  /owners/{owner}/bunnies/{bunny}:
+    put:
+      tags: [BunnyRegistry]
+      operationId: updateBunny
+      summary: Updates an owned bunny.
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: bunny
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Bunny to update, missing fields are unchanged. Owner may be different from path and will transfer bunny ownership.
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/BunnyDTO'
+      responses:
+        '200':
+          description: Bunny updated
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/BunnyDTO'
+        '400':
+          description: If Incoming BunnyDTO has an ID, it must match the path.
+  /bunnies:
+    get:
+      tags: [BunnyRegistry]
+      operationId: findBunnies
+      summary: Finds bunnies
+      description: At least of criteria is required for a result
+      parameters:
+        - name: identifier
+          in: query
+          description: "Identifier template, with # as wildcard, for start of identifier"
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: Start of name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Bunnies found
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/BunnyList'
+  /bunnies/{id}:
+    get:
+      tags: [BunnyRegistry]
+      operationId: getBunny
+      summary: Returns a bunny
+      description: Any bunny
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Bunny
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/BunnyDTO'
+  /bunnies/{id}/owner:
+    get:
+      tags: [BunnyRegistry]
+      operationId: getBunnyOwner
+      summary: Returns any public owner of the bunny
+      description: A private owner can still be accessed using its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Public owner
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/OwnerDTO'
+        '204':
+          description: Bunny has no public owner
+        '404':
+          description: Bunny has no owner
+  /bunnies/{id}/breeder:
+    get:
+      tags: [BunnyRegistry]
+      operationId: getBunnyBreeder
+      summary: Returns any public breeder of the bunny
+      description: A private breeder can still be accessed using its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Public breeder
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/OwnerDTO'
+        '204':
+          description: Bunny has no public breeder
+        '404':
+          description: Bunny has no breeder
+
+components:
+  schemas:
+    OwnersList:
+      type: object
+      properties:
+        owners:
+          type: array
+          items: 
+            $ref: '#/components/schemas/OwnerListDTO'
+    OwnerListDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+    OwnerDTO:
+      allOf:
+        - $ref: '#/components/schemas/OwnerListDTO'
+        - type: object
+          properties:
+            email:
+              type: string
+    BunnyList:
+      type: object
+      properties:
+        bunnies:
+          type: array
+          items: 
+            $ref: '#/components/schemas/BunnyListDTO'
+    BunnyListDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        owner:
+          type: string
+        name:
+          type: string
+    BunnyDTO:
+      allOf:
+        - $ref: '#/components/schemas/BunnyListDTO'
+        - type: object
+          properties:
+            breeder:
+              type: string

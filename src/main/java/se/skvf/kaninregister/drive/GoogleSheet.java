@@ -32,6 +32,7 @@ import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.RowData;
 import com.google.api.services.sheets.v4.model.SheetProperties;
 import com.google.api.services.sheets.v4.model.TextFormat;
+import com.google.api.services.sheets.v4.model.UpdateCellsRequest;
 import com.google.api.services.sheets.v4.model.UpdateSheetPropertiesRequest;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
@@ -83,7 +84,7 @@ public class GoogleSheet {
 	private void formatHeaders() throws IOException {
 		
 		RepeatCellRequest bold = new RepeatCellRequest()
-				.setRange(topRowRange(id))
+				.setRange(topRowGridRange())
 				.setCell(BOLD_CELL)
 				.setFields("userEnteredFormat(textFormat)");
 		
@@ -97,8 +98,12 @@ public class GoogleSheet {
 		LOG.info("Formatted headers for " + this);
 	}
 
-	private static GridRange topRowRange(int sheetId) {
-		return new GridRange().setSheetId(sheetId).setStartRowIndex(0).setEndRowIndex(1);
+	private GridRange topRowGridRange() {
+		return new GridRange().setSheetId(id).setStartRowIndex(0).setEndRowIndex(1);
+	}
+	
+	private GridRange rowGridRange(int rowIndex) {
+		return new GridRange().setSheetId(id).setStartRowIndex(rowIndex + 2).setEndRowIndex(rowIndex + 3);
 	}
 
 	private String createColumn(String columnName, int columnIndex) throws IOException {
@@ -148,6 +153,11 @@ public class GoogleSheet {
 	
 	public Collection<Map<String, String>> findRows(Map<String, Predicate<String>> filters) throws IOException {
 		
+		return getRows(findIndex(filters));
+	}
+
+	private List<Integer> findIndex(Map<String, Predicate<String>> filters) throws IOException {
+		
 		List<String> ranges = filters.keySet().stream()
 				.map(this::columnRange)
 				.collect(toList());
@@ -175,8 +185,7 @@ public class GoogleSheet {
 				rowIndex.add(i);
 			}
 		}
-		
-		return getRows(rowIndex);
+		return rowIndex;
 	}
 	
 	private boolean match(Map<String, List<Object>> columnData, int index, Map<String, Predicate<String>> filters) {
@@ -301,5 +310,36 @@ public class GoogleSheet {
 		BatchUpdateSpreadsheetRequest batch = new BatchUpdateSpreadsheetRequest()
 				.setRequests(asList(requests));
 		spreadsheet.getApi().spreadsheets().batchUpdate(spreadsheet.id, batch).execute();
+	}
+
+	public void updateRow(String idColumn, String id, Map<String, String> data) throws IOException {
+		
+		Map<String, Predicate<String>> filter = new HashMap<>();
+		filter.put(idColumn, id::equals);
+		List<Integer> index = findIndex(filter);
+		if (index.isEmpty()) {
+			throw new NullPointerException(id + " not found in " + this);
+		}
+		
+		List<Request> updates = new ArrayList<>(data.size());
+		for (Map.Entry<String, String> value : data.entrySet()) {
+			CellData cell = new CellData().setUserEnteredValue(new ExtendedValue().setStringValue(defaultString(value.getValue())));
+			RowData row = new RowData().setValues(asList(cell));
+			updates.add(new Request().setUpdateCells(new UpdateCellsRequest()
+				.setRange(gridRange(value.getKey(), index.get(0)))
+				.setRows(asList(row))
+				.setFields("userEnteredValue.stringValue")));
+		}
+		
+		update(updates.toArray(new Request[0]));
+	}
+
+	private GridRange gridRange(String column, int rowIndex) {
+		return new GridRange()
+				.setSheetId(id)
+				.setStartRowIndex(rowIndex + 1)
+				.setEndRowIndex(rowIndex + 2)
+				.setStartColumnIndex(columnIndex(column))
+				.setEndColumnIndex(columnIndex(column) + 1);
 	}
 }

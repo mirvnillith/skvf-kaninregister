@@ -128,6 +128,10 @@ public class Registry {
 		add(maria);
 		findOwners(asList(maria.getId(), jonas.getId())).forEach(System.out::println);
 		
+		jonas.setFirstName("Carl");
+		update(jonas);
+		findOwners(asList(jonas.getId())).forEach(System.out::println);
+		
 		Map<String, Predicate<String>> ström = new HashMap<>();
 		ström.put("Efternamn", n -> n.endsWith("ström"));
 		System.out.println("%ström");
@@ -163,6 +167,10 @@ public class Registry {
 		return owners.find(filters).stream().map(Owner::from).collect(toList());
 	}
 
+	public void update(Owner owner) throws IOException {
+		update(owners, owner);
+	}
+	
 	public void remove(Owner owner) throws IOException {
 		remove(owners, owner);
 	}
@@ -179,6 +187,10 @@ public class Registry {
 		return bunnies.find(filters).stream().map(Bunny::from).collect(toList());
 	}
 	
+	public void update(Bunny bunny) throws IOException {
+		update(bunnies, bunny);
+	}
+	
 	public void remove(Bunny bunny) throws IOException {
 		remove(bunnies, bunny);
 	}
@@ -188,6 +200,13 @@ public class Registry {
 			throw new IllegalStateException("Entity has no ID: " + entity);
 		}
 		table.remove(entity.getId());
+	}
+	
+	private void update(Table table, Entity entity) throws IOException {
+		if (entity.getId() == null) {
+			throw new IllegalStateException("Entity has no ID: " + entity);
+		}
+		table.update(entity.toMap());
 	}
 	
 	private String add(Table table, Entity entity) throws IOException {

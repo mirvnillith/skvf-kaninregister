@@ -52,15 +52,20 @@ public class Table {
 		
 		String id = randomUUID().toString();
 		
-		Map<String, String> data = new HashMap<String, String>();
-		data.put(attributeColumns.get(ID), id);
-		entity.forEach((k, v) -> data.put(attributeColumns.get(k), v));
-		
-		sheet.addRow(attributeColumns.get(ID), data);
+		sheet.addRow(attributeColumns.get(ID), mapEntity(entity, id));
 		
 		LOG.info("Added " + id + " to " + this);
 		entity.put(ID, id);
 		return id;
+	}
+
+	private Map<String, String> mapEntity(Map<String, String> entity, String id) {
+		Map<String, String> data = new HashMap<String, String>();
+		if (id != null) {
+			data.put(attributeColumns.get(ID), id);
+		}
+		entity.forEach((k, v) -> data.put(attributeColumns.get(k), v));
+		return data;
 	}
 
 	public Collection<Map<String, String>> find(Collection<String> ids) throws IOException {
@@ -77,5 +82,15 @@ public class Table {
 	
 	private Map<String, String> mapRow(Map<String, String> row) {
 		return row.entrySet().stream().collect(toMap(e -> columnAttributes.get(e.getKey()), Map.Entry::getValue));
+	}
+
+	public void update(Map<String, String> entity) throws IOException {
+		
+		String id = entity.remove(ID);
+		
+		sheet.updateRow(attributeColumns.get(ID), id, mapEntity(entity, null));
+		
+		LOG.info("Updated " + id + " in " + this);
+		
 	}
 }
