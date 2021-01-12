@@ -18,7 +18,7 @@ public class Database {
 
 	private static final Log LOG = LogFactory.getLog(Database.class);
 
-	private static final String NAME = "Kaninregister";
+	static final String NAME = "Kaninregister";
 
 	@Autowired
 	private GoogleDrive drive;

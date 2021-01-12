@@ -61,10 +61,12 @@ public class Table {
 
 	private Map<String, String> mapEntity(Map<String, String> entity, String id) {
 		Map<String, String> data = new HashMap<String, String>();
+		entity.forEach((k, v) -> data.put(attributeColumns.get(k), v));
 		if (id != null) {
 			data.put(attributeColumns.get(ID), id);
+		} else {
+			data.remove(attributeColumns.get(ID));
 		}
-		entity.forEach((k, v) -> data.put(attributeColumns.get(k), v));
 		return data;
 	}
 
@@ -86,7 +88,7 @@ public class Table {
 
 	public void update(Map<String, String> entity) throws IOException {
 		
-		String id = entity.remove(ID);
+		String id = entity.get(ID);
 		
 		sheet.updateRow(attributeColumns.get(ID), id, mapEntity(entity, null));
 		

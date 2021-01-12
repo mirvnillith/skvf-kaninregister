@@ -1,0 +1,33 @@
+package se.skvf.kaninregister.model;
+
+import static java.util.UUID.randomUUID;
+
+import java.util.UUID;
+
+import org.junit.jupiter.api.Test;
+
+public class OwnerTest extends EntityTest<Owner> {
+
+	public OwnerTest() {
+		super(Owner.class, Owner::from);
+	}
+	
+	@Test
+	public void firstName() throws Exception {
+		assertAttribute("Förnamn", Owner::setFirstName, Owner::getFirstName);
+	}
+	
+	@Test
+	public void lastName() throws Exception {
+		assertAttribute("Efternamn", Owner::setLastName, Owner::getLastName);
+	}
+	
+	@Test
+	public void testToString() {
+		Owner owner = new Owner()
+				.setId(randomUUID().toString())
+				.setFirstName(randomUUID().toString())
+				.setLastName(randomUUID().toString());
+		assertToString(owner, ": "+owner.getFirstName()+" "+owner.getLastName());
+	}
+}

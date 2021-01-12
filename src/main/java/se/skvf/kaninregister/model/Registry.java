@@ -29,8 +29,8 @@ import se.skvf.kaninregister.data.Table;
 @Component
 public class Registry {
 
-	private static final String BUNNIES_NAME = "Kaniner";
-	private static final String OWNERS_NAME = "Ägare";
+	static final String BUNNIES_TABLE = "Kaniner";
+	static final String OWNERS_TABLE = "Ägare";
 
 	@Autowired
 	private Database database;
@@ -54,8 +54,8 @@ public class Registry {
 	@PostConstruct
 	public void setup() throws Exception {
 		
-		bunnies = database.getTable(BUNNIES_NAME, Bunny.COLUMNS);
-		owners = database.getTable(OWNERS_NAME, Owner.COLUMNS);
+		bunnies = database.getTable(BUNNIES_TABLE, Bunny.COLUMNS);
+		owners = database.getTable(OWNERS_TABLE, Owner.COLUMNS);
 		
 		if (test) {
 			test();
