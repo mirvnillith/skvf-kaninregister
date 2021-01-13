@@ -102,10 +102,6 @@ public class GoogleSheet {
 		return new GridRange().setSheetId(id).setStartRowIndex(0).setEndRowIndex(1);
 	}
 	
-	private GridRange rowGridRange(int rowIndex) {
-		return new GridRange().setSheetId(id).setStartRowIndex(rowIndex + 2).setEndRowIndex(rowIndex + 3);
-	}
-
 	private String createColumn(String columnName, int columnIndex) throws IOException {
 		
 		ValueRange title = new ValueRange()

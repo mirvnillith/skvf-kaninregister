@@ -2,8 +2,6 @@ package se.skvf.kaninregister.model;
 
 import static java.util.UUID.randomUUID;
 
-import java.util.UUID;
-
 import org.junit.jupiter.api.Test;
 
 public class BunnyTest extends EntityTest<Bunny> {

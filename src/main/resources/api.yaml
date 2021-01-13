@@ -9,6 +9,30 @@ tags:
     description: Registry of bunnies and owners/breeders
     
 paths:
+  /login:
+    post:
+      tags: [BunnyRegistry]
+      operationId: login
+      summary: Starts an authenticated owner session
+      requestBody:
+        description: Owner credentials
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDTO'
+      responses:
+        '200':
+          description: Owner authenticated
+        '401':
+          description: Authentication failed
+  /logout:
+    post:
+      tags: [BunnyRegistry]
+      operationId: logout
+      summary: Ends an authenticated owner session
+      responses:
+        '200':
+          description: Owner logged out
   /owners:
     post:
       tags: [BunnyRegistry]
@@ -83,6 +107,34 @@ paths:
                 $ref: '#/components/schemas/OwnerDTO'
         '400':
           description: If incoming OwnerDTO has an ID, it must match the path
+        '401':
+          description: Session required
+        '404':
+          description: Owner not found
+  /owners/{id}/password:
+    put:
+      tags: [BunnyRegistry]
+      operationId: setPassword
+      summary: Sets owner password.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Password data
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/PasswordDTO'
+      responses:
+        '200':
+          description: Password set
+        '400':
+          description: Owner credentials not valid
+        '404':
+          description: Owner not found
   /owners/{id}/bunnies:
     post:
       tags: [BunnyRegistry]
@@ -109,6 +161,10 @@ paths:
                 $ref: '#/components/schemas/BunnyDTO'
         '400':
           description: Incoming BunnyDTO must not have an ID and if it has an owner, it must match the path
+        '401':
+          description: Session required
+        '404':
+          description: Owner not found
     get:
       tags: [BunnyRegistry]
       operationId: getOwnerBunnies
@@ -127,6 +183,8 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/BunnyList'
+        '401':
+          description: Session required
   /owners/{owner}/bunnies/{bunny}:
     put:
       tags: [BunnyRegistry]
@@ -158,6 +216,10 @@ paths:
                 $ref: '#/components/schemas/BunnyDTO'
         '400':
           description: If Incoming BunnyDTO has an ID, it must match the path.
+        '401':
+          description: Session required
+        '404':
+          description: Owner or bunny not found
   /bunnies:
     get:
       tags: [BunnyRegistry]
@@ -201,6 +263,8 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/BunnyDTO'
+        '404':
+          description: Bunny not found
   /bunnies/{id}/owner:
     get:
       tags: [BunnyRegistry]
@@ -223,7 +287,7 @@ paths:
         '204':
           description: Bunny has no public owner
         '404':
-          description: Bunny has no owner
+          description: Bunny not found or has no owner
   /bunnies/{id}/breeder:
     get:
       tags: [BunnyRegistry]
@@ -246,7 +310,7 @@ paths:
         '204':
           description: Bunny has no public breeder
         '404':
-          description: Bunny has no breeder
+          description: Bunny not found or has no breeder
 
 components:
   schemas:
@@ -273,6 +337,31 @@ components:
           properties:
             email:
               type: string
+    LoginDTO:
+       type: object
+       description: Login is authenticated using a password and one of the owner identifiers
+       properties:
+         password:
+           type: string
+           description: Owner password
+         email:
+           type: string
+           description: Owner email
+         bunny:
+           type: string
+           description: Owner bunny
+    PasswordDTO:
+       type: object
+       properties:
+         oldPassword:
+           type: string
+           description: If owner has an existing password, this must match
+         bunny:
+           type: string
+           description: If owner has no existing password, this must be one of its bunnies
+         newPassword:
+           type: string
+           description: New password to set
     BunnyList:
       type: object
       properties:
