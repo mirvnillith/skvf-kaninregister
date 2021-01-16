@@ -29,7 +29,7 @@ public class GetOwnerTest extends BunnyRegistryApiTest {
 		
 		String ownerId = randomUUID().toString();
 		
-		when(registry.findBunnies(singleton(ownerId))).thenThrow(IOException.class);
+		when(registry.findOwners(singleton(ownerId))).thenThrow(IOException.class);
 		
 		assertError(INTERNAL_SERVER_ERROR, () -> api.getOwner(ownerId));
 	}
