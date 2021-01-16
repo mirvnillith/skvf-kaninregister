@@ -1,5 +1,6 @@
 package se.skvf.kaninregister.api;
 
+import static java.lang.Thread.sleep;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,6 +26,7 @@ public class SessionManagerTest {
 		
 		assertThat(manager.isSession(sessionId, ownerId)).isTrue();
 		assertThat(manager.isSession(sessionId, null)).isTrue();
+		assertThat(manager.isSession(sessionId, sessionId)).isFalse();
 		assertThat(manager.isSession(ownerId, ownerId)).isFalse();
 		assertThat(manager.isSession(ownerId, null)).isFalse();
 		assertThat(manager.isSession(null, ownerId)).isFalse();
@@ -34,11 +36,29 @@ public class SessionManagerTest {
 		
 		assertThat(manager.isSession(sessionId, ownerId)).isFalse();
 		assertThat(manager.isSession(sessionId, null)).isFalse();
+		assertThat(manager.isSession(sessionId, sessionId)).isFalse();
 		assertThat(manager.isSession(ownerId, ownerId)).isFalse();
 		assertThat(manager.isSession(ownerId, null)).isFalse();
 		assertThat(manager.isSession(null, ownerId)).isFalse();
 		assertThat(manager.isSession(null, null)).isFalse();
 		
 		manager.endSession(null);
+	}
+	
+	@Test
+	public void timeout() throws Exception {
+		
+		manager.setTimeout(1);
+		
+		String ownerId = randomUUID().toString();
+		String sessionId = manager.startSession(ownerId);
+		
+		sleep(500);
+		
+		assertThat(manager.isSession(sessionId, ownerId)).isTrue();
+		
+		sleep(1100);
+		
+		assertThat(manager.isSession(sessionId, ownerId)).isFalse();
 	}
 }

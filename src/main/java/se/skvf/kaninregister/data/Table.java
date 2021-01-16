@@ -1,5 +1,6 @@
 package se.skvf.kaninregister.data;
 
+import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -8,10 +9,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.google.common.collect.Maps;
 
 import se.skvf.kaninregister.drive.GoogleSheet;
 
@@ -24,6 +28,8 @@ public class Table {
 	private final GoogleSheet sheet;
 	private final Map<String, String> attributeColumns;
 	private final Map<String, String> columnAttributes;
+
+	public static final Map<String, Predicate<String>> ALL = Maps.toMap(singleton(ID), k -> ((Predicate<String>)Objects::nonNull));
 	
 	public Table(GoogleSheet sheet, Collection<String> columns) throws IOException {
 		this.sheet = sheet;

@@ -39,7 +39,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 	@Mock
 	private HttpServletRequest request;
 	@Mock
-	private SessionManager sessions;
+	protected SessionManager sessions;
 	
 	@Mock
 	protected Registry registry;
@@ -79,7 +79,8 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 		Owner owner = new Owner()
 				.setId(randomUUID().toString())
 				.setFirstName(randomUUID().toString())
-				.setLastName(randomUUID().toString());
+				.setLastName(randomUUID().toString())
+				.setEmail(randomUUID().toString());
 		when(registry.findOwners(anyCollection())).thenReturn(singleton(owner));
 		return owner;
 	}
@@ -98,7 +99,8 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 		assertAll(
 				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
 				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
-				() -> assertThat(actual.getOwner()).isEqualTo(expected.getOwner())
+				() -> assertThat(actual.getOwner()).isEqualTo(expected.getOwner()),
+				() -> assertThat(actual.getBreeder()).isEqualTo(expected.getBreeder())
 				);
 	}
 	
@@ -114,7 +116,8 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 		assertAll(
 				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
 				() -> assertThat(actual.getFirstName()).isEqualTo(expected.getFirstName()),
-				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName())
+				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName()),
+				() -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail())
 				);
 	}
 	

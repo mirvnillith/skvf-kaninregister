@@ -134,6 +134,8 @@ paths:
         '200':
           description: Password set
         '400':
+          description: Invalid new password
+        '401':
           description: Owner credentials not valid
         '404':
           description: Owner not found

@@ -3,7 +3,9 @@ package se.skvf.kaninregister.model;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class Bunny extends Entity {
 
@@ -67,5 +69,11 @@ public class Bunny extends Entity {
 		name = map.get("Namn");
 		breeder = map.get("Uppfödare");
 		return this;
+	}
+
+	public static Map<String, Predicate<String>> byOwner(String id) {
+		Map<String, Predicate<String>> filter = new HashMap<>();
+		filter.put("Ägare", id::equals);
+		return filter;
 	}
 }

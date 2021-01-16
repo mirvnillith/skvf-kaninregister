@@ -3,20 +3,31 @@ package se.skvf.kaninregister.model;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
+
+import org.jasypt.util.password.PasswordEncryptor;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 
 public class Owner extends Entity {
 
+	private static final PasswordEncryptor ENCRYPTOR = new StrongPasswordEncryptor();
+	
 	static final Collection<String> COLUMNS = asList(
 			"Förnamn", 
 			"Efternamn", 
 			"Offentlig Uppfödare", 
-			"Offentlig Ägare");
+			"Offentlig Ägare",
+			"Lösenord",
+			"E-post");
 
 	private String firstName;
 	private String lastName;
 	private boolean publicBreeder;
 	private boolean publicOwner;
+	private String password;
+	private String email;
 	
 	@Override
 	public Owner setId(String id) {
@@ -41,12 +52,23 @@ public class Owner extends Entity {
 		return this;
 	}
 	
+	public Owner setEmail(String email) {
+		this.email = email;
+		return this;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+	
 	@Override
 	protected void toMap(Map<String, String> map) {
 		map.put("Förnamn", firstName);
 		map.put("Efternamn", lastName);
 		map.put("Offentlig Uppfödare", toString(publicBreeder));
 		map.put("Offentlig Ägare", toString(publicOwner));
+		map.put("Lösenord", password);
+		map.put("E-post", email);
 	}
 	
 	public static Owner from(Map<String, String> map) {
@@ -59,6 +81,8 @@ public class Owner extends Entity {
 		lastName = map.get("Efternamn");
 		publicBreeder = booleanFromString(map.get("Offentlig Uppfödare"));
 		publicOwner = booleanFromString(map.get("Offentlig Ägare"));
+		password = map.get("Lösenord");
+		email = map.get("E-post");
 		return this;
 	}
 	
@@ -91,5 +115,20 @@ public class Owner extends Entity {
 	
 	public boolean isNotPublicOwner() {
 		return !publicOwner;
+	}
+
+	public Owner setPassword(String password) {
+		this.password = ENCRYPTOR.encryptPassword(password);
+		return this;
+	}
+	
+	public boolean validate(String password) {
+		return password != null && ENCRYPTOR.checkPassword(password, this.password);
+	}
+
+	public static Map<String, Predicate<String>> byEmail(String email) {
+		Map<String, Predicate<String>> filter = new HashMap<>();
+		filter.put("E-post", email::equals);
+		return filter;
 	}
 }
