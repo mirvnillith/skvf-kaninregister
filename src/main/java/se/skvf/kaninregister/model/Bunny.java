@@ -7,10 +7,11 @@ import java.util.Map;
 
 public class Bunny extends Entity {
 
-	static final Collection<String> COLUMNS = asList("Ägare", "Namn");
+	static final Collection<String> COLUMNS = asList("Ägare", "Namn", "Uppfödare");
 
 	private String owner;
 	private String name;
+	private String breeder;
 	
 	@Override
 	public Bunny setId(String id) {
@@ -35,10 +36,20 @@ public class Bunny extends Entity {
 		return this;
 	}
 
+	public String getBreeder() {
+		return breeder;
+	}
+	
+	public Bunny setBreeder(String breeder) {
+		this.breeder = breeder;
+		return this;
+	}
+	
 	@Override
 	protected void toMap(Map<String, String> map) {
 		map.put("Ägare", owner);
 		map.put("Namn", name);
+		map.put("Uppfödare", breeder);
 	}
 
 	@Override
@@ -54,6 +65,7 @@ public class Bunny extends Entity {
 		super.fromMap(map);
 		owner = map.get("Ägare");
 		name = map.get("Namn");
+		breeder = map.get("Uppfödare");
 		return this;
 	}
 }

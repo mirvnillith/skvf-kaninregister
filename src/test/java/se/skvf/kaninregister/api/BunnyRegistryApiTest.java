@@ -10,6 +10,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +20,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.function.Executable;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -39,6 +43,13 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 	
 	@Mock
 	protected Registry registry;
+	
+	@Captor
+	protected ArgumentCaptor<Map<String, Predicate<String>>> filterArgument;
+	@Captor
+	protected ArgumentCaptor<Bunny> bunnyArgument;
+	@Captor
+	protected ArgumentCaptor<Owner> ownerArgument;
 	
 	@BeforeEach
 	public void api() {
@@ -77,16 +88,41 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 		Bunny bunny = new Bunny()
 				.setId(randomUUID().toString())
 				.setName(randomUUID().toString())
-				.setOwner(randomUUID().toString());
+				.setOwner(randomUUID().toString())
+				.setBreeder(randomUUID().toString());
 		when(registry.findBunnies(anyCollection())).thenReturn(singleton(bunny));
 		return bunny;
 	}
 
-	protected void assertBunny(BunnyDTO expected, Bunny actual) {
+	protected static void assertBunny(BunnyDTO expected, Bunny actual) {
 		assertAll(
 				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
 				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
 				() -> assertThat(actual.getOwner()).isEqualTo(expected.getOwner())
+				);
+	}
+	
+	protected static void assertBunny(BunnyListDTO expected, Bunny actual) {
+		assertAll(
+				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
+				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
+				() -> assertThat(actual.getOwner()).isEqualTo(expected.getOwner())
+				);
+	}
+
+	protected static void assertOwner(OwnerDTO expected, Owner actual) {
+		assertAll(
+				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
+				() -> assertThat(actual.getFirstName()).isEqualTo(expected.getFirstName()),
+				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName())
+				);
+	}
+	
+	protected static void assertOwner(OwnerListDTO expected, Owner actual) {
+		assertAll(
+				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
+				() -> assertThat(actual.getFirstName()).isEqualTo(expected.getFirstName()),
+				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName())
 				);
 	}
 }

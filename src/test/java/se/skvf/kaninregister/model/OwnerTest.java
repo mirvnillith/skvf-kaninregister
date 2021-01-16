@@ -21,6 +21,16 @@ public class OwnerTest extends EntityTest<Owner> {
 	}
 	
 	@Test
+	public void publicBreeder() throws Exception {
+		assertBooleanAttribute("Offentlig Uppfödare", Owner::setPublicBreeder, Owner::isPublicBreeder);
+	}
+	
+	@Test
+	public void publicOwner() throws Exception {
+		assertBooleanAttribute("Offentlig Ägare", Owner::setPublicOwner, Owner::isPublicOwner);
+	}
+	
+	@Test
 	public void testToString() {
 		Owner owner = new Owner()
 				.setId(randomUUID().toString())

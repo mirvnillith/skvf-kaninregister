@@ -80,7 +80,7 @@ public class Registry {
 
 		List<Long> durations = new ArrayList<>(batch);
 		for (int i=0; i<batch;i++) {
-			Owner owner = new Owner().setFirstName(randomUUID().toString()).setLastName(randomUUID().toString());
+			Entity owner = new Owner().setFirstName(randomUUID().toString()).setLastName(randomUUID().toString());
 			long before = System.currentTimeMillis();
 			ids.add(add(owner));
 			durations.add(System.currentTimeMillis()-before);
@@ -104,7 +104,7 @@ public class Registry {
 		}
 		List<Long> durations = new ArrayList<>(batch);
 		for (String id : batchIds) {
-			Owner owner = new Owner().setId(id);
+			Entity owner = new Owner().setId(id);
 			long before = System.currentTimeMillis();
 			remove(owner);
 			durations.add(System.currentTimeMillis()-before);
@@ -123,7 +123,7 @@ public class Registry {
 	private void test() throws IOException {
 		
 		Owner jonas = new Owner().setFirstName("Jonas").setLastName("Olsson");
-		Owner maria = new Owner().setFirstName("Maria").setLastName("Wahlström");
+		Entity maria = new Owner().setFirstName("Maria").setLastName("Wahlström");
 		add(jonas);
 		add(maria);
 		findOwners(asList(maria.getId(), jonas.getId())).forEach(System.out::println);
@@ -155,7 +155,7 @@ public class Registry {
 		remove(maria);
 	}
 
-	public String add(Owner owner) throws IOException {
+	public String add(Entity owner) throws IOException {
 		return add(owners, owner);
 	}
 	
@@ -167,11 +167,11 @@ public class Registry {
 		return owners.find(filters).stream().map(Owner::from).collect(toList());
 	}
 
-	public void update(Owner owner) throws IOException {
+	public void update(Entity owner) throws IOException {
 		update(owners, owner);
 	}
 	
-	public void remove(Owner owner) throws IOException {
+	public void remove(Entity owner) throws IOException {
 		remove(owners, owner);
 	}
 	

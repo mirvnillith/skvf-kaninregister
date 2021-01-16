@@ -21,6 +21,11 @@ public class BunnyTest extends EntityTest<Bunny> {
 	}
 	
 	@Test
+	public void breeder() throws Exception {
+		assertAttribute("Uppfödare", Bunny::setBreeder, Bunny::getBreeder);
+	}
+	
+	@Test
 	public void testToString() {
 		Bunny bunny = new Bunny()
 				.setId(randomUUID().toString())

@@ -63,7 +63,7 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: '#/components/schemas/OwnersList'
+                $ref: '#/components/schemas/OwnerList'
   /owners/{id}:
     get:
       tags: [BunnyRegistry]
@@ -82,6 +82,8 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/OwnerDTO'
+        '404':
+          description: Bunny not found
     put:
       tags: [BunnyRegistry]
       operationId: updateOwner
@@ -314,7 +316,7 @@ paths:
 
 components:
   schemas:
-    OwnersList:
+    OwnerList:
       type: object
       properties:
         owners:

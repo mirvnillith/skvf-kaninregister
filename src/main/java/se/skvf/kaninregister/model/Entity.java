@@ -7,6 +7,14 @@ import java.util.Map;
 
 public abstract class Entity {
 
+	protected static String toString(boolean flag) {
+		return flag ? "Ja" : "Nej";
+	}
+
+	protected static boolean booleanFromString(String string) {
+		return "Ja".equalsIgnoreCase(string);
+	}
+
 	private String id;
 	
 	public Entity setId(String id) {

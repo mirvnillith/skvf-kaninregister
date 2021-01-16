@@ -40,6 +40,28 @@ public abstract class EntityTest<E extends Entity> {
 		assertThat(entity.getId()).isSameAs(id);
 	}
 	
+	protected void assertBooleanAttribute(String name, BiFunction<E, Boolean, E> setter, Function<E, Boolean> getter) throws Exception {
+		
+		E entity = entityClass.getDeclaredConstructor().newInstance();
+		String id = randomUUID().toString();
+		assertThat(entity.setId(id)).isSameAs(entity);
+		assertThat(entity.getId()).isSameAs(id);
+		
+		boolean value = true;
+		
+		assertThat(setter.apply(entity, value)).isSameAs(entity);
+		assertThat(getter.apply(entity)).isSameAs(value);
+		
+		Map<String, String> map = entity.toMap();
+		assertThat(map)
+			.containsEntry(name, Entity.toString(value))
+			.containsEntry(ID, id);
+		
+		entity = from.apply(map);
+		assertThat(getter.apply(entity)).isSameAs(value);
+		assertThat(entity.getId()).isSameAs(id);
+	}
+	
 	protected void assertToString(E entity, String suffix) {
 		assertThat(entity.toString())
 			.isEqualTo(entityClass.getSimpleName()+"#"+entity.getId()+suffix);

@@ -11,16 +11,9 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-
-import se.skvf.kaninregister.model.Bunny;
 
 public class CreateBunnyTest extends BunnyRegistryApiTest {
 
-	@Captor
-	private ArgumentCaptor<Bunny> bunny;
-	
 	@Test
 	public void createBunny() throws IOException {
 		
@@ -29,14 +22,14 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 		BunnyDTO dto = new BunnyDTO();
 		
 		String bunnyId = randomUUID().toString();
-		when(registry.add(bunny.capture())).thenReturn(bunnyId);
+		when(registry.add(bunnyArgument.capture())).thenReturn(bunnyId);
 		
 		dto = api.createBunny(ownerId, dto);
 		
 		assertThat(dto.getId()).isEqualTo(bunnyId);
 		assertThat(dto.getOwner()).isEqualTo(ownerId);
 		
-		assertBunny(dto, bunny.getValue().setId(bunnyId));
+		assertBunny(dto, bunnyArgument.getValue().setId(bunnyId));
 	}
 	
 	@Test
@@ -48,14 +41,14 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 		dto.setOwner(ownerId);
 		
 		String bunnyId = randomUUID().toString();
-		when(registry.add(bunny.capture())).thenReturn(bunnyId);
+		when(registry.add(bunnyArgument.capture())).thenReturn(bunnyId);
 		
 		dto = api.createBunny(ownerId, dto);
 		
 		assertThat(dto.getId()).isEqualTo(bunnyId);
 		assertThat(dto.getOwner()).isEqualTo(ownerId);
 		
-		assertBunny(dto, bunny.getValue().setId(bunnyId));
+		assertBunny(dto, bunnyArgument.getValue().setId(bunnyId));
 	}
 	
 	@Test
@@ -65,7 +58,7 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 		mockSession(ownerId);
 		BunnyDTO dto = new BunnyDTO();
 		
-		when(registry.add(bunny.capture())).thenThrow(IOException.class);
+		when(registry.add(bunnyArgument.capture())).thenThrow(IOException.class);
 		
 		assertError(INTERNAL_SERVER_ERROR, () -> api.createBunny(ownerId, dto));
 	}
