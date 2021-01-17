@@ -321,22 +321,23 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			}
 			Owner owner = owners.iterator().next();
 			
-			if (passwordDTO.getOldPassword() != null) {
-				
-				if (!owner.validate(passwordDTO.getOldPassword())) {
-					throw new WebApplicationException(UNAUTHORIZED);
-				}
-				
-			} else if (passwordDTO.getBunny() != null) {
-				
-				Collection<Bunny> bunnies = registry.findBunnies(singleton(passwordDTO.getBunny()));
-				if (bunnies.isEmpty() || 
-						!ownerId.equals(bunnies.iterator().next().getOwner())) {
-					throw new WebApplicationException(UNAUTHORIZED);
-				}
-				
-			} else {
+			if (!owner.validate(passwordDTO.getOldPassword())) {
 				throw new WebApplicationException(UNAUTHORIZED);
+			}
+			
+			if (passwordDTO.getOldPassword() == null) {
+
+				if (passwordDTO.getBunny() != null) {
+
+					Collection<Bunny> bunnies = registry.findBunnies(singleton(passwordDTO.getBunny()));
+					if (bunnies.isEmpty() || 
+							!ownerId.equals(bunnies.iterator().next().getOwner())) {
+						throw new WebApplicationException(UNAUTHORIZED);
+					}
+
+				} else {
+					throw new WebApplicationException(UNAUTHORIZED);
+				}
 			}
 			
 			registry.update(owner.setPassword(passwordDTO.getNewPassword()));

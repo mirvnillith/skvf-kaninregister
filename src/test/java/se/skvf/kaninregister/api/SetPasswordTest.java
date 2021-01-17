@@ -55,11 +55,27 @@ public class SetPasswordTest extends BunnyRegistryApiTest {
 	}
 	
 	@Test
-	public void setPassword_bunny() throws IOException {
+	public void setPassword_bunnyWithOldPassword() throws IOException {
 		
 		String oldPassword = randomUUID().toString();
 		Owner owner = mockOwner();
 		owner.setPassword(oldPassword);
+		Bunny bunny = mockBunny();
+		bunny.setOwner(owner.getId());
+		
+		String newPassword = randomUUID().toString();
+		
+		PasswordDTO dto = new PasswordDTO();
+		dto.setBunny(bunny.getId());
+		dto.setNewPassword(newPassword);
+		
+		assertError(UNAUTHORIZED, () -> api.setPassword(owner.getId(), dto));
+	}
+	
+	@Test
+	public void setPassword_bunnyWithoutOldPassword() throws IOException {
+		
+		Owner owner = mockOwner();
 		Bunny bunny = mockBunny();
 		bunny.setOwner(owner.getId());
 		
@@ -74,7 +90,6 @@ public class SetPasswordTest extends BunnyRegistryApiTest {
 		
 		Owner updatedOwner = ownerArgument.getValue();
 		assertThat(updatedOwner.validate(newPassword)).isTrue();
-		assertThat(updatedOwner.validate(oldPassword)).isFalse();
 	}
 	
 	@Test

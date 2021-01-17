@@ -1,12 +1,14 @@
 package se.skvf.kaninregister.model;
 
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
@@ -126,7 +128,11 @@ public class Owner extends Entity {
 	}
 	
 	public boolean validate(String password) {
-		return password != null && ENCRYPTOR.checkPassword(password, this.password);
+		if (password == null) {
+			return isEmpty(this.password);
+		} else {
+			return ENCRYPTOR.checkPassword(password, this.password);
+		}
 	}
 
 	public static Map<String, Predicate<String>> byEmail(String email) {
