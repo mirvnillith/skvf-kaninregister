@@ -63,6 +63,9 @@ public class Owner extends Entity {
 	
 	@Override
 	protected void toMap(Map<String, String> map) {
+		if (firstName == null) {
+			throw new IllegalStateException("Owner must have a first name");
+		}
 		map.put("Förnamn", firstName);
 		map.put("Efternamn", lastName);
 		map.put("Offentlig Uppfödare", toString(publicBreeder));

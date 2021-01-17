@@ -7,7 +7,14 @@ import org.junit.jupiter.api.Test;
 public class BunnyTest extends EntityTest<Bunny> {
 
 	public BunnyTest() {
-		super(Bunny.class, Bunny::from);
+		super(Bunny::from);
+	}
+	
+	@Override
+	protected Bunny create() {
+		return new Bunny()
+				.setOwner(randomUUID().toString())
+				.setName(randomUUID().toString());
 	}
 	
 	@Test
@@ -32,5 +39,15 @@ public class BunnyTest extends EntityTest<Bunny> {
 				.setOwner(randomUUID().toString())
 				.setName(randomUUID().toString());
 		assertToString(bunny, ": "+bunny.getName()+"@"+bunny.getOwner());
+	}
+	
+	@Test
+	public void mandatoryOwner() {
+		assertMandatoryAttribute("Ägare");
+	}
+	
+	@Test
+	public void mandatoryName() {
+		assertMandatoryAttribute("Namn");
 	}
 }

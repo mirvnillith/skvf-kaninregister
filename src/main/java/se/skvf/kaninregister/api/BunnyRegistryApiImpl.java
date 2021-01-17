@@ -2,6 +2,9 @@ package se.skvf.kaninregister.api;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
+import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
@@ -10,6 +13,9 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
@@ -35,9 +41,9 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private SessionManager sessions;
 	
 	@Context
-	HttpServletRequest request;
+	private HttpServletRequest request;
 	@Context
-	HttpServletResponse response;
+	private HttpServletResponse response;
 	
 	@Override
 	public BunnyDTO createBunny(String ownerId, BunnyDTO bunnyDTO) {
@@ -340,14 +346,80 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 
 	@Override
 	public BunnyDTO updateBunny(String ownerId, String bunnyId, BunnyDTO bunnyDTO) {
-		// TODO Auto-generated method stub
-		return null;
+		return process(() -> {
+			
+			validateSession(ownerId);
+			
+			Set<String> ownerIds = new HashSet<>();
+			ownerIds.add(ownerId);
+			if (bunnyDTO.getBreeder() != null) {
+				ownerIds.add(bunnyDTO.getBreeder());
+			}
+			if (bunnyDTO.getOwner() != null) {
+				ownerIds.add(bunnyDTO.getOwner());
+			}
+			
+			Map<String, Owner> owners = registry.findOwners(ownerIds).stream().collect(toMap(Owner::getId, identity()));
+			if (owners.get(ownerId) == null) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			if (bunnyDTO.getBreeder() != null &&
+					owners.get(bunnyDTO.getBreeder()) == null) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			if (bunnyDTO.getOwner() != null && 
+					owners.get(bunnyDTO.getOwner()) == null) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			
+			if (bunnyDTO.getId() != null &&
+					!bunnyDTO.getId().equals(bunnyId)) {
+				throw new WebApplicationException(BAD_REQUEST);
+			}
+			Collection<Bunny> bunnies = registry.findBunnies(singleton(bunnyId));
+			if (bunnies.isEmpty()) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			Bunny bunny = bunnies.iterator().next();
+			
+			update(bunny, bunnyDTO);
+			registry.update(bunny);
+			return toDTO(bunny);
+		});
+	}
+
+	private static void update(Bunny bunny, BunnyDTO dto) {
+		ofNullable(dto.getBreeder()).ifPresent(bunny::setBreeder);
+		ofNullable(dto.getName()).ifPresent(bunny::setName);
+		ofNullable(dto.getOwner()).ifPresent(bunny::setOwner);
+	}
+	
+	private static void update(Owner owner, OwnerDTO dto) {
+		ofNullable(dto.getEmail()).ifPresent(owner::setEmail);
+		ofNullable(dto.getFirstName()).ifPresent(owner::setFirstName);
+		ofNullable(dto.getLastName()).ifPresent(owner::setLastName);
 	}
 
 	@Override
 	public OwnerDTO updateOwner(String id, OwnerDTO ownerDTO) {
-		// TODO Auto-generated method stub
-		return null;
+		return process(() -> {
+			
+			validateSession(id);
+			
+			if (ownerDTO.getId() != null &&
+					!ownerDTO.getId().equals(id)) {
+				throw new WebApplicationException(BAD_REQUEST);
+			}
+			Collection<Owner> owners = registry.findOwners(singleton(id));
+			if (owners.isEmpty()) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			Owner owner = owners.iterator().next();
+			
+			update(owner, ownerDTO);
+			registry.update(owner);
+			return toDTO(owner);
+		});
 	}
 
 }

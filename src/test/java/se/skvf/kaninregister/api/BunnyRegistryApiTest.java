@@ -54,7 +54,6 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 	@BeforeEach
 	public void api() {
 		
-		impl.request = request;
 		api = impl;
 		
 		when(request.getCookies()).thenReturn(new Cookie[0]);

@@ -49,6 +49,12 @@ public class Bunny extends Entity {
 	
 	@Override
 	protected void toMap(Map<String, String> map) {
+		if (owner == null) {
+			throw new IllegalStateException("Bunny must have an owner");
+		}
+		if (name == null) {
+			throw new IllegalStateException("Bunny must have a name");
+		}
 		map.put("Ägare", owner);
 		map.put("Namn", name);
 		map.put("Uppfödare", breeder);

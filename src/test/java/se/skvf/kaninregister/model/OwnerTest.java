@@ -10,7 +10,13 @@ import org.junit.jupiter.api.Test;
 public class OwnerTest extends EntityTest<Owner> {
 
 	public OwnerTest() {
-		super(Owner.class, Owner::from);
+		super(Owner::from);
+	}
+	
+	@Override
+	protected Owner create() {
+		return new Owner()
+				.setFirstName(randomUUID().toString());
 	}
 	
 	@Test
@@ -32,7 +38,7 @@ public class OwnerTest extends EntityTest<Owner> {
 	public void password() {
 		
 		String password = randomUUID().toString();
-		Owner owner = new Owner()
+		Owner owner = create()
 				.setPassword(password);
 		
 		assertThat(owner.validate(password)).isTrue();
@@ -65,5 +71,10 @@ public class OwnerTest extends EntityTest<Owner> {
 				.setFirstName(randomUUID().toString())
 				.setLastName(randomUUID().toString());
 		assertToString(owner, ": "+owner.getFirstName()+" "+owner.getLastName());
+	}
+	
+	@Test
+	public void mandatoryFirstName() {
+		assertMandatoryAttribute("Förnamn");
 	}
 }

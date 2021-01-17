@@ -11,8 +11,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.IOException;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.junit.jupiter.api.Test;
 
 import se.skvf.kaninregister.model.Bunny;
