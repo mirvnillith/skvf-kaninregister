@@ -22,8 +22,10 @@ import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.ext.Provider;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +34,8 @@ import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Owner;
 import se.skvf.kaninregister.model.Registry;
 
+@Provider
+@Path("api")
 public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 
 	@Autowired
@@ -156,8 +160,12 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 
 	@Override
 	public BunnyList findBunnies(String identifier, String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return process(() -> {
+
+			BunnyList list = new BunnyList();
+			list.setBunnies(emptyList());
+			return list;
+		});
 	}
 
 	@Override
