@@ -31,12 +31,12 @@ public class Registry {
 	private boolean test;
 	private boolean performance;
 	
-	@Value("${skvf.dev.test}")
+	@Value("${skvf.dev.test:false}")
 	public void setTest(boolean test) {
 		this.test = test;
 	}
 	
-	@Value("${skvf.dev.performance}")
+	@Value("${skvf.dev.performance:false}")
 	public void setPerformance(boolean performance) {
 		this.performance = performance;
 	}
