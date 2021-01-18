@@ -356,10 +356,14 @@ components:
            description: Owner bunny
     PasswordDTO:
        type: object
+       description: Authentication and new password. One of oldPassword, email or bunny must be set.
        properties:
          oldPassword:
            type: string
            description: If owner has an existing password, this must match
+         email:
+           type: string
+           description: If owner has no existing password, this must be its email
          bunny:
            type: string
            description: If owner has no existing password, this must be one of its bunnies

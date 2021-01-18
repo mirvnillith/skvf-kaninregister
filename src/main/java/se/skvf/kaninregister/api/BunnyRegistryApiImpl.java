@@ -27,6 +27,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import se.skvf.kaninregister.data.Table;
@@ -38,6 +40,8 @@ import se.skvf.kaninregister.model.Registry;
 @Path("api")
 public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 
+	private static final Log LOG = LogFactory.getLog(BunnyRegistryApiImpl.class);
+	
 	@Autowired
 	private Registry registry;
 	
@@ -73,8 +77,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		try {
 			return call.call();
 		} catch (WebApplicationException e) {
+			LOG.info("Application error", e);
 			throw e;
 		} catch (Exception e) {
+			LOG.error("Unexpected error", e);
 			throw new WebApplicationException(e, INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -122,7 +128,8 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private static Owner toOwner(OwnerDTO dto) {
 		return new Owner().setId(dto.getId())
 				.setFirstName(dto.getFirstName())
-				.setLastName(dto.getLastName());
+				.setLastName(dto.getLastName())
+				.setEmail(dto.getEmail());
 	}
 
 	private String getSession() {
@@ -335,7 +342,13 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			if (passwordDTO.getOldPassword() == null) {
 
-				if (passwordDTO.getBunny() != null) {
+				if (passwordDTO.getEmail() != null) {
+					
+					if (!passwordDTO.getEmail().equals(owner.getEmail())) {
+						throw new WebApplicationException(UNAUTHORIZED);
+					}
+					
+				} else if (passwordDTO.getBunny() != null) {
 
 					Collection<Bunny> bunnies = registry.findBunnies(singleton(passwordDTO.getBunny()));
 					if (bunnies.isEmpty() || 
