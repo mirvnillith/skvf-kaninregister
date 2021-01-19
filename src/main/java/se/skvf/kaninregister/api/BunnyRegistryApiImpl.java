@@ -88,7 +88,8 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private static Bunny toBunny(BunnyDTO dto) {
 		return new Bunny().setId(dto.getId())
 				.setName(dto.getName())
-				.setOwner(dto.getOwner());
+				.setOwner(dto.getOwner())
+				.setBreeder(dto.getBreeder());
 	}
 	
 	private static BunnyDTO toDTO(Bunny bunny) {
