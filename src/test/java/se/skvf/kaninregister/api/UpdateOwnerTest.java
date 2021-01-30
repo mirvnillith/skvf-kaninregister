@@ -27,6 +27,7 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 		dto.setEmail(randomUUID().toString());
 		dto.setFirstName(randomUUID().toString());
 		dto.setLastName(randomUUID().toString());
+		dto.setUserName(randomUUID().toString());
 		
 		doNothing().when(registry).update(ownerArgument.capture());
 		OwnerDTO updated = api.updateOwner(ownerId, dto);
@@ -58,6 +59,7 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 		ofNullable(dto.getEmail()).ifPresent(assertThat(updated.getEmail())::isEqualTo);
 		ofNullable(dto.getFirstName()).ifPresent(assertThat(updated.getFirstName())::isEqualTo);
 		ofNullable(dto.getLastName()).ifPresent(assertThat(updated.getLastName())::isEqualTo);
+		ofNullable(dto.getUserName()).ifPresent(assertThat(updated.getUserName())::isEqualTo);
 	}
 	
 	@Test

@@ -23,6 +23,10 @@ paths:
       responses:
         '200':
           description: Owner authenticated
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/OwnerDTO'
         '401':
           description: Authentication failed
   /logout:
@@ -113,6 +117,32 @@ paths:
           description: Session required
         '404':
           description: Owner not found
+  /owners/{id}/activate:
+    put:
+      tags: [BunnyRegistry]
+      operationId: activate
+      summary: Activates owner.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Activation data
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/ActivationDTO'
+      responses:
+        '200':
+          description: Owner activated
+        '400':
+          description: Invalid user name or password
+        '401':
+          description: Owner already activated
+        '404':
+          description: Owner not found
   /owners/{id}/password:
     put:
       tags: [BunnyRegistry]
@@ -136,7 +166,7 @@ paths:
         '400':
           description: Invalid new password
         '401':
-          description: Owner credentials not valid
+          description: Session required
         '404':
           description: Owner not found
   /owners/{id}/bunnies:
@@ -339,34 +369,46 @@ components:
         - $ref: '#/components/schemas/OwnerListDTO'
         - type: object
           properties:
+            userName:
+              type: string
             email:
               type: string
     LoginDTO:
        type: object
-       description: Login is authenticated using a password and one of the owner identifiers
+       required:
+         - userName
+         - password
        properties:
+         userName:
+           type: string
+           description: Owner user name
          password:
            type: string
            description: Owner password
-         email:
-           type: string
-           description: Owner email
+    ActivationDTO:
+       type: object
+       required:
+         - userName
+         - password
+       properties:
          bunny:
            type: string
-           description: Owner bunny
+           description: Any bunny owned (required if owner has no previous user name)
+         userName:
+           type: string
+           description: User name to set
+         password:
+           type: string
+           description: Password to set
     PasswordDTO:
        type: object
-       description: Authentication and new password. One of oldPassword, email or bunny must be set.
+       required:
+         - currentPassword
+         - newPassword
        properties:
-         oldPassword:
+         currentPassword:
            type: string
-           description: If owner has an existing password, this must match
-         email:
-           type: string
-           description: If owner has no existing password, this must be its email
-         bunny:
-           type: string
-           description: If owner has no existing password, this must be one of its bunnies
+           description: Must match current password
          newPassword:
            type: string
            description: New password to set
@@ -391,5 +433,8 @@ components:
         - $ref: '#/components/schemas/BunnyListDTO'
         - type: object
           properties:
+            previousOwner:
+              type: string
+              readOnly: true
             breeder:
               type: string

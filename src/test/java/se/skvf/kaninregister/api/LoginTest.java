@@ -19,7 +19,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 
-import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Owner;
 
 public class LoginTest extends BunnyRegistryApiTest {
@@ -30,23 +29,24 @@ public class LoginTest extends BunnyRegistryApiTest {
 	private ArgumentCaptor<Cookie> cookie;
 	
 	@Test
-	public void login_email() throws IOException {
+	public void login() throws IOException {
 		
 		String password = randomUUID().toString();
-		Owner owner = mockOwner();
-		owner.setPassword(password);
+		Owner owner = mockOwner()
+				.setUserName(randomUUID().toString())
+				.setPassword(password);
 		when(registry.findOwners(filterArgument.capture())).thenReturn(singleton(owner));
 		
 		String sessionId = randomUUID().toString();
 		when(sessions.startSession(owner.getId())).thenReturn(sessionId);
 		
 		LoginDTO dto = new LoginDTO();
-		dto.setEmail(owner.getEmail());
+		dto.setUserName(owner.getUserName());
 		dto.setPassword(password);
 		api.login(dto);
 		
-		assertThat(filterArgument.getValue().get("E-post"))
-			.accepts(dto.getEmail());
+		assertThat(filterArgument.getValue().get("Användarnamn"))
+			.accepts(dto.getUserName());
 		verify(response).addCookie(cookie.capture());
 		assertThat(cookie.getValue())
 			.satisfies(c -> assertEquals(api.getClass().getSimpleName(), c.getName()))
@@ -57,15 +57,16 @@ public class LoginTest extends BunnyRegistryApiTest {
 	public void login_incorrectPassword() throws IOException {
 		
 		String password = randomUUID().toString();
-		Owner owner = mockOwner();
-		owner.setPassword(password);
+		Owner owner = mockOwner()
+				.setUserName(randomUUID().toString())
+				.setPassword(password);
 		when(registry.findOwners(filterArgument.capture())).thenReturn(singleton(owner));
 		
 		String sessionId = randomUUID().toString();
 		when(sessions.startSession(owner.getId())).thenReturn(sessionId);
 		
 		LoginDTO dto = new LoginDTO();
-		dto.setEmail(owner.getEmail());
+		dto.setUserName(owner.getUserName());
 		dto.setPassword(password + password);
 		assertError(UNAUTHORIZED, () -> api.login(dto));
 	}
@@ -76,23 +77,15 @@ public class LoginTest extends BunnyRegistryApiTest {
 		when(registry.findOwners(filterArgument.capture())).thenThrow(IOException.class);
 		
 		LoginDTO dto = new LoginDTO();
-		dto.setEmail("");
+		dto.setUserName("");
 		assertError(INTERNAL_SERVER_ERROR, () -> api.login(dto));
 	}
 	
 	@Test
-	public void login_unknownEmail() throws IOException {
+	public void login_unknownUserName() throws IOException {
 		
 		LoginDTO dto = new LoginDTO();
-		dto.setEmail("");
-		assertError(UNAUTHORIZED, () -> api.login(dto));
-	}
-	
-	@Test
-	public void login_unknownBunny() throws IOException {
-		
-		LoginDTO dto = new LoginDTO();
-		dto.setBunny("");
+		dto.setUserName("");
 		assertError(UNAUTHORIZED, () -> api.login(dto));
 	}
 	
@@ -100,37 +93,5 @@ public class LoginTest extends BunnyRegistryApiTest {
 	public void login_none() throws IOException {
 		
 		assertError(UNAUTHORIZED, () -> api.login(new LoginDTO()));
-	}
-	
-	@Test
-	public void login_bunny() throws IOException {
-		
-		String password = randomUUID().toString();
-		Owner owner = mockOwner();
-		owner.setPassword(password);
-		Bunny bunny = mockBunny();
-		
-		String sessionId = randomUUID().toString();
-		when(sessions.startSession(owner.getId())).thenReturn(sessionId);
-		
-		LoginDTO dto = new LoginDTO();
-		dto.setBunny(bunny.getId());
-		dto.setPassword(password);
-		api.login(dto);
-		
-		verify(response).addCookie(cookie.capture());
-		assertThat(cookie.getValue())
-			.satisfies(c -> assertEquals(api.getClass().getSimpleName(), c.getName()))
-			.satisfies(c -> assertEquals(sessionId, c.getValue()));
-	}
-	
-	@Test
-	public void login_unknownOwner() throws IOException {
-		
-		Bunny bunny = mockBunny();
-		
-		LoginDTO dto = new LoginDTO();
-		dto.setBunny(bunny.getId());
-		assertError(UNAUTHORIZED, () -> api.login(dto));
 	}
 }

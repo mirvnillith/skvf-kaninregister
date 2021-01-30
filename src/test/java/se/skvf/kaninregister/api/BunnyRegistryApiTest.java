@@ -99,6 +99,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
 				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
 				() -> assertThat(actual.getOwner()).isEqualTo(expected.getOwner()),
+				() -> assertThat(actual.getPreviousOwner()).isEqualTo(expected.getPreviousOwner()),
 				() -> assertThat(actual.getBreeder()).isEqualTo(expected.getBreeder())
 				);
 	}
@@ -116,6 +117,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
 				() -> assertThat(actual.getFirstName()).isEqualTo(expected.getFirstName()),
 				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName()),
+				() -> assertThat(actual.getUserName()).isEqualTo(expected.getUserName()),
 				() -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail())
 				);
 	}

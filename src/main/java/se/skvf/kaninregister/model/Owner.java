@@ -1,14 +1,12 @@
 package se.skvf.kaninregister.model;
 
 import static java.util.Arrays.asList;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
@@ -21,6 +19,7 @@ public class Owner extends Entity {
 			"Efternamn", 
 			"Offentlig Uppfödare", 
 			"Offentlig Ägare",
+			"Användarnamn",
 			"Lösenord",
 			"E-post");
 
@@ -28,12 +27,22 @@ public class Owner extends Entity {
 	private String lastName;
 	private boolean publicBreeder;
 	private boolean publicOwner;
+	private String userName;
 	private String password;
 	private String email;
 	
 	@Override
 	public Owner setId(String id) {
 		return (Owner) super.setId(id);
+	}
+	
+	public String getUserName() {
+		return userName;
+	}
+	
+	public Owner setUserName(String userName) {
+		this.userName = userName;
+		return this;
 	}
 	
 	public String getFirstName() {
@@ -68,10 +77,14 @@ public class Owner extends Entity {
 		if (firstName == null) {
 			throw new IllegalStateException("Owner must have a first name");
 		}
+		if (lastName == null) {
+			throw new IllegalStateException("Owner must have a last name");
+		}
 		map.put("Förnamn", firstName);
 		map.put("Efternamn", lastName);
 		map.put("Offentlig Uppfödare", toString(publicBreeder));
 		map.put("Offentlig Ägare", toString(publicOwner));
+		map.put("Användarnamn", userName);
 		map.put("Lösenord", password);
 		map.put("E-post", email);
 	}
@@ -86,6 +99,7 @@ public class Owner extends Entity {
 		lastName = map.get("Efternamn");
 		publicBreeder = booleanFromString(map.get("Offentlig Uppfödare"));
 		publicOwner = booleanFromString(map.get("Offentlig Ägare"));
+		userName = map.get("Användarnamn");
 		password = map.get("Lösenord");
 		email = map.get("E-post");
 		return this;
@@ -129,15 +143,19 @@ public class Owner extends Entity {
 	
 	public boolean validate(String password) {
 		if (password == null) {
-			return isEmpty(this.password);
+			return false;
 		} else {
 			return ENCRYPTOR.checkPassword(password, this.password);
 		}
 	}
 
-	public static Map<String, Predicate<String>> byEmail(String email) {
+	public static Map<String, Predicate<String>> byUserName(String userName) {
 		Map<String, Predicate<String>> filter = new HashMap<>();
-		filter.put("E-post", email::equals);
+		filter.put("Användarnamn", userName::equals);
 		return filter;
+	}
+
+	public boolean isActivated() {
+		return this.password != null;
 	}
 }

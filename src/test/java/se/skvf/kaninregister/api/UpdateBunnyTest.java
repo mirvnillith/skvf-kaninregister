@@ -46,6 +46,7 @@ public class UpdateBunnyTest extends BunnyRegistryApiTest {
 		
 		assertUpdate(updated, dto, bunnyId);
 		assertBunny(updated, bunnyArgument.getValue());
+		assertThat(updated.getPreviousOwner()).isEqualTo(owner.getId());
 	}
 
 	private static void assertUpdate(BunnyDTO updated, BunnyDTO dto, String bunnyId) {
@@ -71,6 +72,31 @@ public class UpdateBunnyTest extends BunnyRegistryApiTest {
 		dto.setOwner(randomUUID().toString());
 		
 		assertError(NOT_FOUND, () -> api.updateBunny(owner.getId(), bunny.getId(), dto));
+	}
+	
+	@Test
+	public void updateBunny_anonymousNewOwner() throws IOException {
+		
+		Owner owner = mockOwner();
+		mockSession(owner.getId());
+		reset(registry);
+		when(registry.findOwners(anyCollection())).thenReturn(asList(owner));
+		
+		String anonymousId = randomUUID().toString();
+		when(registry.add(ownerArgument.capture())).thenReturn(anonymousId);
+		
+		Bunny bunny = mockBunny();
+		bunny.setOwner(owner.getId());
+		
+		BunnyDTO dto = new BunnyDTO();
+		dto.setName(randomUUID().toString());
+		dto.setOwner("");
+		
+		BunnyDTO updated = api.updateBunny(owner.getId(), bunny.getId(), dto);
+		
+		assertThat(updated.getOwner()).isEqualTo(anonymousId);
+		assertThat(updated.getPreviousOwner()).isEqualTo(owner.getId());
+		assertThat(ownerArgument.getValue().isPublicOwner()).isFalse();
 	}
 	
 	@Test

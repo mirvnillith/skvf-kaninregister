@@ -8,8 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.apache.cxf.message.Message;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,20 +59,21 @@ public class ApplicationApiTest {
 		
 		// Breeder creates an account ...
 		OwnerDTO breeder = new OwnerDTO();
-		breeder.setEmail(randomUUID().toString());
+		breeder.setUserName(randomUUID().toString());
 		breeder.setFirstName(randomUUID().toString());
+		breeder.setLastName(randomUUID().toString());
 		breeder = api.createOwner(breeder);
 		
-		// ... and sets a password
-		PasswordDTO breederPassword = new PasswordDTO();
-		breederPassword.setEmail(breeder.getEmail());
-		breederPassword.setNewPassword(randomUUID().toString());
-		api.setPassword(breeder.getId(), breederPassword);
+		// ... and activates by user name
+		ActivationDTO activation = new ActivationDTO();
+		activation.setUserName(breeder.getUserName());
+		activation.setPassword(randomUUID().toString());
+		api.activate(breeder.getId(), activation);
 		
 		// Breeder logs in ...
 		LoginDTO loginDTO = new LoginDTO();
-		loginDTO.setEmail(breeder.getEmail());
-		loginDTO.setPassword(breederPassword.getNewPassword());
+		loginDTO.setUserName(breeder.getUserName());
+		loginDTO.setPassword(activation.getPassword());
 		api.login(loginDTO);
 		
 		// .. and creates a bunny
@@ -89,26 +88,23 @@ public class ApplicationApiTest {
 		api.login(loginDTO);
 		
 		// Breeder sells bunny to a new owner
-		OwnerDTO owner = new OwnerDTO();
-		owner.setEmail(randomUUID().toString());
-		owner.setFirstName(randomUUID().toString());
-		owner = api.createOwner(owner);
 		BunnyDTO transfer = new BunnyDTO();
-		transfer.setOwner(owner.getId());
+		transfer.setOwner("");
 		bunny = api.updateBunny(breeder.getId(), bunny.getId(), transfer);
 		
 		api.logout();
 		
-		// New owner sets a password ...
-		PasswordDTO ownerPassword = new PasswordDTO();
-		ownerPassword.setBunny(bunny.getId());
-		ownerPassword.setNewPassword(randomUUID().toString());
-		api.setPassword(owner.getId(), ownerPassword);
+		// New owner activates by bunny ...
+		activation = new ActivationDTO();
+		activation.setBunny(bunny.getId());
+		activation.setUserName(randomUUID().toString());
+		activation.setPassword(randomUUID().toString());
+		api.activate(bunny.getOwner(), activation);
 		
 		// ... and renames bunny
-		loginDTO.setEmail(owner.getEmail());
-		loginDTO.setPassword(ownerPassword.getNewPassword());
-		api.login(loginDTO);
+		loginDTO.setUserName(activation.getUserName());
+		loginDTO.setPassword(activation.getPassword());
+		OwnerDTO owner = api.login(loginDTO);
 		BunnyDTO rename = new BunnyDTO();
 		rename.setName("My Bunny");
 		bunny = api.updateBunny(owner.getId(), bunny.getId(), rename);
@@ -118,6 +114,7 @@ public class ApplicationApiTest {
 		final String breederId = breeder.getId();
 		assertThat(api.getBunny(bunny.getId()))
 			.satisfies(b -> assertThat(b.getOwner()).isEqualTo(ownerId))
+			.satisfies(b -> assertThat(b.getPreviousOwner()).isEqualTo(breederId))
 			.satisfies(b -> assertThat(b.getBreeder()).isEqualTo(breederId))
 			.satisfies(b -> assertThat(b.getName()).isEqualTo("My Bunny"));
 	}

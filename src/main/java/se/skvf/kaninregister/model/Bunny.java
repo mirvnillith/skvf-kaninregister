@@ -9,10 +9,11 @@ import java.util.function.Predicate;
 
 public class Bunny extends Entity {
 
-	static final Collection<String> COLUMNS = asList("Ägare", "Namn", "Uppfödare");
+	static final Collection<String> COLUMNS = asList("Ägare", "Tidigare Ägare", "Namn", "Uppfödare");
 
-	private String owner;
 	private String name;
+	private String owner;
+	private String previousOwner;
 	private String breeder;
 	
 	@Override
@@ -26,6 +27,15 @@ public class Bunny extends Entity {
 
 	public Bunny setOwner(String owner) {
 		this.owner = owner;
+		return this;
+	}
+	
+	public String getPreviousOwner() {
+		return previousOwner;
+	}
+	
+	public Bunny setPreviousOwner(String previousOwner) {
+		this.previousOwner = previousOwner;
 		return this;
 	}
 
@@ -56,6 +66,7 @@ public class Bunny extends Entity {
 			throw new IllegalStateException("Bunny must have a name");
 		}
 		map.put("Ägare", owner);
+		map.put("Tidigare Ägare", previousOwner);
 		map.put("Namn", name);
 		map.put("Uppfödare", breeder);
 	}
@@ -72,6 +83,7 @@ public class Bunny extends Entity {
 	protected Bunny fromMap(Map<String, String> map) {
 		super.fromMap(map);
 		owner = map.get("Ägare");
+		previousOwner = map.get("Tidigare Ägare");
 		name = map.get("Namn");
 		breeder = map.get("Uppfödare");
 		return this;

@@ -16,6 +16,10 @@ public class CreateOwnerTest extends BunnyRegistryApiTest {
 	public void createOwner() throws IOException {
 		
 		OwnerDTO dto = new OwnerDTO();
+		dto.setFirstName(randomUUID().toString());
+		dto.setLastName(randomUUID().toString());
+		dto.setUserName(randomUUID().toString());
+		dto.setEmail(randomUUID().toString());
 		
 		String ownerId = randomUUID().toString();
 		when(registry.add(ownerArgument.capture())).thenReturn(ownerId);

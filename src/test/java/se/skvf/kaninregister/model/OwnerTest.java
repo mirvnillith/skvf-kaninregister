@@ -16,7 +16,8 @@ public class OwnerTest extends EntityTest<Owner> {
 	@Override
 	protected Owner create() {
 		return new Owner()
-				.setFirstName(randomUUID().toString());
+				.setFirstName(randomUUID().toString())
+				.setLastName(randomUUID().toString());
 	}
 	
 	@Test
@@ -76,5 +77,10 @@ public class OwnerTest extends EntityTest<Owner> {
 	@Test
 	public void mandatoryFirstName() {
 		assertMandatoryAttribute("Förnamn");
+	}
+	
+	@Test
+	public void mandatoryLastName() {
+		assertMandatoryAttribute("Efternamn");
 	}
 }

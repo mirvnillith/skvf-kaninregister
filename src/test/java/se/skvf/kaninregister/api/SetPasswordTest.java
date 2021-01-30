@@ -13,13 +13,12 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Owner;
 
 public class SetPasswordTest extends BunnyRegistryApiTest {
 
 	@Test
-	public void setPassword_oldPassword() throws IOException {
+	public void setPassword() throws IOException {
 		
 		String oldPassword = randomUUID().toString();
 		Owner owner = mockOwner();
@@ -28,7 +27,7 @@ public class SetPasswordTest extends BunnyRegistryApiTest {
 		String newPassword = randomUUID().toString();
 		
 		PasswordDTO dto = new PasswordDTO();
-		dto.setOldPassword(oldPassword);
+		dto.setCurrentPassword(oldPassword);
 		dto.setNewPassword(newPassword);
 		api.setPassword(owner.getId(), dto);
 		
@@ -40,82 +39,15 @@ public class SetPasswordTest extends BunnyRegistryApiTest {
 	}
 	
 	@Test
-	public void setPassword_incorrectOldPassword() throws IOException {
+	public void setPassword_incorrectCurrentPassword() throws IOException {
 		
 		Owner owner = mockOwner();
 		
 		PasswordDTO dto = new PasswordDTO();
-		dto.setOldPassword(randomUUID().toString());
+		dto.setCurrentPassword(randomUUID().toString());
 		dto.setNewPassword(randomUUID().toString());
 		assertError(UNAUTHORIZED, () -> api.setPassword(owner.getId(), dto));
-		dto.setOldPassword(null);
-		assertError(UNAUTHORIZED, () -> api.setPassword(owner.getId(), dto));
-		
-		verify(registry, never()).update(owner);
-	}
-	
-	@Test
-	public void setPassword_bunnyWithOldPassword() throws IOException {
-		
-		String oldPassword = randomUUID().toString();
-		Owner owner = mockOwner();
-		owner.setPassword(oldPassword);
-		Bunny bunny = mockBunny();
-		bunny.setOwner(owner.getId());
-		
-		String newPassword = randomUUID().toString();
-		
-		PasswordDTO dto = new PasswordDTO();
-		dto.setBunny(bunny.getId());
-		dto.setNewPassword(newPassword);
-		
-		assertError(UNAUTHORIZED, () -> api.setPassword(owner.getId(), dto));
-	}
-	
-	@Test
-	public void setPassword_bunnyWithoutOldPassword() throws IOException {
-		
-		Owner owner = mockOwner();
-		Bunny bunny = mockBunny();
-		bunny.setOwner(owner.getId());
-		
-		String newPassword = randomUUID().toString();
-		
-		PasswordDTO dto = new PasswordDTO();
-		dto.setBunny(bunny.getId());
-		dto.setNewPassword(newPassword);
-		api.setPassword(owner.getId(), dto);
-		
-		verify(registry).update(ownerArgument.capture());
-		
-		Owner updatedOwner = ownerArgument.getValue();
-		assertThat(updatedOwner.validate(newPassword)).isTrue();
-	}
-	
-	@Test
-	public void setPassword_unknownBunny() throws IOException {
-		
-		Owner owner = mockOwner();
-		
-		PasswordDTO dto = new PasswordDTO();
-		dto.setBunny(randomUUID().toString());
-		dto.setNewPassword(randomUUID().toString());
-		
-		assertError(UNAUTHORIZED, () -> api.setPassword(owner.getId(), dto));
-		
-		verify(registry, never()).update(owner);
-	}
-	
-	@Test
-	public void setPassword_otherBunnyOwner() throws IOException {
-		
-		Owner owner = mockOwner();
-		Bunny bunny = mockBunny();
-		
-		PasswordDTO dto = new PasswordDTO();
-		dto.setBunny(bunny.getId());
-		dto.setNewPassword(randomUUID().toString());
-		
+		dto.setCurrentPassword(null);
 		assertError(UNAUTHORIZED, () -> api.setPassword(owner.getId(), dto));
 		
 		verify(registry, never()).update(owner);
