@@ -118,7 +118,7 @@ paths:
         '404':
           description: Owner not found
   /owners/{id}/activate:
-    put:
+    post:
       tags: [BunnyRegistry]
       operationId: activate
       summary: Activates owner.
@@ -297,6 +297,33 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/BunnyDTO'
+        '404':
+          description: Bunny not found
+  /bunnies/{id}/revert:
+    get:
+      tags: [BunnyRegistry]
+      operationId: revertBunnyOwner
+      summary: Reverts bunny to previous owner
+      description: The previous owner can revert a bunny if the new owner is not activated
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ownership reverted
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/BunnyDTO'
+        '204':
+          description: Bunny has no public owner
+        '400':
+          description: No previous owner
+        '401':
+          description: Session required, current owner activated or not previous owner
         '404':
           description: Bunny not found
   /bunnies/{id}/owner:

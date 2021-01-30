@@ -80,7 +80,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				.setFirstName(randomUUID().toString())
 				.setLastName(randomUUID().toString())
 				.setEmail(randomUUID().toString());
-		when(registry.findOwners(anyCollection())).thenReturn(singleton(owner));
+		when(registry.findOwners(singleton(owner.getId()))).thenReturn(singleton(owner));
 		return owner;
 	}
 	
@@ -90,7 +90,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				.setName(randomUUID().toString())
 				.setOwner(randomUUID().toString())
 				.setBreeder(randomUUID().toString());
-		when(registry.findBunnies(anyCollection())).thenReturn(singleton(bunny));
+		when(registry.findBunnies(singleton(bunny.getId()))).thenReturn(singleton(bunny));
 		return bunny;
 	}
 

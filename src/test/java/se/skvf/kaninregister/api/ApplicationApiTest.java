@@ -87,9 +87,13 @@ public class ApplicationApiTest {
 		api.logout();
 		api.login(loginDTO);
 		
-		// Breeder sells bunny to a new owner
+		// Breeder sells bunny to a new owner ...
 		BunnyDTO transfer = new BunnyDTO();
 		transfer.setOwner("");
+		bunny = api.updateBunny(breeder.getId(), bunny.getId(), transfer);
+		// ... reverts ...
+		bunny = api.revertBunnyOwner(bunny.getId());
+		// ... and sells again
 		bunny = api.updateBunny(breeder.getId(), bunny.getId(), transfer);
 		
 		api.logout();
