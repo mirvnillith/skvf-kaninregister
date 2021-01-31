@@ -31,6 +31,7 @@ paths:
           description: Authentication failed
         '409':
           description: Already in session
+          
   /logout:
     post:
       tags: [BunnyRegistry]
@@ -39,6 +40,7 @@ paths:
       responses:
         '200':
           description: Owner logged out
+          
   /owners:
     post:
       tags: [BunnyRegistry]
@@ -78,6 +80,9 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/OwnerList'
+        '401':
+          description: Session required
+                
   /owners/{id}:
     get:
       tags: [BunnyRegistry]
@@ -131,6 +136,26 @@ paths:
           description: Session required, of owner
         '404':
           description: Owner not found
+    delete:
+      tags: [BunnyRegistry]
+      operationId: deleteOwner
+      summary: Deletes an owner, removing it as breeder from bunnies
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Owner deleted
+        '400':
+          description: Owner has bunnies
+        '401':
+          description: Session required, of owner
+        '404':
+          description: Owner not found
+          
   /owners/{id}/activate:
     post:
       tags: [BunnyRegistry]
@@ -161,6 +186,7 @@ paths:
           description: Owner not found
         '409':
           description: User name already in use
+          
   /owners/{id}/password:
     put:
       tags: [BunnyRegistry]
@@ -187,6 +213,7 @@ paths:
           description: Session required, of owner
         '404':
           description: Owner not found
+          
   /owners/{id}/bunnies:
     post:
       tags: [BunnyRegistry]
@@ -237,6 +264,7 @@ paths:
                 $ref: '#/components/schemas/BunnyList'
         '401':
           description: Session required, of owner
+          
   /owners/{owner}/bunnies/{bunny}:
     put:
       tags: [BunnyRegistry]
@@ -272,6 +300,29 @@ paths:
           description: Session required, of owner
         '404':
           description: Owner or bunny not found
+    delete:
+      tags: [BunnyRegistry]
+      operationId: deleteBunny
+      summary: Deletes a bunny
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: bunny
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Bunny deleted
+        '401':
+          description: Session required, of owner
+        '404':
+          description: Owner or bunny not found
+      
   /bunnies:
     get:
       tags: [BunnyRegistry]
@@ -296,6 +347,7 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/BunnyList'
+                
   /bunnies/{id}:
     get:
       tags: [BunnyRegistry]
@@ -317,6 +369,7 @@ paths:
                 $ref: '#/components/schemas/BunnyDTO'
         '404':
           description: Bunny not found
+          
   /bunnies/{id}/revert:
     get:
       tags: [BunnyRegistry]
@@ -346,6 +399,7 @@ paths:
           description: Bunny not found
         '409':
           description: Current owner activated
+          
   /bunnies/{id}/owner:
     get:
       tags: [BunnyRegistry]
@@ -369,6 +423,7 @@ paths:
           description: Bunny has no public owner
         '404':
           description: Bunny not found or has no owner
+          
   /bunnies/{id}/breeder:
     get:
       tags: [BunnyRegistry]

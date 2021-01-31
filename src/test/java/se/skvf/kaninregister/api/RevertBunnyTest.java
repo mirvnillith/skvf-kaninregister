@@ -3,9 +3,11 @@ package se.skvf.kaninregister.api;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
@@ -36,6 +38,22 @@ public class RevertBunnyTest extends BunnyRegistryApiTest {
 		assertBunny(reverted, bunnyArgument.getValue());
 		assertThat(reverted.getOwner()).isEqualTo(previousOwner.getId());
 		assertThat(reverted.getPreviousOwner()).isNull();
+	}
+	
+	@Test
+	public void revertBunny_error() throws IOException {
+		
+		Owner owner = mockOwner();
+		Owner previousOwner = mockOwner();
+		mockSession(previousOwner.getId());
+		
+		Bunny bunny = mockBunny();
+		bunny.setOwner(owner.getId());
+		bunny.setPreviousOwner(previousOwner.getId());
+		
+		doThrow(NullPointerException.class).when(registry).update(bunny);
+		
+		assertError(INTERNAL_SERVER_ERROR, () -> api.revertBunnyOwner(bunny.getId()));
 	}
 	
 	@Test

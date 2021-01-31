@@ -14,6 +14,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static se.skvf.kaninregister.model.Bunny.byBreeder;
 import static se.skvf.kaninregister.model.Bunny.byOwner;
 import static se.skvf.kaninregister.model.Owner.byUserName;
 import static se.skvf.kaninregister.model.Owner.onlyBreeders;
@@ -308,6 +309,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	@Override
 	public OwnerList getOwners(Boolean onlyBreeders) {
 		return process(() -> {
+			
+			if (getSession() == null) {
+				throw new WebApplicationException(UNAUTHORIZED);
+			}
 			return toOwnerList(registry.findOwners(onlyBreeders(onlyBreeders)));
 		});
 	}
@@ -341,6 +346,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	@Override
 	public void logout() {
 		sessions.endSession(getSession());
+		removeCookie();
+	}
+
+	private void removeCookie() {
 		ofNullable(getSessionCookie()).ifPresent(c -> {
 			c.setMaxAge(0);
 			response.addCookie(c);
@@ -520,6 +529,39 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			registry.remove(currentOwner);
 			
 			return toDTO(bunny);
+		});
+	}
+
+	@Override
+	public void deleteBunny(String owner, String bunny) {
+		process(() -> {
+			
+			validateSession(owner);
+			validateOwner(owner);
+			registry.remove(validateBunny(bunny));
+			
+			return Void.class;
+		});
+	}
+
+	@Override
+	public void deleteOwner(String id) {
+		process(() -> {
+			
+			validateSession(id);
+			Owner owner = validateOwner(id);
+			if (registry.findBunnies(byOwner(id)).size() > 0) {
+				throw new WebApplicationException(BAD_REQUEST);
+			}
+			
+			for (Bunny bunny : registry.findBunnies(byBreeder(id))) {
+				registry.update(bunny.setBreeder(null));
+			}
+			
+			registry.remove(owner);
+			removeCookie();
+			
+			return Void.class;
 		});
 	}
 

@@ -6,12 +6,16 @@ import static org.apache.cxf.jaxrs.client.WebClient.getConfig;
 import static org.apache.cxf.message.Message.MAINTAIN_SESSION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static se.skvf.kaninregister.data.Table.ALL;
+
+import java.io.IOException;
 
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,6 +50,9 @@ public class ApplicationApiTest {
 	@LocalServerPort
 	private int port;
 	
+	@Autowired
+	private Registry registry;
+	
 	private BunnyRegistryApi api;
 	
 	@BeforeEach
@@ -55,7 +62,7 @@ public class ApplicationApiTest {
 	}
 	
 	@Test
-	public void scenario() {
+	public void scenario() throws IOException {
 		
 		// Breeder creates an account ...
 		OwnerDTO breeder = new OwnerDTO();
@@ -73,7 +80,8 @@ public class ApplicationApiTest {
 		// Breeder logs in ...
 		LoginDTO loginDTO = new LoginDTO();
 		loginDTO.setUserName(breeder.getUserName());
-		loginDTO.setPassword(activation.getPassword());
+		String breederPassword = activation.getPassword();
+		loginDTO.setPassword(breederPassword);
 		api.login(loginDTO);
 		
 		// .. and creates a bunny
@@ -102,7 +110,8 @@ public class ApplicationApiTest {
 		activation = new ActivationDTO();
 		activation.setBunny(bunny.getId());
 		activation.setUserName(randomUUID().toString());
-		activation.setPassword(randomUUID().toString());
+		String ownerPassword = randomUUID().toString();
+		activation.setPassword(ownerPassword);
 		api.activateOwner(bunny.getOwner(), activation);
 		
 		// ... and renames bunny
@@ -121,5 +130,22 @@ public class ApplicationApiTest {
 			.satisfies(b -> assertThat(b.getPreviousOwner()).isEqualTo(breederId))
 			.satisfies(b -> assertThat(b.getBreeder()).isEqualTo(breederId))
 			.satisfies(b -> assertThat(b.getName()).isEqualTo("My Bunny"));
+		
+		// Delete breeder
+		loginDTO.setUserName(breeder.getUserName());
+		loginDTO.setPassword(breederPassword);
+		api.login(loginDTO);
+		api.deleteOwner(breeder.getId());
+		
+		// Delete bunny ...
+		loginDTO.setUserName(owner.getUserName());
+		loginDTO.setPassword(ownerPassword);
+		api.login(loginDTO);
+		api.deleteBunny(owner.getId(), bunny.getId());
+		// ... and owner
+		api.deleteOwner(owner.getId());
+		
+		assertThat(registry.findBunnies(ALL)).isEmpty();
+		assertThat(registry.findOwners(ALL)).isEmpty();
 	}
 }

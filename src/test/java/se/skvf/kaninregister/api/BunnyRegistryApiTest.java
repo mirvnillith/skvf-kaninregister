@@ -4,8 +4,10 @@ import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.util.function.Predicate;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
@@ -49,6 +52,10 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 	protected ArgumentCaptor<Bunny> bunnyArgument;
 	@Captor
 	protected ArgumentCaptor<Owner> ownerArgument;
+	@Mock
+	protected HttpServletResponse response;
+	@Captor
+	private ArgumentCaptor<Cookie> cookie;
 	
 	@BeforeEach
 	public void api() {
@@ -92,6 +99,14 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				.setBreeder(randomUUID().toString());
 		when(registry.findBunnies(singleton(bunny.getId()))).thenReturn(singleton(bunny));
 		return bunny;
+	}
+
+	protected void assertCookie(String sessionId, boolean add) {
+		verify(response).addCookie(cookie.capture());
+		assertThat(cookie.getValue())
+			.satisfies(c -> assertEquals(sessionId, c.getValue()))
+			.satisfies(c -> assertEquals(add ? -1 : 0, c.getMaxAge()))
+			.satisfies(c -> assertEquals(api.getClass().getSimpleName(), c.getName()));
 	}
 
 	protected static void assertBunny(BunnyDTO expected, Bunny actual) {

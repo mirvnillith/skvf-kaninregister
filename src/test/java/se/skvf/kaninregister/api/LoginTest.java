@@ -6,29 +6,16 @@ import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
 
 import se.skvf.kaninregister.model.Owner;
 
 public class LoginTest extends BunnyRegistryApiTest {
 
-	@Mock
-	private HttpServletResponse response;
-	@Captor
-	private ArgumentCaptor<Cookie> cookie;
-	
 	@Test
 	public void login() throws IOException {
 		
@@ -48,10 +35,7 @@ public class LoginTest extends BunnyRegistryApiTest {
 		
 		assertThat(filterArgument.getValue().get("Användarnamn"))
 			.accepts(dto.getUserName());
-		verify(response).addCookie(cookie.capture());
-		assertThat(cookie.getValue())
-			.satisfies(c -> assertEquals(api.getClass().getSimpleName(), c.getName()))
-			.satisfies(c -> assertEquals(sessionId, c.getValue()));
+		assertCookie(sessionId ,true);
 	}
 	
 	@Test

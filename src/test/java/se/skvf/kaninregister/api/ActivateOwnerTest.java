@@ -4,10 +4,12 @@ import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -127,6 +129,21 @@ public class ActivateOwnerTest extends BunnyRegistryApiTest {
 		api.activateOwner(owner.getId(), dto);
 		
 		assertError(NO_CONTENT, () -> api.activateOwner(owner.getId(), dto));
+	}
+	
+	@Test
+	public void activate_error() throws IOException {
+		
+		Owner owner = mockOwner();
+		doThrow(NullPointerException.class).when(registry).update(owner);
+		
+		String password = randomUUID().toString();
+		
+		ActivationDTO dto = new ActivationDTO();
+		dto.setUserName(randomUUID().toString());
+		dto.setPassword(password);
+		
+		assertError(INTERNAL_SERVER_ERROR, () -> api.activateOwner(owner.getId(), dto));
 	}
 		
 	@Test
