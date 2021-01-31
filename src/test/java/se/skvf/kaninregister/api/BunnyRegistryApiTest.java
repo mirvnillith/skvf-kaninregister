@@ -5,7 +5,6 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
@@ -79,7 +78,8 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				.setId(randomUUID().toString())
 				.setFirstName(randomUUID().toString())
 				.setLastName(randomUUID().toString())
-				.setEmail(randomUUID().toString());
+				.setEmail(randomUUID().toString())
+				.setPublicOwner(true);
 		when(registry.findOwners(singleton(owner.getId()))).thenReturn(singleton(owner));
 		return owner;
 	}
@@ -118,7 +118,11 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				() -> assertThat(actual.getFirstName()).isEqualTo(expected.getFirstName()),
 				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName()),
 				() -> assertThat(actual.getUserName()).isEqualTo(expected.getUserName()),
-				() -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail())
+				() -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail()),
+				() -> assertThat(actual.isPublicOwner()).isEqualTo(expected.getPublicOwner()),
+				() -> assertThat(actual.isBreeder()).isEqualTo(expected.getBreeder()),
+				() -> assertThat(actual.getBreederName()).isEqualTo(expected.getBreederName()),
+				() -> assertThat(actual.isPublicBreeder()).isEqualTo(expected.getPublicBreeder())
 				);
 	}
 	
@@ -126,7 +130,9 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 		assertAll(
 				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
 				() -> assertThat(actual.getFirstName()).isEqualTo(expected.getFirstName()),
-				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName())
+				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName()),
+				() -> assertThat(actual.getUserName()).isEqualTo(expected.getUserName()),
+				() -> assertThat(actual.getBreederName()).isEqualTo(expected.getBreederName())
 				);
 	}
 }

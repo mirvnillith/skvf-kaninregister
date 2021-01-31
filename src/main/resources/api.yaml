@@ -29,6 +29,8 @@ paths:
                 $ref: '#/components/schemas/OwnerDTO'
         '401':
           description: Authentication failed
+        '409':
+          description: Already in session
   /logout:
     post:
       tags: [BunnyRegistry]
@@ -56,11 +58,19 @@ paths:
               schema: 
                 $ref: '#/components/schemas/OwnerDTO'
         '400':
-          description: Incoming OwnerDTO must not contain an ID
+          description: Incoming OwnerDTO must not contain an ID, but must have a user name
+        '401':
+          description: Session NOT allowed
     get:
       tags: [BunnyRegistry]
       operationId: getOwners
       summary: Returns a list of owners.
+      parameters:
+        - name: onlyBreeders
+          in: query
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: List of owners
@@ -86,8 +96,12 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/OwnerDTO'
+        '204':
+          description: Non-public owner and not in session
+        '401':
+          description: Session required
         '404':
-          description: Bunny not found
+          description: Owner not found
     put:
       tags: [BunnyRegistry]
       operationId: updateOwner
@@ -114,13 +128,13 @@ paths:
         '400':
           description: If incoming OwnerDTO has an ID, it must match the path
         '401':
-          description: Session required
+          description: Session required, of owner
         '404':
           description: Owner not found
   /owners/{id}/activate:
     post:
       tags: [BunnyRegistry]
-      operationId: activate
+      operationId: activateOwner
       summary: Activates owner.
       parameters:
         - name: id
@@ -137,12 +151,16 @@ paths:
       responses:
         '200':
           description: Owner activated
+        '204':
+          description: Owner already activated
         '400':
           description: Invalid user name or password
         '401':
-          description: Owner already activated
+          description: Session NOT allowed
         '404':
           description: Owner not found
+        '409':
+          description: User name already in use
   /owners/{id}/password:
     put:
       tags: [BunnyRegistry]
@@ -166,7 +184,7 @@ paths:
         '400':
           description: Invalid new password
         '401':
-          description: Session required
+          description: Session required, of owner
         '404':
           description: Owner not found
   /owners/{id}/bunnies:
@@ -196,7 +214,7 @@ paths:
         '400':
           description: Incoming BunnyDTO must not have an ID and if it has an owner, it must match the path
         '401':
-          description: Session required
+          description: Session required, of owner
         '404':
           description: Owner not found
     get:
@@ -218,7 +236,7 @@ paths:
               schema: 
                 $ref: '#/components/schemas/BunnyList'
         '401':
-          description: Session required
+          description: Session required, of owner
   /owners/{owner}/bunnies/{bunny}:
     put:
       tags: [BunnyRegistry]
@@ -251,7 +269,7 @@ paths:
         '400':
           description: If Incoming BunnyDTO has an ID, it must match the path.
         '401':
-          description: Session required
+          description: Session required, of owner
         '404':
           description: Owner or bunny not found
   /bunnies:
@@ -323,9 +341,11 @@ paths:
         '400':
           description: No previous owner
         '401':
-          description: Session required, current owner activated or not previous owner
+          description: Session required, of previous owner
         '404':
           description: Bunny not found
+        '409':
+          description: Current owner activated
   /bunnies/{id}/owner:
     get:
       tags: [BunnyRegistry]
@@ -391,15 +411,25 @@ components:
           type: string
         lastName:
           type: string
+        userName:
+          type: string
+          readOnly: true
+        breederName:
+          type: string
     OwnerDTO:
       allOf:
         - $ref: '#/components/schemas/OwnerListDTO'
         - type: object
           properties:
-            userName:
-              type: string
             email:
               type: string
+            publicOwner:
+              type: boolean
+            breeder:
+              type: boolean
+            publicBreeder:
+              type: boolean
+            
     LoginDTO:
        type: object
        required:

@@ -68,7 +68,7 @@ public class ApplicationApiTest {
 		ActivationDTO activation = new ActivationDTO();
 		activation.setUserName(breeder.getUserName());
 		activation.setPassword(randomUUID().toString());
-		api.activate(breeder.getId(), activation);
+		api.activateOwner(breeder.getId(), activation);
 		
 		// Breeder logs in ...
 		LoginDTO loginDTO = new LoginDTO();
@@ -103,7 +103,7 @@ public class ApplicationApiTest {
 		activation.setBunny(bunny.getId());
 		activation.setUserName(randomUUID().toString());
 		activation.setPassword(randomUUID().toString());
-		api.activate(bunny.getOwner(), activation);
+		api.activateOwner(bunny.getOwner(), activation);
 		
 		// ... and renames bunny
 		loginDTO.setUserName(activation.getUserName());

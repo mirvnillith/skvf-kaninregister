@@ -19,7 +19,9 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 	@Test
 	public void updateOwner() throws IOException {
 		
-		Owner owner = mockOwner();
+		String userName = randomUUID().toString();
+		Owner owner = mockOwner()
+				.setUserName(userName);
 		String ownerId = owner.getId();
 		mockSession(ownerId);
 		
@@ -28,11 +30,16 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 		dto.setFirstName(randomUUID().toString());
 		dto.setLastName(randomUUID().toString());
 		dto.setUserName(randomUUID().toString());
+		dto.setPublicOwner(false);
+		dto.setBreeder(true);
+		dto.setBreederName(randomUUID().toString());
+		dto.setPublicBreeder(true);
 		
 		doNothing().when(registry).update(ownerArgument.capture());
 		OwnerDTO updated = api.updateOwner(ownerId, dto);
 		
 		assertUpdate(updated, dto, ownerId);
+		assertThat(updated.getUserName()).isEqualTo(userName);
 		assertOwner(updated, ownerArgument.getValue());
 	}
 	
@@ -59,7 +66,10 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 		ofNullable(dto.getEmail()).ifPresent(assertThat(updated.getEmail())::isEqualTo);
 		ofNullable(dto.getFirstName()).ifPresent(assertThat(updated.getFirstName())::isEqualTo);
 		ofNullable(dto.getLastName()).ifPresent(assertThat(updated.getLastName())::isEqualTo);
-		ofNullable(dto.getUserName()).ifPresent(assertThat(updated.getUserName())::isEqualTo);
+		ofNullable(dto.getPublicOwner()).ifPresent(assertThat(updated.getPublicOwner())::isEqualTo);
+		ofNullable(dto.getBreeder()).ifPresent(assertThat(updated.getBreeder())::isEqualTo);
+		ofNullable(dto.getBreederName()).ifPresent(assertThat(updated.getBreederName())::isEqualTo);
+		ofNullable(dto.getPublicBreeder()).ifPresent(assertThat(updated.getPublicBreeder())::isEqualTo);
 	}
 	
 	@Test

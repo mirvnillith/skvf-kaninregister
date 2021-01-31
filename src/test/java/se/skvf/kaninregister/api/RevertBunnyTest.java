@@ -2,6 +2,7 @@ package se.skvf.kaninregister.api;
 
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +50,7 @@ public class RevertBunnyTest extends BunnyRegistryApiTest {
 		bunny.setOwner(owner.getId());
 		bunny.setPreviousOwner(previousOwner.getId());
 		
-		assertError(UNAUTHORIZED, () -> api.revertBunnyOwner(bunny.getId()));
+		assertError(CONFLICT, () -> api.revertBunnyOwner(bunny.getId()));
 	}
 	
 	@Test

@@ -1,5 +1,6 @@
 package se.skvf.kaninregister.model;
 
+import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
 
 import java.util.Collection;
@@ -17,16 +18,20 @@ public class Owner extends Entity {
 	static final Collection<String> COLUMNS = asList(
 			"Förnamn", 
 			"Efternamn", 
-			"Offentlig Uppfödare", 
 			"Offentlig Ägare",
+			"Uppfödare",
+			"Uppfödarnamn",
+			"Offentlig Uppfödare", 
 			"Användarnamn",
 			"Lösenord",
 			"E-post");
 
 	private String firstName;
 	private String lastName;
-	private boolean publicBreeder;
 	private boolean publicOwner;
+	private boolean breeder;
+	private String breederName;
+	private boolean publicBreeder;
 	private String userName;
 	private String password;
 	private String email;
@@ -82,8 +87,10 @@ public class Owner extends Entity {
 		}
 		map.put("Förnamn", firstName);
 		map.put("Efternamn", lastName);
-		map.put("Offentlig Uppfödare", toString(publicBreeder));
 		map.put("Offentlig Ägare", toString(publicOwner));
+		map.put("Uppfödare", toString(breeder));
+		map.put("Uppfödarnamn", breederName);
+		map.put("Offentlig Uppfödare", toString(publicBreeder));
 		map.put("Användarnamn", userName);
 		map.put("Lösenord", password);
 		map.put("E-post", email);
@@ -97,8 +104,10 @@ public class Owner extends Entity {
 		super.fromMap(map);
 		firstName = map.get("Förnamn");
 		lastName = map.get("Efternamn");
-		publicBreeder = booleanFromString(map.get("Offentlig Uppfödare"));
 		publicOwner = booleanFromString(map.get("Offentlig Ägare"));
+		breeder = booleanFromString(map.get("Uppfödare"));
+		breederName = map.get("Uppfödarnamn");
+		publicBreeder = booleanFromString(map.get("Offentlig Uppfödare"));
 		userName = map.get("Användarnamn");
 		password = map.get("Lösenord");
 		email = map.get("E-post");
@@ -110,6 +119,24 @@ public class Owner extends Entity {
 		return super.toString() + ": " + firstName + " " + lastName;
 	}
 
+	public boolean isBreeder() {
+		return breeder;
+	}
+	
+	public Owner setBreeder(boolean breeder) {
+		this.breeder = breeder;
+		return this;
+	}
+	
+	public String getBreederName() {
+		return breederName;
+	}
+	
+	public Owner setBreederName(String breederName) {
+		this.breederName = breederName;
+		return this;
+	}
+	
 	public Owner setPublicBreeder(boolean publicBreeder) {
 		this.publicBreeder = publicBreeder;
 		return this;
@@ -157,5 +184,11 @@ public class Owner extends Entity {
 
 	public boolean isActivated() {
 		return this.password != null;
+	}
+
+	public static Map<String, Predicate<String>> onlyBreeders(Boolean onlyBreeders) {
+		Map<String, Predicate<String>> filter = new HashMap<>();
+		filter.put("Uppfödare", b -> TRUE.equals(onlyBreeders) ? booleanFromString(b) : true);
+		return filter;
 	}
 }

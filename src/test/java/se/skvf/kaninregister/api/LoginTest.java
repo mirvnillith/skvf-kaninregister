@@ -2,6 +2,7 @@ package se.skvf.kaninregister.api;
 
 import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
+import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,6 +88,14 @@ public class LoginTest extends BunnyRegistryApiTest {
 		LoginDTO dto = new LoginDTO();
 		dto.setUserName("");
 		assertError(UNAUTHORIZED, () -> api.login(dto));
+	}
+	
+	@Test
+	public void login_inSession() throws IOException {
+		
+		mockSession(randomUUID().toString());
+		
+		assertError(CONFLICT, () -> api.login(new LoginDTO()));
 	}
 	
 	@Test

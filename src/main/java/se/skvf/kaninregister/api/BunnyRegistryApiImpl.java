@@ -6,6 +6,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
@@ -13,9 +14,9 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static se.skvf.kaninregister.data.Table.ALL;
 import static se.skvf.kaninregister.model.Bunny.byOwner;
 import static se.skvf.kaninregister.model.Owner.byUserName;
+import static se.skvf.kaninregister.model.Owner.onlyBreeders;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -33,12 +34,10 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import se.skvf.kaninregister.data.Table;
 import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Owner;
 import se.skvf.kaninregister.model.Registry;
@@ -78,7 +77,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		});
 	}
 
-	private <T> T process(Callable<T> call) {
+	private static <T> T process(Callable<T> call) {
 		try {
 			return call.call();
 		} catch (WebApplicationException e) {
@@ -122,6 +121,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setLastName(owner.getLastName());
 		dto.setEmail(owner.getEmail());
 		dto.setUserName(owner.getUserName());
+		dto.setPublicOwner(owner.isPublicOwner());
+		dto.setBreeder(owner.isBreeder());
+		dto.setBreederName(owner.getBreederName());
+		dto.setPublicBreeder(owner.isPublicBreeder());
 		return dto;
 	}
 	
@@ -130,28 +133,46 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setId(owner.getId());
 		dto.setFirstName(owner.getFirstName());
 		dto.setLastName(owner.getLastName());
+		dto.setUserName(owner.getUserName());
+		dto.setBreederName(owner.getBreederName());
 		return dto;
 	}
 	
 	private static Owner toOwner(OwnerDTO dto) {
-		return new Owner().setId(dto.getId())
+		Owner owner= new Owner().setId(dto.getId())
 				.setFirstName(dto.getFirstName())
 				.setLastName(dto.getLastName())
 				.setEmail(dto.getEmail())
-				.setUserName(dto.getUserName());
+				.setUserName(dto.getUserName())
+				.setBreederName(dto.getBreederName());
+		ofNullable(dto.getPublicOwner()).ifPresent(owner::setPublicOwner);
+		ofNullable(dto.getBreeder()).ifPresent(owner::setBreeder);
+		ofNullable(dto.getPublicBreeder()).ifPresent(owner::setPublicBreeder);
+		return owner;
 	}
 
 	private String getSession() {
-		for (Cookie cookie : request.getCookies()) {
-			if (cookie.getName().equals(getClass().getSimpleName())) {
-				return cookie.getValue();
+		return ofNullable(getSessionCookie())
+				.map(Cookie::getValue)
+				.orElse(null);
+	}
+	
+	private Cookie getSessionCookie() {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals(getClass().getSimpleName())) {
+					return cookie;
+				}
 			}
 		}
 		return null;
 	}
 	
 	private void setSession(String sessionId) {
-		response.addCookie(new Cookie(getClass().getSimpleName(), sessionId));
+		Cookie cookie = new Cookie(getClass().getSimpleName(), sessionId);
+		cookie.setMaxAge(-1);
+		response.addCookie(cookie);
 	}
 	
 	private void validateSession(String ownerId) {
@@ -164,7 +185,12 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	public OwnerDTO createOwner(OwnerDTO ownerDTO) {
 		return process(() -> {
 			
-			if (ownerDTO.getId() != null) {
+			if (getSession() != null) {
+				throw new WebApplicationException(UNAUTHORIZED);
+			}
+			
+			if (ownerDTO.getId() != null ||
+					ownerDTO.getUserName() == null) {
 				throw new WebApplicationException(BAD_REQUEST);
 			}
 			
@@ -240,7 +266,19 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	@Override
 	public OwnerDTO getOwner(String id) {
 		return process(() -> {
-			return toDTO(validateOwner(id));
+			
+			String session = getSession();
+			if (session == null) {
+				throw new WebApplicationException(UNAUTHORIZED);
+			}
+			
+			Owner owner = validateOwner(id);
+			if (owner.isNotPublicOwner() &&
+					!sessions.isSession(session, owner.getId())) {
+				throw new WebApplicationException(NO_CONTENT);
+			}
+			
+			return toDTO(owner);
 		});
 	}
 
@@ -268,9 +306,9 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public OwnerList getOwners() {
+	public OwnerList getOwners(Boolean onlyBreeders) {
 		return process(() -> {
-			return toOwnerList(registry.findOwners(ALL));
+			return toOwnerList(registry.findOwners(onlyBreeders(onlyBreeders)));
 		});
 	}
 
@@ -278,6 +316,9 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	public OwnerDTO login(LoginDTO loginDTO) {
 		return process(() -> {
 			
+			if (getSession() != null) {
+				throw new WebApplicationException(CONFLICT);
+			}
 			if (loginDTO.getUserName() == null) {
 				throw new WebApplicationException(UNAUTHORIZED);
 			}
@@ -300,6 +341,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	@Override
 	public void logout() {
 		sessions.endSession(getSession());
+		ofNullable(getSessionCookie()).ifPresent(c -> {
+			c.setMaxAge(0);
+			response.addCookie(c);
+		});
 	}
 
 	@Override
@@ -382,7 +427,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		ofNullable(dto.getEmail()).ifPresent(owner::setEmail);
 		ofNullable(dto.getFirstName()).ifPresent(owner::setFirstName);
 		ofNullable(dto.getLastName()).ifPresent(owner::setLastName);
-		ofNullable(dto.getUserName()).ifPresent(owner::setUserName);
+		ofNullable(dto.getPublicOwner()).ifPresent(owner::setPublicOwner);
+		ofNullable(dto.getBreeder()).ifPresent(owner::setBreeder);
+		ofNullable(dto.getBreederName()).ifPresent(owner::setBreederName);
+		ofNullable(dto.getPublicBreeder()).ifPresent(owner::setPublicBreeder);
 	}
 
 	@Override
@@ -404,13 +452,17 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public void activate(String id, ActivationDTO activationDTO) {
+	public void activateOwner(String id, ActivationDTO activationDTO) {
 		process(() -> {
+			
+			if (getSession() != null) {
+				throw new WebApplicationException(UNAUTHORIZED);								
+			}
 			
 			Owner owner = validateOwner(id);
 			
 			if (owner.isActivated()) {
-				throw new WebApplicationException(UNAUTHORIZED);				
+				throw new WebApplicationException(NO_CONTENT);				
 			}
 			
 			if (activationDTO.getBunny() != null) {
@@ -419,14 +471,18 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 					throw new WebApplicationException(BAD_REQUEST);
 				}
 			}
-			if (owner.getUserName() != null &&
-					!owner.getUserName().equals(activationDTO.getUserName())) {
-				throw new WebApplicationException(BAD_REQUEST);
+			if (owner.getUserName() != null) {
+				if (!owner.getUserName().equals(activationDTO.getUserName())) {
+					throw new WebApplicationException(BAD_REQUEST);
+				}
+			} else if (registry.findOwners(byUserName(activationDTO.getUserName())).size() > 0) {
+				throw new WebApplicationException(CONFLICT);
 			}
+			
 			if (isAllBlank(activationDTO.getPassword())) {
 				throw new WebApplicationException(BAD_REQUEST);
 			}
-
+			
 			owner.setUserName(activationDTO.getUserName())
 				.setPassword(activationDTO.getPassword());
 			registry.update(owner);
@@ -454,7 +510,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			Owner currentOwner = validateOwner(bunny.getOwner());
 			
 			if (currentOwner.isActivated()) {
-				throw new WebApplicationException(UNAUTHORIZED);
+				throw new WebApplicationException(CONFLICT);
 			}
 			
 			bunny.setOwner(bunny.getPreviousOwner())

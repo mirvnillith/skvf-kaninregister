@@ -36,6 +36,11 @@ public class OwnerTest extends EntityTest<Owner> {
 	}
 	
 	@Test
+	public void userName() throws Exception {
+		assertAttribute("Användarnamn", Owner::setUserName, Owner::getUserName);
+	}
+	
+	@Test
 	public void password() {
 		
 		String password = randomUUID().toString();
@@ -58,6 +63,16 @@ public class OwnerTest extends EntityTest<Owner> {
 	@Test
 	public void publicBreeder() throws Exception {
 		assertBooleanAttribute("Offentlig Uppfödare", Owner::setPublicBreeder, Owner::isPublicBreeder);
+	}
+	
+	@Test
+	public void breederName() throws Exception {
+		assertAttribute("Uppfödarnamn", Owner::setBreederName, Owner::getBreederName);
+	}
+	
+	@Test
+	public void breeder() throws Exception {
+		assertBooleanAttribute("Uppfödare", Owner::setBreeder, Owner::isBreeder);
 	}
 	
 	@Test
