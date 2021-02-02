@@ -30,7 +30,6 @@ class RegistryRuntimeTest {
 		}
 	}
 	
-	@Generated("testMethod")
 	private void addOwners(Registry registry, Set<String> ids, int batch) throws Exception {
 
 		List<Long> durations = new ArrayList<>(batch);
@@ -47,10 +46,9 @@ class RegistryRuntimeTest {
 		AtomicLong total = new AtomicLong();
 		durations.forEach(total::addAndGet);
 		long avg = total.get()/batch;
-		System.out.println("add("+ids.size()+"): "+min+"-"+avg+"-"+max);
+		System.out.println("add(" + ids.size() + "): " + min + "-" + avg + "-"+max);
 	}
 	
-	@Generated("testMethod")
 	private void removeOwners(Registry registry, Set<String> ids, int batch) throws Exception {
 		
 		Set<String> batchIds = new HashSet<String>();
@@ -72,7 +70,7 @@ class RegistryRuntimeTest {
 		AtomicLong total = new AtomicLong();
 		durations.forEach(total::addAndGet);
 		long avg = total.get()/batch;
-		System.out.println("remove("+ids.size()+"): "+min+"-"+avg+"-"+max);
+		System.out.println("remove(" + ids.size() + "): " + min + "-" + avg+"-"+max);
 		ids.removeAll(batchIds);
 	}
 

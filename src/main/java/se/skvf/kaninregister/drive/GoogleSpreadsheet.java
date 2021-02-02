@@ -9,8 +9,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.AddProtectedRangeRequest;
 import com.google.api.services.sheets.v4.model.AddSheetRequest;
 import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.GridRange;
+import com.google.api.services.sheets.v4.model.ProtectedRange;
 import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.SheetProperties;
@@ -39,7 +42,7 @@ public class GoogleSpreadsheet {
 	
 	public GoogleSheet getSheet(String sheetName) throws IOException {
 		Spreadsheet spreadsheet = getApi().spreadsheets().get(id)
-				.setFields("sheets(properties)")
+				.setFields("sheets(properties,protectedRanges)")
 				.execute();
 		
 		for (Sheet sheet : spreadsheet.getSheets()) {
@@ -48,14 +51,26 @@ public class GoogleSpreadsheet {
 			LOG.info(sheetTitle + " (" + sheetId + ")");
 			if (sheetTitle.equals(DEFAULT_SHEET)) {
 				setName(sheet, sheetName);
+				protect(sheet);
 				return new GoogleSheet(this, sheetName, sheetId);
 			} else if (sheetTitle.equals(sheetName)) {
+				protect(sheet);
 				return new GoogleSheet(this, sheetName, sheetId);
 			}
 		}
 	
 		createSheet(sheetName);
 		return getSheet(sheetName);
+	}
+
+	private void protect(Sheet sheet) throws IOException {
+		if (sheet.getProtectedRanges().isEmpty()) {
+			getApi().spreadsheets().batchUpdate(id, new BatchUpdateSpreadsheetRequest().setRequests(asList(new Request()
+					.setAddProtectedRange(new AddProtectedRangeRequest()
+							.setProtectedRange(new ProtectedRange()
+									.setRange(new GridRange().setSheetId(sheet.getProperties().getSheetId()))
+									.setWarningOnly(true))))));
+		}
 	}
 
 	private void createSheet(String sheetName) throws IOException {
