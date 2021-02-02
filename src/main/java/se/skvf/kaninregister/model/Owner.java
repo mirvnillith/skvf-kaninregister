@@ -185,6 +185,10 @@ public class Owner extends Entity {
 	public boolean isActivated() {
 		return this.password != null;
 	}
+	
+	public boolean isApproved() {
+		return true;
+	}
 
 	public static Map<String, Predicate<String>> onlyBreeders(Boolean onlyBreeders) {
 		Map<String, Predicate<String>> filter = new HashMap<>();

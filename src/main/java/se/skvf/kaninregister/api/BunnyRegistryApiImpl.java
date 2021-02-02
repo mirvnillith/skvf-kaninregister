@@ -69,7 +69,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 					(bunnyDTO.getOwner() != null && !bunnyDTO.getOwner().equals(ownerId))) {
 				throw new WebApplicationException(BAD_REQUEST);
 			}
-			validateOwner(ownerId);
+			validateOwner(ownerId, true);
 			
 			bunnyDTO.setOwner(ownerId);
 			bunnyDTO.setId(registry.add(toBunny(bunnyDTO)));
@@ -222,7 +222,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	public OwnerDTO getBunnyBreeder(String id) {
 		return process(() -> {
 			
-			Owner breeder = validateOwner(validateBunny(id).getBreeder());
+			Owner breeder = validateOwner(validateBunny(id).getBreeder(), false);
 			if (breeder.isNotPublicBreeder()) {
 				throw new WebApplicationException(NO_CONTENT);
 			}
@@ -230,7 +230,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		});
 	}
 
-	private Owner validateOwner(String id) throws IOException {
+	private Owner validateOwner(String id, boolean requiresApproval) throws IOException {
 		if (isBlank(id)) {
 			throw new WebApplicationException(NOT_FOUND);
 		}
@@ -238,7 +238,11 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		if (owners.isEmpty()) {
 			throw new WebApplicationException(NOT_FOUND);
 		}
-		return owners.iterator().next();
+		Owner owner = owners.iterator().next();
+		if (requiresApproval && !owner.isApproved()) {
+			throw new WebApplicationException(UNAUTHORIZED);
+		}
+		return owner;
 	}
 
 	private Bunny validateBunny(String id) throws IOException {
@@ -256,7 +260,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	public OwnerDTO getBunnyOwner(String id) {
 		return process(() -> {
 			
-			Owner owner = validateOwner(validateBunny(id).getOwner());
+			Owner owner = validateOwner(validateBunny(id).getOwner(), false);
 			if (owner.isNotPublicOwner()) {
 				throw new WebApplicationException(NO_CONTENT);
 			}
@@ -273,7 +277,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				throw new WebApplicationException(UNAUTHORIZED);
 			}
 			
-			Owner owner = validateOwner(id);
+			Owner owner = validateOwner(id, false);
 			if (owner.isNotPublicOwner() &&
 					!sessions.isSession(session, owner.getId())) {
 				throw new WebApplicationException(NO_CONTENT);
@@ -288,7 +292,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		return process(() -> {
 			
 			validateSession(id);
-			validateOwner(id);
+			validateOwner(id, false);
 			
 			return toBunnyList(registry.findBunnies(byOwner(id)));
 		});
@@ -364,7 +368,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				throw new WebApplicationException(BAD_REQUEST);
 			}
 			
-			Owner owner = validateOwner(ownerId);
+			Owner owner = validateOwner(ownerId, false);
 			
 			if (!owner.validate(passwordDTO.getCurrentPassword())) {
 				throw new WebApplicationException(UNAUTHORIZED);
@@ -452,7 +456,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 					!ownerDTO.getId().equals(id)) {
 				throw new WebApplicationException(BAD_REQUEST);
 			}
-			Owner owner = validateOwner(id);
+			Owner owner = validateOwner(id, true);
 			
 			update(owner, ownerDTO);
 			registry.update(owner);
@@ -468,7 +472,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				throw new WebApplicationException(UNAUTHORIZED);								
 			}
 			
-			Owner owner = validateOwner(id);
+			Owner owner = validateOwner(id, false);
 			
 			if (owner.isActivated()) {
 				throw new WebApplicationException(NO_CONTENT);				
@@ -516,7 +520,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			validateSession(bunny.getPreviousOwner());
 			
-			Owner currentOwner = validateOwner(bunny.getOwner());
+			Owner currentOwner = validateOwner(bunny.getOwner(), false);
 			
 			if (currentOwner.isActivated()) {
 				throw new WebApplicationException(CONFLICT);
@@ -537,7 +541,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		process(() -> {
 			
 			validateSession(owner);
-			validateOwner(owner);
+			validateOwner(owner, false);
 			registry.remove(validateBunny(bunny));
 			
 			return Void.class;
@@ -549,7 +553,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		process(() -> {
 			
 			validateSession(id);
-			Owner owner = validateOwner(id);
+			Owner owner = validateOwner(id, false);
 			if (registry.findBunnies(byOwner(id)).size() > 0) {
 				throw new WebApplicationException(BAD_REQUEST);
 			}
@@ -565,4 +569,8 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		});
 	}
 
+	@Override
+	public void approveOwner(String id, ApprovalDTO approvalDTO) {
+		// TODO Auto-generated method stub
+	}
 }

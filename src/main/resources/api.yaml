@@ -133,7 +133,7 @@ paths:
         '400':
           description: If incoming OwnerDTO has an ID, it must match the path
         '401':
-          description: Session required, of owner
+          description: Session required, of approved owner
         '404':
           description: Owner not found
     delete:
@@ -186,6 +186,35 @@ paths:
           description: Owner not found
         '409':
           description: User name already in use
+          
+  /owners/{id}/approve:
+    post:
+      tags: [BunnyRegistry]
+      operationId: approveOwner
+      summary: Approves storage/usage of owner data.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Approval data
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/ApprovalDTO'
+      responses:
+        '200':
+          description: Owner approved
+        '204':
+          description: Approval pending
+        '400':
+          description: Invalid approval
+        '401':
+          description: Session required, of owner
+        '404':
+          description: Owner not found
           
   /owners/{id}/password:
     put:
@@ -241,7 +270,7 @@ paths:
         '400':
           description: Incoming BunnyDTO must not have an ID and if it has an owner, it must match the path
         '401':
-          description: Session required, of owner
+          description: Session required, of approved owner
         '404':
           description: Owner not found
     get:
@@ -512,6 +541,14 @@ components:
          password:
            type: string
            description: Password to set
+    ApprovalDTO:
+       type: object
+       required:
+         - contract
+       properties:
+         contract:
+           type: string
+           description: Contract identifier
     PasswordDTO:
        type: object
        required:
