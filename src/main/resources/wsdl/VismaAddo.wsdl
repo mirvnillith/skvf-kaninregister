@@ -1,0 +1,4370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions name="SigningService"
+	targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy"
+	xmlns:wsa10="http://www.w3.org/2005/08/addressing"
+	xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/"
+	xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract"
+	xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+	xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata"
+	xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+	xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
+	xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+	xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+	xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<wsp:Policy wsu:Id="Signing_policy">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<wsoma:OptimizedMimeSerialization
+					xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization" />
+				<sp:TransportBinding
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:TransportToken>
+							<wsp:Policy>
+								<sp:HttpsToken RequireClientCertificate="false" />
+							</wsp:Policy>
+						</sp:TransportToken>
+						<sp:AlgorithmSuite>
+							<wsp:Policy>
+								<sp:Basic256 />
+							</wsp:Policy>
+						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Strict />
+							</wsp:Policy>
+						</sp:Layout>
+						<sp:IncludeTimestamp />
+					</wsp:Policy>
+				</sp:TransportBinding>
+				<sp:EndorsingSupportingTokens
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:SecureConversationToken
+							sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+							<wsp:Policy>
+								<sp:BootstrapPolicy>
+									<wsp:Policy>
+										<sp:SignedParts>
+											<sp:Body />
+											<sp:Header Name="To"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="From"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="FaultTo"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="ReplyTo"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="MessageID"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="RelatesTo"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="Action"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+										</sp:SignedParts>
+										<sp:EncryptedParts>
+											<sp:Body />
+										</sp:EncryptedParts>
+										<sp:TransportBinding>
+											<wsp:Policy>
+												<sp:TransportToken>
+													<wsp:Policy>
+														<sp:HttpsToken
+															RequireClientCertificate="false" />
+													</wsp:Policy>
+												</sp:TransportToken>
+												<sp:AlgorithmSuite>
+													<wsp:Policy>
+														<sp:Basic256 />
+													</wsp:Policy>
+												</sp:AlgorithmSuite>
+												<sp:Layout>
+													<wsp:Policy>
+														<sp:Strict />
+													</wsp:Policy>
+												</sp:Layout>
+												<sp:IncludeTimestamp />
+											</wsp:Policy>
+										</sp:TransportBinding>
+										<sp:SignedSupportingTokens>
+											<wsp:Policy>
+												<sp:UsernameToken
+													sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+													<wsp:Policy>
+														<sp:WssUsernameToken10 />
+													</wsp:Policy>
+												</sp:UsernameToken>
+											</wsp:Policy>
+										</sp:SignedSupportingTokens>
+										<sp:Wss11>
+											<wsp:Policy />
+										</sp:Wss11>
+										<sp:Trust10>
+											<wsp:Policy>
+												<sp:MustSupportIssuedTokens />
+												<sp:RequireClientEntropy />
+												<sp:RequireServerEntropy />
+											</wsp:Policy>
+										</sp:Trust10>
+									</wsp:Policy>
+								</sp:BootstrapPolicy>
+							</wsp:Policy>
+						</sp:SecureConversationToken>
+					</wsp:Policy>
+				</sp:EndorsingSupportingTokens>
+				<sp:Wss11
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy />
+				</sp:Wss11>
+				<sp:Trust10
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:MustSupportIssuedTokens />
+						<sp:RequireClientEntropy />
+						<sp:RequireServerEntropy />
+					</wsp:Policy>
+				</sp:Trust10>
+				<wsaw:UsingAddressing />
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+	<wsp:Policy wsu:Id="Unsigned_policy">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<wsoma:OptimizedMimeSerialization
+					xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization" />
+				<sp:TransportBinding
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:TransportToken>
+							<wsp:Policy>
+								<sp:HttpsToken RequireClientCertificate="false" />
+							</wsp:Policy>
+						</sp:TransportToken>
+						<sp:AlgorithmSuite>
+							<wsp:Policy>
+								<sp:Basic256 />
+							</wsp:Policy>
+						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Strict />
+							</wsp:Policy>
+						</sp:Layout>
+					</wsp:Policy>
+				</sp:TransportBinding>
+				<wsaw:UsingAddressing />
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+	<wsp:Policy wsu:Id="SigningSecure_policy">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<wsoma:OptimizedMimeSerialization
+					xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization" />
+				<sp:TransportBinding
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:TransportToken>
+							<wsp:Policy>
+								<sp:HttpsToken RequireClientCertificate="false" />
+							</wsp:Policy>
+						</sp:TransportToken>
+						<sp:AlgorithmSuite>
+							<wsp:Policy>
+								<sp:Basic256 />
+							</wsp:Policy>
+						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Strict />
+							</wsp:Policy>
+						</sp:Layout>
+						<sp:IncludeTimestamp />
+					</wsp:Policy>
+				</sp:TransportBinding>
+				<sp:EndorsingSupportingTokens
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:SecureConversationToken
+							sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+							<wsp:Policy>
+								<sp:BootstrapPolicy>
+									<wsp:Policy>
+										<sp:SignedParts>
+											<sp:Body />
+											<sp:Header Name="To"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="From"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="FaultTo"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="ReplyTo"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="MessageID"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="RelatesTo"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+											<sp:Header Name="Action"
+												Namespace="http://www.w3.org/2005/08/addressing" />
+										</sp:SignedParts>
+										<sp:EncryptedParts>
+											<sp:Body />
+										</sp:EncryptedParts>
+										<sp:TransportBinding>
+											<wsp:Policy>
+												<sp:TransportToken>
+													<wsp:Policy>
+														<sp:HttpsToken
+															RequireClientCertificate="false" />
+													</wsp:Policy>
+												</sp:TransportToken>
+												<sp:AlgorithmSuite>
+													<wsp:Policy>
+														<sp:Basic256 />
+													</wsp:Policy>
+												</sp:AlgorithmSuite>
+												<sp:Layout>
+													<wsp:Policy>
+														<sp:Strict />
+													</wsp:Policy>
+												</sp:Layout>
+												<sp:IncludeTimestamp />
+											</wsp:Policy>
+										</sp:TransportBinding>
+										<sp:EndorsingSupportingTokens>
+											<wsp:Policy>
+												<sp:X509Token
+													sp:IncludeToken="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy/IncludeToken/AlwaysToRecipient">
+													<wsp:Policy>
+														<sp:RequireThumbprintReference />
+														<sp:WssX509V3Token10 />
+													</wsp:Policy>
+												</sp:X509Token>
+												<sp:SignedParts>
+													<sp:Header Name="To"
+														Namespace="http://www.w3.org/2005/08/addressing" />
+												</sp:SignedParts>
+											</wsp:Policy>
+										</sp:EndorsingSupportingTokens>
+										<sp:Wss11>
+											<wsp:Policy>
+												<sp:MustSupportRefThumbprint />
+											</wsp:Policy>
+										</sp:Wss11>
+										<sp:Trust10>
+											<wsp:Policy>
+												<sp:MustSupportIssuedTokens />
+												<sp:RequireClientEntropy />
+												<sp:RequireServerEntropy />
+											</wsp:Policy>
+										</sp:Trust10>
+									</wsp:Policy>
+								</sp:BootstrapPolicy>
+							</wsp:Policy>
+						</sp:SecureConversationToken>
+					</wsp:Policy>
+				</sp:EndorsingSupportingTokens>
+				<sp:Wss11
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy />
+				</sp:Wss11>
+				<sp:Trust10
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:MustSupportIssuedTokens />
+						<sp:RequireClientEntropy />
+						<sp:RequireServerEntropy />
+					</wsp:Policy>
+				</sp:Trust10>
+				<wsaw:UsingAddressing />
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+	<wsp:Policy wsu:Id="SigningTcp_policy">
+		<wsp:ExactlyOne>
+			<wsp:All>
+				<msb:BinaryEncoding
+					xmlns:msb="http://schemas.microsoft.com/ws/06/2004/mspolicy/netbinary1" />
+				<sp:TransportBinding
+					xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy">
+					<wsp:Policy>
+						<sp:TransportToken>
+							<wsp:Policy>
+								<msf:WindowsTransportSecurity
+									xmlns:msf="http://schemas.microsoft.com/ws/2006/05/framing/policy">
+									<msf:ProtectionLevel>EncryptAndSign</msf:ProtectionLevel>
+								</msf:WindowsTransportSecurity>
+							</wsp:Policy>
+						</sp:TransportToken>
+						<sp:AlgorithmSuite>
+							<wsp:Policy>
+								<sp:Basic256 />
+							</wsp:Policy>
+						</sp:AlgorithmSuite>
+						<sp:Layout>
+							<wsp:Policy>
+								<sp:Strict />
+							</wsp:Policy>
+						</sp:Layout>
+					</wsp:Policy>
+				</sp:TransportBinding>
+				<wsaw:UsingAddressing />
+			</wsp:All>
+		</wsp:ExactlyOne>
+	</wsp:Policy>
+	<wsdl:types>
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:import schemaLocation="http___schemas.microsoft.com_2003_10_Serialization_.xsd"
+				namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_initiatesigningrequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigningrequest" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_initiatesigning_templateoverride.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigning/templateoverride" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_initiatesigningresponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigningresponse" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_initiatesecuretransferrequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesecuretransferrequest" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_initiatesecuretransferresponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesecuretransferresponse" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_startsynchronoussigningrequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/startsynchronoussigningrequest" />
+			<xs:import schemaLocation="http___schemas.datacontract.org_2004_07_Visma.Addo.WebService.Contracts.v2_0.Messages.xsd"
+				namespace="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_initiatecampaignrequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatecampaignrequest" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_initiatecampaignresponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatecampaignresponse" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_startcampaignsigningrequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/startcampaignsigningrequest" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_startcampaignsigningresponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/startcampaignsigningresponse" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_generatedocumentrequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentrequest" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_generatedocumentresponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_mergedocumentsrequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/mergedocumentsrequest" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_mergedocumentsresponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/mergedocumentsresponse" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_getsigningtemplatesresponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningtemplatesresponse" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_cancelsigningresponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/cancelsigningresponse" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_getsigningstatus.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_getaccountinfo.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getaccountinfo" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_generatedocumentfromdocxrequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentfromdocxrequest" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_gettransactiondetailsresponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/gettransactiondetailsresponse" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_updatetransactionrequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/updatetransactionrequest" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_getaccountinfo_contact.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getaccountinfo/contact" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_filedata.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/filedata" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_getcampaignsresponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getcampaignsresponse" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_gettemplatemessagesresponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/gettemplatemessagesresponse" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_creategrouprequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/creategrouprequest" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_ADDUSERTOGROUPREQUEST.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/ADDUSERTOGROUPREQUEST" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_createuserrequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/createuserrequest" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_GetSigningsRequest.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/GetSigningsRequest" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_GetSigningsResponse.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/GetSigningsResponse" />
+			<xs:element name="InitiateSigning">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q1:guid"
+							xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q2:InitiateSigningRequest"
+							xmlns:q2="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigningrequest" />
+						<xs:element minOccurs="0" name="templateOverride"
+							nillable="true" type="q3:TemplateOverride"
+							xmlns:q3="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigning/templateoverride" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="InitiateSigningResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="InitiateSigningResult"
+							nillable="true" type="q4:InitiateSigningResponse"
+							xmlns:q4="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigningresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="InitiateSecureTransfer">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q5:guid"
+							xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q6:InitiateSecureTransferRequest"
+							xmlns:q6="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesecuretransferrequest" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="InitiateSecureTransferResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="InitiateSecureTransferResult" nillable="true"
+							type="q7:InitiateSecureTransferResponse"
+							xmlns:q7="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesecuretransferresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="InitiateSigningSynchronously">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q8:guid"
+							xmlns:q8="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q9:InitiateSigningSynchronouslyRequest"
+							xmlns:q9="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/startsynchronoussigningrequest" />
+						<xs:element minOccurs="0" name="templateOverride"
+							nillable="true" type="q10:TemplateOverride"
+							xmlns:q10="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigning/templateoverride" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="InitiateSigningSynchronouslyResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="InitiateSigningSynchronouslyResult" nillable="true"
+							type="q11:InitiateSigningSynchronouslyResponse"
+							xmlns:q11="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="InitiateCampaign">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q12:guid"
+							xmlns:q12="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q13:InitiateCampaignRequest"
+							xmlns:q13="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatecampaignrequest" />
+						<xs:element minOccurs="0" name="templateOverride"
+							nillable="true" type="q14:TemplateOverride"
+							xmlns:q14="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigning/templateoverride" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="InitiateCampaignResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="InitiateCampaignResult"
+							nillable="true" type="q15:InitiateCampaignResponse"
+							xmlns:q15="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatecampaignresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="StartCampaignSigning">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q16:guid"
+							xmlns:q16="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q17:StartCampaignSigningRequest"
+							xmlns:q17="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/startcampaignsigningrequest" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="StartCampaignSigningResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="StartCampaignSigningResult" nillable="true"
+							type="q18:StartCampaignSigningResponse"
+							xmlns:q18="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/startcampaignsigningresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GenerateDocument">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q19:guid"
+							xmlns:q19="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q20:GenerateDocumentRequest"
+							xmlns:q20="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentrequest" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GenerateDocumentResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="GenerateDocumentResult"
+							nillable="true" type="q21:GenerateDocumentResponse"
+							xmlns:q21="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="MergeDocuments">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q22:guid"
+							xmlns:q22="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q23:MergeDocumentsRequest"
+							xmlns:q23="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/mergedocumentsrequest" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="MergeDocumentsResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="MergeDocumentsResult"
+							nillable="true" type="q24:MergeDocumentsResponse"
+							xmlns:q24="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/mergedocumentsresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Login">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="email" nillable="true"
+							type="xs:string" />
+						<xs:element minOccurs="0" name="password"
+							nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="LoginResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="LoginResult"
+							type="q25:guid"
+							xmlns:q25="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AdLogin">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="email" nillable="true"
+							type="xs:string" />
+						<xs:element minOccurs="0" name="password"
+							nillable="true" type="xs:string" />
+						<xs:element minOccurs="0" name="profileName"
+							nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AdLoginResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="AdLoginResult"
+							type="q26:guid"
+							xmlns:q26="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSigningTemplates">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q27:guid"
+							xmlns:q27="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSigningTemplatesResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="GetSigningTemplatesResult" nillable="true"
+							type="q28:GetSigningTemplatesResponse"
+							xmlns:q28="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningtemplatesresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSecureTransferTemplates">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q29:guid"
+							xmlns:q29="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSecureTransferTemplatesResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="GetSecureTransferTemplatesResult" nillable="true"
+							type="q30:GetSigningTemplatesResponse"
+							xmlns:q30="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningtemplatesresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSystemTemplates">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q31:guid"
+							xmlns:q31="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSystemTemplatesResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="GetSystemTemplatesResult" nillable="true"
+							type="q32:GetSigningTemplatesResponse"
+							xmlns:q32="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningtemplatesresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSigning">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q33:guid"
+							xmlns:q33="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="signingToken"
+							nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSigningResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="GetSigningResult"
+							nillable="true" type="q34:GetSigningResponse"
+							xmlns:q34="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSigningWithoutDocuments">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q35:guid"
+							xmlns:q35="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="signingToken"
+							nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSigningWithoutDocumentsResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="GetSigningWithoutDocumentsResult" nillable="true"
+							type="q36:GetSigningResponse"
+							xmlns:q36="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CancelSigning">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q37:guid"
+							xmlns:q37="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="signingToken"
+							nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CancelSigningResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="CancelSigningResult"
+							nillable="true" type="q38:CancelSigningResponse"
+							xmlns:q38="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/cancelsigningresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSigningStatus">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q39:guid"
+							xmlns:q39="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="signingToken"
+							nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSigningStatusResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="GetSigningStatusResult"
+							nillable="true" type="q40:GetSigningStatus"
+							xmlns:q40="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetAccountInfo">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q41:guid"
+							xmlns:q41="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetAccountInfoResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="GetAccountInfoResult"
+							nillable="true" type="q42:GetAccountInfo"
+							xmlns:q42="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getaccountinfo" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GenerateDocumentWithMergeData">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q43:guid"
+							xmlns:q43="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q44:GenerateDocumentWithMergeDataRequest"
+							xmlns:q44="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentfromdocxrequest" />
+						<xs:element minOccurs="0" name="encryptDocument"
+							type="xs:boolean" />
+						<xs:element minOccurs="0" name="encryptionKey"
+							nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GenerateDocumentWithMergeDataResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="GenerateDocumentWithMergeDataResult" nillable="true"
+							type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetTransactionDetails">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q45:guid"
+							xmlns:q45="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="transactionToken"
+							type="q46:guid"
+							xmlns:q46="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetTransactionDetailsResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="GetTransactionDetailsResult" nillable="true"
+							type="q47:GetTransactionDetailsResponse"
+							xmlns:q47="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/gettransactiondetailsresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CancelTransaction">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q48:guid"
+							xmlns:q48="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="transactionToken"
+							type="q49:guid"
+							xmlns:q49="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CancelTransactionResponse">
+				<xs:complexType>
+					<xs:sequence />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ReactivateTransaction">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q50:guid"
+							xmlns:q50="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="transactionToken"
+							type="q51:guid"
+							xmlns:q51="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ReactivateTransactionResponse">
+				<xs:complexType>
+					<xs:sequence />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="UpdateTransaction">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q52:guid"
+							xmlns:q52="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0"
+							name="updateTransactionRequest" nillable="true"
+							type="q53:UpdateTransactionRequest"
+							xmlns:q53="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/updatetransactionrequest" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="UpdateTransactionResponse">
+				<xs:complexType>
+					<xs:sequence />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="SaveRecipient">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q54:guid"
+							xmlns:q54="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="contact"
+							nillable="true" type="q55:Contact"
+							xmlns:q55="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getaccountinfo/contact" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="SaveRecipientResponse">
+				<xs:complexType>
+					<xs:sequence />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="DeleteRecipient">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q56:guid"
+							xmlns:q56="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="contact"
+							nillable="true" type="q57:Contact"
+							xmlns:q57="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getaccountinfo/contact" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="DeleteRecipientResponse">
+				<xs:complexType>
+					<xs:sequence />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ExportRecipients">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q58:guid"
+							xmlns:q58="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="separator"
+							nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ExportRecipientsResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="ExportRecipientsResult"
+							nillable="true" type="q59:FileData"
+							xmlns:q59="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/filedata" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ImportRecipients">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q60:guid"
+							xmlns:q60="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="data" nillable="true"
+							type="xs:base64Binary" />
+						<xs:element minOccurs="0" name="separator"
+							nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ImportRecipientsResponse">
+				<xs:complexType>
+					<xs:sequence />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetCampaigns">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q61:guid"
+							xmlns:q61="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="externalReference"
+							nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetCampaignsResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="GetCampaignsResult"
+							nillable="true" type="q62:GetCampaignsResponse"
+							xmlns:q62="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getcampaignsresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetTemplateMessages">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q63:guid"
+							xmlns:q63="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="templateId"
+							type="q64:guid"
+							xmlns:q64="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetTemplateMessagesResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="GetTemplateMessagesResult" nillable="true"
+							type="q65:GetTemplateMessagesResponse"
+							xmlns:q65="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/gettemplatemessagesresponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetRejectionComment">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q66:guid"
+							xmlns:q66="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="signingToken"
+							nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetRejectionCommentResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="GetRejectionCommentResult" nillable="true"
+							type="q67:GetRejectionCommentResponse"
+							xmlns:q67="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CreateGroup">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q68:guid"
+							xmlns:q68="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q69:CreateGroupRequest"
+							xmlns:q69="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/creategrouprequest" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CreateGroupResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="CreateGroupResult"
+							nillable="true" type="q70:GroupResponse"
+							xmlns:q70="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetGroups">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q71:guid"
+							xmlns:q71="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetGroupsResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="GetGroupsResult"
+							nillable="true" type="q72:GetGroupsResponse"
+							xmlns:q72="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AddUserToGroup">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q73:guid"
+							xmlns:q73="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q74:AddUserToGroupRequest"
+							xmlns:q74="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/ADDUSERTOGROUPREQUEST" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="AddUserToGroupResponse">
+				<xs:complexType>
+					<xs:sequence />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CreateUser">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q75:guid"
+							xmlns:q75="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q76:CreateUserRequest"
+							xmlns:q76="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/createuserrequest" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CreateUserResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="CreateUserResult"
+							nillable="true" type="q77:CreateUserResponse"
+							xmlns:q77="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CreateAccount">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q78:guid"
+							xmlns:q78="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q79:CreateAccountRequest"
+							xmlns:q79="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="CreateAccountResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="CreateAccountResult"
+							nillable="true" type="q80:CreateAccountResponse"
+							xmlns:q80="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSignings">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q81:guid"
+							xmlns:q81="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="request"
+							nillable="true" type="q82:GetSigningsRequest"
+							xmlns:q82="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/GetSigningsRequest" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetSigningsResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="GetSigningsResult"
+							nillable="true" type="q83:GetSigningsResponse"
+							xmlns:q83="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/GetSigningsResponse" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="RefreshToken">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q84:guid"
+							xmlns:q84="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="RefreshTokenResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="RefreshTokenResult"
+							type="xs:dateTime" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Logout">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q85:guid"
+							xmlns:q85="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="LogoutResponse">
+				<xs:complexType>
+					<xs:sequence />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetTransactionToken">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="token" type="q86:guid"
+							xmlns:q86="http://schemas.microsoft.com/2003/10/Serialization/" />
+						<xs:element minOccurs="0" name="transactionId"
+							type="xs:int" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="GetTransactionTokenResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0"
+							name="GetTransactionTokenResult" nillable="true" type="q87:guid"
+							xmlns:q87="http://schemas.microsoft.com/2003/10/Serialization/" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message
+		name="SigningService_InitiateSigning_InputMessage">
+		<wsdl:part name="parameters" element="tns:InitiateSigning" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_InitiateSigning_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:InitiateSigningResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_InitiateSigning_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q1:ValidationFault"
+			xmlns:q1="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_InitiateSecureTransfer_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:InitiateSecureTransfer" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_InitiateSecureTransfer_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:InitiateSecureTransferResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_InitiateSecureTransfer_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q2:ValidationFault"
+			xmlns:q2="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_InitiateSigningSynchronously_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:InitiateSigningSynchronously" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_InitiateSigningSynchronously_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:InitiateSigningSynchronouslyResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_InitiateSigningSynchronously_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q3:ValidationFault"
+			xmlns:q3="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_InitiateCampaign_InputMessage">
+		<wsdl:part name="parameters" element="tns:InitiateCampaign" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_InitiateCampaign_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:InitiateCampaignResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_InitiateCampaign_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q4:ValidationFault"
+			xmlns:q4="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_StartCampaignSigning_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:StartCampaignSigning" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_StartCampaignSigning_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:StartCampaignSigningResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_StartCampaignSigning_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q5:ValidationFault"
+			xmlns:q5="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GenerateDocument_InputMessage">
+		<wsdl:part name="parameters" element="tns:GenerateDocument" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GenerateDocument_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GenerateDocumentResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GenerateDocument_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q6:ValidationFault"
+			xmlns:q6="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_MergeDocuments_InputMessage">
+		<wsdl:part name="parameters" element="tns:MergeDocuments" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_MergeDocuments_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:MergeDocumentsResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_MergeDocuments_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q7:ValidationFault"
+			xmlns:q7="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message name="SigningService_Login_InputMessage">
+		<wsdl:part name="parameters" element="tns:Login" />
+	</wsdl:message>
+	<wsdl:message name="SigningService_Login_OutputMessage">
+		<wsdl:part name="parameters" element="tns:LoginResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_Login_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q8:ValidationFault"
+			xmlns:q8="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message name="SigningService_AdLogin_InputMessage">
+		<wsdl:part name="parameters" element="tns:AdLogin" />
+	</wsdl:message>
+	<wsdl:message name="SigningService_AdLogin_OutputMessage">
+		<wsdl:part name="parameters" element="tns:AdLoginResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_AdLogin_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q9:ValidationFault"
+			xmlns:q9="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSigningTemplates_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetSigningTemplates" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSigningTemplates_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetSigningTemplatesResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSecureTransferTemplates_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetSecureTransferTemplates" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSecureTransferTemplates_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetSecureTransferTemplatesResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSystemTemplates_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetSystemTemplates" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSystemTemplates_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetSystemTemplatesResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSigning_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetSigning" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSigning_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetSigningResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSigning_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q10:ValidationFault"
+			xmlns:q10="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSigningWithoutDocuments_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetSigningWithoutDocuments" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSigningWithoutDocuments_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetSigningWithoutDocumentsResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSigningWithoutDocuments_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q11:ValidationFault"
+			xmlns:q11="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CancelSigning_InputMessage">
+		<wsdl:part name="parameters" element="tns:CancelSigning" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CancelSigning_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:CancelSigningResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CancelSigning_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q12:ValidationFault"
+			xmlns:q12="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSigningStatus_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetSigningStatus" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSigningStatus_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetSigningStatusResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSigningStatus_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q13:ValidationFault"
+			xmlns:q13="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetAccountInfo_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetAccountInfo" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetAccountInfo_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetAccountInfoResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetAccountInfo_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q14:ValidationFault"
+			xmlns:q14="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GenerateDocumentWithMergeData_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GenerateDocumentWithMergeData" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GenerateDocumentWithMergeData_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GenerateDocumentWithMergeDataResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GenerateDocumentWithMergeData_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q15:ValidationFault"
+			xmlns:q15="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetTransactionDetails_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetTransactionDetails" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetTransactionDetails_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetTransactionDetailsResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetTransactionDetails_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q16:ValidationFault"
+			xmlns:q16="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CancelTransaction_InputMessage">
+		<wsdl:part name="parameters" element="tns:CancelTransaction" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CancelTransaction_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:CancelTransactionResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CancelTransaction_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q17:ValidationFault"
+			xmlns:q17="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_ReactivateTransaction_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:ReactivateTransaction" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_ReactivateTransaction_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:ReactivateTransactionResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_ReactivateTransaction_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q18:ValidationFault"
+			xmlns:q18="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_UpdateTransaction_InputMessage">
+		<wsdl:part name="parameters" element="tns:UpdateTransaction" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_UpdateTransaction_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:UpdateTransactionResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_UpdateTransaction_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q19:ValidationFault"
+			xmlns:q19="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_SaveRecipient_InputMessage">
+		<wsdl:part name="parameters" element="tns:SaveRecipient" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_SaveRecipient_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:SaveRecipientResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_SaveRecipient_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q20:ValidationFault"
+			xmlns:q20="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_DeleteRecipient_InputMessage">
+		<wsdl:part name="parameters" element="tns:DeleteRecipient" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_DeleteRecipient_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:DeleteRecipientResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_DeleteRecipient_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q21:ValidationFault"
+			xmlns:q21="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_ExportRecipients_InputMessage">
+		<wsdl:part name="parameters" element="tns:ExportRecipients" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_ExportRecipients_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:ExportRecipientsResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_ExportRecipients_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q22:ValidationFault"
+			xmlns:q22="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_ImportRecipients_InputMessage">
+		<wsdl:part name="parameters" element="tns:ImportRecipients" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_ImportRecipients_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:ImportRecipientsResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_ImportRecipients_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q23:ValidationFault"
+			xmlns:q23="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetCampaigns_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetCampaigns" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetCampaigns_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetCampaignsResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetCampaigns_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q24:ValidationFault"
+			xmlns:q24="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetTemplateMessages_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetTemplateMessages" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetTemplateMessages_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetTemplateMessagesResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetTemplateMessages_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q25:ValidationFault"
+			xmlns:q25="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetRejectionComment_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetRejectionComment" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetRejectionComment_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetRejectionCommentResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetRejectionComment_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q26:ValidationFault"
+			xmlns:q26="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CreateGroup_InputMessage">
+		<wsdl:part name="parameters" element="tns:CreateGroup" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CreateGroup_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:CreateGroupResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CreateGroup_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q27:ValidationFault"
+			xmlns:q27="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message name="SigningService_GetGroups_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetGroups" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetGroups_OutputMessage">
+		<wsdl:part name="parameters" element="tns:GetGroupsResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetGroups_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q28:ValidationFault"
+			xmlns:q28="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_AddUserToGroup_InputMessage">
+		<wsdl:part name="parameters" element="tns:AddUserToGroup" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_AddUserToGroup_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:AddUserToGroupResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_AddUserToGroup_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q29:ValidationFault"
+			xmlns:q29="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CreateUser_InputMessage">
+		<wsdl:part name="parameters" element="tns:CreateUser" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CreateUser_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:CreateUserResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CreateUser_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q30:ValidationFault"
+			xmlns:q30="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CreateAccount_InputMessage">
+		<wsdl:part name="parameters" element="tns:CreateAccount" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CreateAccount_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:CreateAccountResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_CreateAccount_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q31:ValidationFault"
+			xmlns:q31="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSignings_InputMessage">
+		<wsdl:part name="parameters" element="tns:GetSignings" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSignings_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetSigningsResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetSignings_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q32:ValidationFault"
+			xmlns:q32="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_RefreshToken_InputMessage">
+		<wsdl:part name="parameters" element="tns:RefreshToken" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_RefreshToken_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:RefreshTokenResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_RefreshToken_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q33:ValidationFault"
+			xmlns:q33="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message name="SigningService_Logout_InputMessage">
+		<wsdl:part name="parameters" element="tns:Logout" />
+	</wsdl:message>
+	<wsdl:message name="SigningService_Logout_OutputMessage">
+		<wsdl:part name="parameters" element="tns:LogoutResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_Logout_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q34:ValidationFault"
+			xmlns:q34="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetTransactionToken_InputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetTransactionToken" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetTransactionToken_OutputMessage">
+		<wsdl:part name="parameters"
+			element="tns:GetTransactionTokenResponse" />
+	</wsdl:message>
+	<wsdl:message
+		name="SigningService_GetTransactionToken_ValidationFaultFault_FaultMessage">
+		<wsdl:part name="detail" element="q35:ValidationFault"
+			xmlns:q35="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+	</wsdl:message>
+	<wsdl:portType name="SigningService">
+		<wsdl:operation name="InitiateSigning">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigning"
+				message="tns:SigningService_InitiateSigning_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigningResponse"
+				message="tns:SigningService_InitiateSigning_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigningValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_InitiateSigning_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="InitiateSecureTransfer">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSecureTransfer"
+				message="tns:SigningService_InitiateSecureTransfer_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSecureTransferResponse"
+				message="tns:SigningService_InitiateSecureTransfer_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSecureTransferValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_InitiateSecureTransfer_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="InitiateSigningSynchronously">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigningSynchronously"
+				message="tns:SigningService_InitiateSigningSynchronously_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigningSynchronouslyResponse"
+				message="tns:SigningService_InitiateSigningSynchronously_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigningSynchronouslyValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_InitiateSigningSynchronously_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="InitiateCampaign">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateCampaign"
+				message="tns:SigningService_InitiateCampaign_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateCampaignResponse"
+				message="tns:SigningService_InitiateCampaign_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateCampaignValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_InitiateCampaign_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="StartCampaignSigning">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/StartCampaignSigning"
+				message="tns:SigningService_StartCampaignSigning_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/StartCampaignSigningResponse"
+				message="tns:SigningService_StartCampaignSigning_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/StartCampaignSigningValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_StartCampaignSigning_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GenerateDocument">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocument"
+				message="tns:SigningService_GenerateDocument_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocumentResponse"
+				message="tns:SigningService_GenerateDocument_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocumentValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GenerateDocument_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="MergeDocuments">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/MergeDocuments"
+				message="tns:SigningService_MergeDocuments_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/MergeDocumentsResponse"
+				message="tns:SigningService_MergeDocuments_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/MergeDocumentsValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_MergeDocuments_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="Login">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/Login"
+				message="tns:SigningService_Login_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/LoginResponse"
+				message="tns:SigningService_Login_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/LoginValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_Login_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="AdLogin">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AdLogin"
+				message="tns:SigningService_AdLogin_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AdLoginResponse"
+				message="tns:SigningService_AdLogin_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AdLoginValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_AdLogin_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningTemplates">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningTemplates"
+				message="tns:SigningService_GetSigningTemplates_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningTemplatesResponse"
+				message="tns:SigningService_GetSigningTemplates_OutputMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetSecureTransferTemplates">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSecureTransferTemplates"
+				message="tns:SigningService_GetSecureTransferTemplates_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSecureTransferTemplatesResponse"
+				message="tns:SigningService_GetSecureTransferTemplates_OutputMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetSystemTemplates">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSystemTemplates"
+				message="tns:SigningService_GetSystemTemplates_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSystemTemplatesResponse"
+				message="tns:SigningService_GetSystemTemplates_OutputMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetSigning">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigning"
+				message="tns:SigningService_GetSigning_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningResponse"
+				message="tns:SigningService_GetSigning_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GetSigning_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningWithoutDocuments">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningWithoutDocuments"
+				message="tns:SigningService_GetSigningWithoutDocuments_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningWithoutDocumentsResponse"
+				message="tns:SigningService_GetSigningWithoutDocuments_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningWithoutDocumentsValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GetSigningWithoutDocuments_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="CancelSigning">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelSigning"
+				message="tns:SigningService_CancelSigning_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelSigningResponse"
+				message="tns:SigningService_CancelSigning_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelSigningValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_CancelSigning_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningStatus">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningStatus"
+				message="tns:SigningService_GetSigningStatus_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningStatusResponse"
+				message="tns:SigningService_GetSigningStatus_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningStatusValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GetSigningStatus_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetAccountInfo">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetAccountInfo"
+				message="tns:SigningService_GetAccountInfo_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetAccountInfoResponse"
+				message="tns:SigningService_GetAccountInfo_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetAccountInfoValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GetAccountInfo_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GenerateDocumentWithMergeData">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocumentWithMergeData"
+				message="tns:SigningService_GenerateDocumentWithMergeData_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocumentWithMergeDataResponse"
+				message="tns:SigningService_GenerateDocumentWithMergeData_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocumentWithMergeDataValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GenerateDocumentWithMergeData_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetTransactionDetails">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionDetails"
+				message="tns:SigningService_GetTransactionDetails_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionDetailsResponse"
+				message="tns:SigningService_GetTransactionDetails_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionDetailsValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GetTransactionDetails_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="CancelTransaction">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelTransaction"
+				message="tns:SigningService_CancelTransaction_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelTransactionResponse"
+				message="tns:SigningService_CancelTransaction_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelTransactionValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_CancelTransaction_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="ReactivateTransaction">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ReactivateTransaction"
+				message="tns:SigningService_ReactivateTransaction_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ReactivateTransactionResponse"
+				message="tns:SigningService_ReactivateTransaction_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ReactivateTransactionValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_ReactivateTransaction_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="UpdateTransaction">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/UpdateTransaction"
+				message="tns:SigningService_UpdateTransaction_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/UpdateTransactionResponse"
+				message="tns:SigningService_UpdateTransaction_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/UpdateTransactionValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_UpdateTransaction_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="SaveRecipient">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/SaveRecipient"
+				message="tns:SigningService_SaveRecipient_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/SaveRecipientResponse"
+				message="tns:SigningService_SaveRecipient_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/SaveRecipientValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_SaveRecipient_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="DeleteRecipient">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/DeleteRecipient"
+				message="tns:SigningService_DeleteRecipient_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/DeleteRecipientResponse"
+				message="tns:SigningService_DeleteRecipient_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/DeleteRecipientValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_DeleteRecipient_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="ExportRecipients">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ExportRecipients"
+				message="tns:SigningService_ExportRecipients_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ExportRecipientsResponse"
+				message="tns:SigningService_ExportRecipients_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ExportRecipientsValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_ExportRecipients_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="ImportRecipients">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ImportRecipients"
+				message="tns:SigningService_ImportRecipients_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ImportRecipientsResponse"
+				message="tns:SigningService_ImportRecipients_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ImportRecipientsValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_ImportRecipients_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetCampaigns">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetCampaigns"
+				message="tns:SigningService_GetCampaigns_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetCampaignsResponse"
+				message="tns:SigningService_GetCampaigns_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetCampaignsValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GetCampaigns_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetTemplateMessages">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTemplateMessages"
+				message="tns:SigningService_GetTemplateMessages_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTemplateMessagesResponse"
+				message="tns:SigningService_GetTemplateMessages_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTemplateMessagesValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GetTemplateMessages_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetRejectionComment">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetRejectionComment"
+				message="tns:SigningService_GetRejectionComment_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetRejectionCommentResponse"
+				message="tns:SigningService_GetRejectionComment_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetRejectionCommentValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GetRejectionComment_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="CreateGroup">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateGroup"
+				message="tns:SigningService_CreateGroup_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateGroupResponse"
+				message="tns:SigningService_CreateGroup_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateGroupValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_CreateGroup_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetGroups">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetGroups"
+				message="tns:SigningService_GetGroups_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetGroupsResponse"
+				message="tns:SigningService_GetGroups_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetGroupsValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GetGroups_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="AddUserToGroup">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AddUserToGroup"
+				message="tns:SigningService_AddUserToGroup_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AddUserToGroupResponse"
+				message="tns:SigningService_AddUserToGroup_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AddUserToGroupValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_AddUserToGroup_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="CreateUser">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateUser"
+				message="tns:SigningService_CreateUser_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateUserResponse"
+				message="tns:SigningService_CreateUser_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateUserValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_CreateUser_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="CreateAccount">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateAccount"
+				message="tns:SigningService_CreateAccount_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateAccountResponse"
+				message="tns:SigningService_CreateAccount_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateAccountValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_CreateAccount_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetSignings">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSignings"
+				message="tns:SigningService_GetSignings_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningsResponse"
+				message="tns:SigningService_GetSignings_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningsValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GetSignings_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="RefreshToken">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/RefreshToken"
+				message="tns:SigningService_RefreshToken_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/RefreshTokenResponse"
+				message="tns:SigningService_RefreshToken_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/RefreshTokenValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_RefreshToken_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="Logout">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/Logout"
+				message="tns:SigningService_Logout_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/LogoutResponse"
+				message="tns:SigningService_Logout_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/LogoutValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_Logout_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+		<wsdl:operation name="GetTransactionToken">
+			<wsdl:input
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionToken"
+				message="tns:SigningService_GetTransactionToken_InputMessage" />
+			<wsdl:output
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionTokenResponse"
+				message="tns:SigningService_GetTransactionToken_OutputMessage" />
+			<wsdl:fault
+				wsaw:Action="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionTokenValidationFaultFault"
+				name="ValidationFaultFault"
+				message="tns:SigningService_GetTransactionToken_ValidationFaultFault_FaultMessage" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="Signing" type="tns:SigningService">
+		<wsp:PolicyReference URI="#Signing_policy" />
+		<soap12:binding
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="InitiateSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateSecureTransfer">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSecureTransfer"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateSigningSynchronously">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigningSynchronously"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateCampaign">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateCampaign"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="StartCampaignSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/StartCampaignSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GenerateDocument">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocument"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="MergeDocuments">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/MergeDocuments"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Login">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/Login"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="AdLogin">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AdLogin"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSecureTransferTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSecureTransferTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSystemTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSystemTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningWithoutDocuments">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningWithoutDocuments"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CancelSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningStatus">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningStatus"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetAccountInfo">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetAccountInfo"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GenerateDocumentWithMergeData">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocumentWithMergeData"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTransactionDetails">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionDetails"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CancelTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ReactivateTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ReactivateTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="UpdateTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/UpdateTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="SaveRecipient">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/SaveRecipient"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="DeleteRecipient">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/DeleteRecipient"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ExportRecipients">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ExportRecipients"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ImportRecipients">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ImportRecipients"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetCampaigns">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetCampaigns"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTemplateMessages">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTemplateMessages"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetRejectionComment">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetRejectionComment"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateGroup">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateGroup"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetGroups">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetGroups"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="AddUserToGroup">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AddUserToGroup"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateUser">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateUser"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateAccount">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateAccount"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSignings">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSignings"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="RefreshToken">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/RefreshToken"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Logout">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/Logout"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTransactionToken">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionToken"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="Unsigned" type="tns:SigningService">
+		<wsp:PolicyReference URI="#Unsigned_policy" />
+		<soap12:binding
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="InitiateSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateSecureTransfer">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSecureTransfer"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateSigningSynchronously">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigningSynchronously"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateCampaign">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateCampaign"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="StartCampaignSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/StartCampaignSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GenerateDocument">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocument"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="MergeDocuments">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/MergeDocuments"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Login">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/Login"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="AdLogin">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AdLogin"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSecureTransferTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSecureTransferTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSystemTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSystemTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningWithoutDocuments">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningWithoutDocuments"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CancelSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningStatus">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningStatus"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetAccountInfo">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetAccountInfo"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GenerateDocumentWithMergeData">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocumentWithMergeData"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTransactionDetails">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionDetails"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CancelTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ReactivateTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ReactivateTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="UpdateTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/UpdateTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="SaveRecipient">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/SaveRecipient"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="DeleteRecipient">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/DeleteRecipient"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ExportRecipients">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ExportRecipients"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ImportRecipients">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ImportRecipients"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetCampaigns">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetCampaigns"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTemplateMessages">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTemplateMessages"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetRejectionComment">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetRejectionComment"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateGroup">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateGroup"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetGroups">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetGroups"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="AddUserToGroup">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AddUserToGroup"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateUser">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateUser"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateAccount">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateAccount"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSignings">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSignings"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="RefreshToken">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/RefreshToken"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Logout">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/Logout"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTransactionToken">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionToken"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="SigningSecure"
+		type="tns:SigningService">
+		<wsp:PolicyReference URI="#SigningSecure_policy" />
+		<soap12:binding
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="InitiateSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateSecureTransfer">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSecureTransfer"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateSigningSynchronously">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigningSynchronously"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateCampaign">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateCampaign"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="StartCampaignSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/StartCampaignSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GenerateDocument">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocument"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="MergeDocuments">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/MergeDocuments"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Login">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/Login"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="AdLogin">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AdLogin"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSecureTransferTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSecureTransferTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSystemTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSystemTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningWithoutDocuments">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningWithoutDocuments"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CancelSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningStatus">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningStatus"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetAccountInfo">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetAccountInfo"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GenerateDocumentWithMergeData">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocumentWithMergeData"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTransactionDetails">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionDetails"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CancelTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ReactivateTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ReactivateTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="UpdateTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/UpdateTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="SaveRecipient">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/SaveRecipient"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="DeleteRecipient">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/DeleteRecipient"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ExportRecipients">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ExportRecipients"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ImportRecipients">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ImportRecipients"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetCampaigns">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetCampaigns"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTemplateMessages">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTemplateMessages"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetRejectionComment">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetRejectionComment"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateGroup">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateGroup"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetGroups">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetGroups"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="AddUserToGroup">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AddUserToGroup"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateUser">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateUser"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateAccount">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateAccount"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSignings">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSignings"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="RefreshToken">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/RefreshToken"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Logout">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/Logout"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTransactionToken">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionToken"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="SigningTcp" type="tns:SigningService">
+		<wsp:PolicyReference URI="#SigningTcp_policy" />
+		<soap12:binding
+			transport="http://schemas.microsoft.com/soap/tcp" />
+		<wsdl:operation name="InitiateSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateSecureTransfer">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSecureTransfer"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateSigningSynchronously">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateSigningSynchronously"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="InitiateCampaign">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/InitiateCampaign"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="StartCampaignSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/StartCampaignSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GenerateDocument">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocument"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="MergeDocuments">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/MergeDocuments"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Login">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/Login"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="AdLogin">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AdLogin"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSecureTransferTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSecureTransferTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSystemTemplates">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSystemTemplates"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningWithoutDocuments">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningWithoutDocuments"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CancelSigning">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelSigning"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSigningStatus">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSigningStatus"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetAccountInfo">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetAccountInfo"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GenerateDocumentWithMergeData">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GenerateDocumentWithMergeData"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTransactionDetails">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionDetails"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CancelTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CancelTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ReactivateTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ReactivateTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="UpdateTransaction">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/UpdateTransaction"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="SaveRecipient">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/SaveRecipient"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="DeleteRecipient">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/DeleteRecipient"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ExportRecipients">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ExportRecipients"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="ImportRecipients">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/ImportRecipients"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetCampaigns">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetCampaigns"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTemplateMessages">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTemplateMessages"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetRejectionComment">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetRejectionComment"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateGroup">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateGroup"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetGroups">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetGroups"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="AddUserToGroup">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/AddUserToGroup"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateUser">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateUser"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="CreateAccount">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/CreateAccount"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetSignings">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetSignings"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="RefreshToken">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/RefreshToken"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="Logout">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/Logout"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="GetTransactionToken">
+			<soap12:operation
+				soapAction="http://schemas.vismaaddo.net/services/signingservice/v2_0/SigningService/GetTransactionToken"
+				style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="ValidationFaultFault">
+				<soap12:fault use="literal" name="ValidationFaultFault"
+					namespace="" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="SigningService">
+		<wsdl:port name="Signing" binding="tns:Signing">
+			<soap12:address
+				location="https://vismaaddo.net/WebService/v2.0/SigningService.svc" />
+			<wsa10:EndpointReference>
+				<wsa10:Address>https://vismaaddo.net/WebService/v2.0/SigningService.svc
+				</wsa10:Address>
+			</wsa10:EndpointReference>
+		</wsdl:port>
+		<wsdl:port name="Unsigned" binding="tns:Unsigned">
+			<soap12:address
+				location="https://vismaaddo.net/WebService/v2.0/SigningService.svc/unsigned" />
+			<wsa10:EndpointReference>
+				<wsa10:Address>https://vismaaddo.net/WebService/v2.0/SigningService.svc/unsigned
+				</wsa10:Address>
+			</wsa10:EndpointReference>
+		</wsdl:port>
+		<wsdl:port name="SigningSecure" binding="tns:SigningSecure">
+			<soap12:address
+				location="https://vismaaddo.net/WebService/v2.0/SigningService.svc/secure" />
+			<wsa10:EndpointReference>
+				<wsa10:Address>https://vismaaddo.net/WebService/v2.0/SigningService.svc/secure
+				</wsa10:Address>
+			</wsa10:EndpointReference>
+		</wsdl:port>
+		<wsdl:port name="SigningTcp" binding="tns:SigningTcp">
+			<soap12:address
+				location="net.tcp://addowebp02:8555/WebService/v2.0/SigningService.svc/tcp" />
+			<wsa10:EndpointReference>
+				<wsa10:Address>net.tcp://addowebp02:8555/WebService/v2.0/SigningService.svc/tcp
+				</wsa10:Address>
+				<Identity
+					xmlns="http://schemas.xmlsoap.org/ws/2006/02/addressingidentity">
+					<Spn>host/ADDOWEBP02</Spn>
+				</Identity>
+			</wsa10:EndpointReference>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

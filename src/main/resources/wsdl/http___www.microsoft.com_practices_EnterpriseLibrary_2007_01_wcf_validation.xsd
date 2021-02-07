@@ -1,0 +1,16 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation">
+			<xs:import schemaLocation="http___schemas.datacontract.org_2004_07_Microsoft.Practices.EnterpriseLibrary.Validation.Integration.WCF.xsd"
+				namespace="http://schemas.datacontract.org/2004/07/Microsoft.Practices.EnterpriseLibrary.Validation.Integration.WCF" />
+			<xs:complexType name="ValidationFault">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="Details" nillable="true"
+						type="q1:ArrayOfValidationDetail"
+						xmlns:q1="http://schemas.datacontract.org/2004/07/Microsoft.Practices.EnterpriseLibrary.Validation.Integration.WCF" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="ValidationFault" nillable="true"
+				type="tns:ValidationFault" />
+		</xs:schema>

@@ -1,0 +1,38 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse/recipient"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse/recipient">
+			<xs:import schemaLocation="http___schemas.microsoft.com_2003_10_Serialization_.xsd"
+				namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+			<xs:complexType
+				name="ArrayOfGetSigningResponse.Recipient">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="unbounded"
+						name="GetSigningResponse.Recipient" nillable="true"
+						type="tns:GetSigningResponse.Recipient" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="ArrayOfGetSigningResponse.Recipient"
+				nillable="true" type="tns:ArrayOfGetSigningResponse.Recipient" />
+			<xs:complexType name="GetSigningResponse.Recipient">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="AdditionalData"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="CustomId"
+						nillable="true" type="ser:guid" />
+					<xs:element minOccurs="0" name="Name" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="SignatureIdentifier"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="SignatureSubject"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="Title" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="XmlData" nillable="true"
+						type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="GetSigningResponse.Recipient"
+				nillable="true" type="tns:GetSigningResponse.Recipient" />
+		</xs:schema>

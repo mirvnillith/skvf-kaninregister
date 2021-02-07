@@ -1,0 +1,115 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningtemplatesresponse/SigningTemplate"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningtemplatesresponse/SigningTemplate">
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_enums_AuthenticationMethodEnum.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/AuthenticationMethodEnum" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_bccrecipientdata.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/bccrecipientdata" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_enums_DeliveryMethodEnum.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/DeliveryMethodEnum" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_enums_DocumentEncryptionEnum.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/DocumentEncryptionEnum" />
+			<xs:import schemaLocation="http___schemas.microsoft.com_2003_10_Serialization_.xsd"
+				namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_enums_MessageTypeEnum.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/MessageTypeEnum" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_recipientdata.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/recipientdata" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_enums_SigningMethodEnum.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/SigningMethodEnum" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_getsigningtemplatesresponse_SigningTemplateAction.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningtemplatesresponse/SigningTemplateAction" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_enums_TemplateDocumentTypeEnum.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/TemplateDocumentTypeEnum" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_enums_TemplateUsageType.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/TemplateUsageType" />
+			<xs:complexType name="ArrayOfSigningTemplate">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="unbounded"
+						name="SigningTemplate" nillable="true" type="tns:SigningTemplate" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="ArrayOfSigningTemplate" nillable="true"
+				type="tns:ArrayOfSigningTemplate" />
+			<xs:complexType name="SigningTemplate">
+				<xs:sequence>
+					<xs:element minOccurs="0"
+						name="AllowApproveAllAttachments" type="xs:boolean" />
+					<xs:element minOccurs="0" name="AuthenticationMethod"
+						type="q1:AuthenticationMethodEnum"
+						xmlns:q1="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/AuthenticationMethodEnum" />
+					<xs:element minOccurs="0" name="BccRecipients"
+						nillable="true" type="q2:ArrayOfBccRecipientData"
+						xmlns:q2="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/bccrecipientdata" />
+					<xs:element minOccurs="0" name="DistributionMethod"
+						type="q3:DeliveryMethodEnum"
+						xmlns:q3="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/DeliveryMethodEnum" />
+					<xs:element minOccurs="0" name="DocumentEncryption"
+						type="q4:DocumentEncryptionEnum"
+						xmlns:q4="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/DocumentEncryptionEnum" />
+					<xs:element minOccurs="0" name="Duration"
+						type="ser:duration" />
+					<xs:element minOccurs="0" name="FriendlyName"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="Id" type="ser:guid" />
+					<xs:element minOccurs="0"
+						name="IsQuestionnaireMandatory" type="xs:boolean" />
+					<xs:element minOccurs="0" name="IsSystemTemplate"
+						type="xs:boolean" />
+					<xs:element minOccurs="0" name="LastReminderDay"
+						type="xs:int" />
+					<xs:element minOccurs="0" name="MessageType"
+						type="q5:MessageTypeEnum"
+						xmlns:q5="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/MessageTypeEnum" />
+					<xs:element minOccurs="0" name="MessageTypes"
+						nillable="true" type="q6:ArrayOfMessageTypeEnum"
+						xmlns:q6="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/MessageTypeEnum" />
+					<xs:element minOccurs="0"
+						name="NotificationIntervalDays" type="xs:int" />
+					<xs:element minOccurs="0" name="QuestionnaireEnabled"
+						type="xs:boolean" />
+					<xs:element minOccurs="0" name="Recipients"
+						nillable="true" type="q7:ArrayOfRecipientData"
+						xmlns:q7="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/recipientdata" />
+					<xs:element minOccurs="0" name="ShowDate"
+						type="xs:boolean" />
+					<xs:element minOccurs="0" name="ShowSignerName"
+						type="xs:boolean" />
+					<xs:element minOccurs="0" name="SigningMethod"
+						type="q8:SigningMethodEnum"
+						xmlns:q8="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/SigningMethodEnum" />
+					<xs:element minOccurs="0" name="SigningTemplateActions"
+						nillable="true" type="q9:ArrayOfSigningTemplateAction"
+						xmlns:q9="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningtemplatesresponse/SigningTemplateAction" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="SigningTemplate" nillable="true"
+				type="tns:SigningTemplate" />
+			<xs:complexType name="ArrayOfSigningTemplateMessage">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="unbounded"
+						name="SigningTemplateMessage" nillable="true"
+						type="tns:SigningTemplateMessage" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="ArrayOfSigningTemplateMessage"
+				nillable="true" type="tns:ArrayOfSigningTemplateMessage" />
+			<xs:complexType name="SigningTemplateMessage">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="Body" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="Subject" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="Type"
+						type="q10:TemplateDocumentTypeEnum"
+						xmlns:q10="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/TemplateDocumentTypeEnum" />
+					<xs:element minOccurs="0" name="UsageType"
+						type="q11:TemplateUsageType"
+						xmlns:q11="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/TemplateUsageType" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="SigningTemplateMessage" nillable="true"
+				type="tns:SigningTemplateMessage" />
+		</xs:schema>

@@ -1,0 +1,38 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/startsynchronoussigningrequest"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/startsynchronoussigningrequest">
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_initiatesigningrequest_signing.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigningrequest/signing" />
+			<xs:import schemaLocation="http___schemas.microsoft.com_2003_10_Serialization_.xsd"
+				namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+			<xs:complexType
+				name="InitiateSigningSynchronouslyRequest">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="DistributionUrl"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="DocumentOpenedUrl"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="DocumentSignedUrl"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="ExpirationUrl"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="Name" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="RejectionUrl"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="SigningData"
+						nillable="true" type="q1:Signing"
+						xmlns:q1="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigningrequest/signing" />
+					<xs:element minOccurs="0" name="SigningTemplateId"
+						type="ser:guid" />
+					<xs:element minOccurs="0" name="StartDate"
+						type="xs:dateTime" />
+					<xs:element minOccurs="0"
+						name="TransactionStateChangedUrl" nillable="true" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="InitiateSigningSynchronouslyRequest"
+				nillable="true" type="tns:InitiateSigningSynchronouslyRequest" />
+		</xs:schema>

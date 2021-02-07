@@ -1,0 +1,33 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/startcampaignsigningrequest"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/startcampaignsigningrequest">
+			<xs:import schemaLocation="http___schemas.datacontract.org_2004_07_Visma.Addo.WebService.Contracts.v2_0.Messages.xsd"
+				namespace="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_mergedocumentsresponse_mergedocument.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/mergedocumentsresponse/mergedocument" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_campaignrecipientoverride.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/campaignrecipientoverride" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_recipientdata_templatedatacontainer.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/recipientdata/templatedatacontainer" />
+			<xs:complexType name="StartCampaignSigningRequest">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="EnclosureDocuments"
+						nillable="true" type="q1:ArrayOfEnclosureDocument"
+						xmlns:q1="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					<xs:element minOccurs="0" name="MergedDocuments"
+						nillable="true" type="q2:ArrayOfMergeDocument"
+						xmlns:q2="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/mergedocumentsresponse/mergedocument" />
+					<xs:element minOccurs="0" name="Recipient"
+						nillable="true" type="q3:CampaignRecipientOverride"
+						xmlns:q3="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/campaignrecipientoverride" />
+					<xs:element minOccurs="0" name="SigningToken"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="TemplateData"
+						nillable="true" type="q4:TemplateDataContainer"
+						xmlns:q4="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/recipientdata/templatedatacontainer" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="StartCampaignSigningRequest"
+				nillable="true" type="tns:StartCampaignSigningRequest" />
+		</xs:schema>

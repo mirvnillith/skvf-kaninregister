@@ -1,0 +1,14 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/ADDUSERTOGROUPREQUEST"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/ADDUSERTOGROUPREQUEST">
+			<xs:complexType name="AddUserToGroupRequest">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="Email" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="GroupId" type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="AddUserToGroupRequest" nillable="true"
+				type="tns:AddUserToGroupRequest" />
+		</xs:schema>

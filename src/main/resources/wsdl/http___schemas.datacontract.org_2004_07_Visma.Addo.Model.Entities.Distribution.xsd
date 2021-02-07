@@ -1,0 +1,32 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.datacontract.org/2004/07/Visma.Addo.Model.Entities.Distribution"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.datacontract.org/2004/07/Visma.Addo.Model.Entities.Distribution">
+			<xs:complexType name="SigningDistributionModel">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="VismaHrConfig"
+						nillable="true" type="tns:VismaHrConfigModel" />
+					<xs:element minOccurs="0" name="VismaHrmConfig"
+						nillable="true" type="tns:VismaHrmConfigModel" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="SigningDistributionModel"
+				nillable="true" type="tns:SigningDistributionModel" />
+			<xs:complexType name="VismaHrConfigModel">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="EmployeeNumber"
+						type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="VismaHrConfigModel" nillable="true"
+				type="tns:VismaHrConfigModel" />
+			<xs:complexType name="VismaHrmConfigModel">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="CompanyId" type="xs:int" />
+					<xs:element minOccurs="0" name="EmployeeId"
+						type="xs:int" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="VismaHrmConfigModel" nillable="true"
+				type="tns:VismaHrmConfigModel" />
+		</xs:schema>

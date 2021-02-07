@@ -1,0 +1,13 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/OrderTypeEnum"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/OrderTypeEnum">
+			<xs:simpleType name="OrderTypeEnum">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Ascending" />
+					<xs:enumeration value="Descending" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:element name="OrderTypeEnum" nillable="true"
+				type="tns:OrderTypeEnum" />
+		</xs:schema>

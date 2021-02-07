@@ -1,0 +1,16 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getcampaignsresponse"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getcampaignsresponse">
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_getsigningstatus_campaign.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus/campaign" />
+			<xs:complexType name="GetCampaignsResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="Campaigns"
+						nillable="true" type="q1:ArrayOfGetCampaignsResponse.Campaign"
+						xmlns:q1="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus/campaign" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="GetCampaignsResponse" nillable="true"
+				type="tns:GetCampaignsResponse" />
+		</xs:schema>

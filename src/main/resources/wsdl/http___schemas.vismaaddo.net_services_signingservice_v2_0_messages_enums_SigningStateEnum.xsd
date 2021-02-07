@@ -1,0 +1,52 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/SigningStateEnum"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/SigningStateEnum">
+			<xs:import schemaLocation="http___schemas.microsoft.com_2003_10_Serialization_.xsd"
+				namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+			<xs:simpleType name="TransactionStateEnum">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Failed">
+						<xs:annotation>
+							<xs:appinfo>
+								<EnumerationValue
+									xmlns="http://schemas.microsoft.com/2003/10/Serialization/">-1</EnumerationValue>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="Created" />
+					<xs:enumeration value="Pending" />
+					<xs:enumeration value="Started" />
+					<xs:enumeration value="Signed" />
+					<xs:enumeration value="ReadyForDistribution" />
+					<xs:enumeration value="Completed" />
+					<xs:enumeration value="Expired" />
+					<xs:enumeration value="Canceled" />
+					<xs:enumeration value="DataCollecting" />
+					<xs:enumeration value="Rejected" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:element name="TransactionStateEnum" nillable="true"
+				type="tns:TransactionStateEnum" />
+			<xs:simpleType name="SigningStateEnum">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="Failed">
+						<xs:annotation>
+							<xs:appinfo>
+								<EnumerationValue
+									xmlns="http://schemas.microsoft.com/2003/10/Serialization/">-1</EnumerationValue>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="Created" />
+					<xs:enumeration value="Started" />
+					<xs:enumeration value="Completed" />
+					<xs:enumeration value="Expired" />
+					<xs:enumeration value="Stopped" />
+					<xs:enumeration value="CampaignStarted" />
+					<xs:enumeration value="Rejected" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:element name="SigningStateEnum" nillable="true"
+				type="tns:SigningStateEnum" />
+		</xs:schema>

@@ -1,0 +1,52 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse">
+			<xs:import schemaLocation="http___schemas.datacontract.org_2004_07_Visma.Addo.WebService.Contracts.v2_0.Messages.xsd"
+				namespace="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_generatedocumentresponse_bccrecipient.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse/bccrecipient" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_generatedocumentresponse_recipient.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse/recipient" />
+			<xs:complexType name="GenerateDocumentResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="GeneratedDocuments"
+						nillable="true" type="q1:ArrayOfGeneratedDocument"
+						xmlns:q1="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="GenerateDocumentResponse"
+				nillable="true" type="tns:GenerateDocumentResponse" />
+			<xs:complexType name="GetSigningResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="BccRecipients"
+						nillable="true" type="q2:ArrayOfGetSigningResponse.BccRecipient"
+						xmlns:q2="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse/bccrecipient" />
+					<xs:element minOccurs="0"
+						name="CampaignExternalReference" nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="CreatedOn"
+						type="xs:dateTime" />
+					<xs:element minOccurs="0" name="Documents"
+						nillable="true" type="q3:ArrayOfSignedDocument"
+						xmlns:q3="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					<xs:element minOccurs="0" name="Enclosures"
+						nillable="true" type="q4:ArrayOfEnclosure"
+						xmlns:q4="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					<xs:element minOccurs="0" name="ExpiresOn"
+						type="xs:dateTime" />
+					<xs:element minOccurs="0" name="ExternalReferenceId"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="Name" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="Recipients"
+						nillable="true" type="q5:ArrayOfGetSigningResponse.Recipient"
+						xmlns:q5="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentresponse/recipient" />
+					<xs:element minOccurs="0" name="ReferenceNumber"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="SigningToken"
+						nillable="true" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="GetSigningResponse" nillable="true"
+				type="tns:GetSigningResponse" />
+		</xs:schema>

@@ -1,0 +1,23 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentfromdocxrequest"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/generatedocumentfromdocxrequest">
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_recipientdata.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/recipientdata" />
+			<xs:complexType
+				name="GenerateDocumentWithMergeDataRequest">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="DataModel"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="Document"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="RegionDatas"
+						nillable="true" type="q1:ArrayOfGenerateDocumentRegionData"
+						xmlns:q1="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/recipientdata" />
+					<xs:element minOccurs="0" name="XmlMergeData"
+						nillable="true" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="GenerateDocumentWithMergeDataRequest"
+				nillable="true" type="tns:GenerateDocumentWithMergeDataRequest" />
+		</xs:schema>

@@ -1,0 +1,80 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatecampaignrequest"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatecampaignrequest">
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_bccrecipientdata.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/bccrecipientdata" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_campaignrecipient.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/campaignrecipient" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_SenderDataOverride.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/SenderDataOverride" />
+			<xs:import schemaLocation="http___schemas.microsoft.com_2003_10_Serialization_.xsd"
+				namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+			<xs:complexType name="InitiateCampaignRequest">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="AllowAddingComment"
+						type="xs:boolean" />
+					<xs:element minOccurs="0" name="AllowAttachEnclosure"
+						type="xs:boolean" />
+					<xs:element minOccurs="0" name="BccRecipients"
+						nillable="true" type="q1:ArrayOfBccRecipientData"
+						xmlns:q1="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/bccrecipientdata" />
+					<xs:element minOccurs="0" name="DistributionUrl"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="DocumentOpenedUrl"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="DocumentSignedUrl"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="ExpirationUrl"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="ExternalReference"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="MergeDocuments"
+						nillable="true"
+						type="tns:ArrayOfInitiateCampaignRequest.MergeDocument" />
+					<xs:element minOccurs="0" name="Name" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="Recipients"
+						nillable="true" type="q2:ArrayOfCampaignRecipient"
+						xmlns:q2="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/campaignrecipient" />
+					<xs:element minOccurs="0" name="RecipientsCsvData"
+						nillable="true" type="xs:base64Binary" />
+					<xs:element minOccurs="0" name="RejectionUrl"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="Sender" nillable="true"
+						type="q3:SenderDataOverride"
+						xmlns:q3="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/SenderDataOverride" />
+					<xs:element minOccurs="0" name="SigningTemplateId"
+						type="ser:guid" />
+					<xs:element minOccurs="0" name="Site" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0"
+						name="TransactionStateChangedUrl" nillable="true" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="InitiateCampaignRequest" nillable="true"
+				type="tns:InitiateCampaignRequest" />
+			<xs:complexType
+				name="ArrayOfInitiateCampaignRequest.MergeDocument">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="unbounded"
+						name="InitiateCampaignRequest.MergeDocument" nillable="true"
+						type="tns:InitiateCampaignRequest.MergeDocument" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element
+				name="ArrayOfInitiateCampaignRequest.MergeDocument" nillable="true"
+				type="tns:ArrayOfInitiateCampaignRequest.MergeDocument" />
+			<xs:complexType
+				name="InitiateCampaignRequest.MergeDocument">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="Data" nillable="true"
+						type="xs:base64Binary" />
+					<xs:element minOccurs="0" name="Name" nillable="true"
+						type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="InitiateCampaignRequest.MergeDocument"
+				nillable="true" type="tns:InitiateCampaignRequest.MergeDocument" />
+		</xs:schema>

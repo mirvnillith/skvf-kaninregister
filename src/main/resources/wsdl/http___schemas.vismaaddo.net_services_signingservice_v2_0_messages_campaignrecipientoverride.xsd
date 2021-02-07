@@ -1,0 +1,31 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/campaignrecipientoverride"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/campaignrecipientoverride">
+			<xs:import schemaLocation="http___schemas.datacontract.org_2004_07_Visma.Addo.Model.Entities.Enums.xsd"
+				namespace="http://schemas.datacontract.org/2004/07/Visma.Addo.Model.Entities.Enums" />
+			<xs:complexType name="CampaignRecipientOverride">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="AdditionalData"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="AuthenticationMethod"
+						type="q1:AuthenticationMethod"
+						xmlns:q1="http://schemas.datacontract.org/2004/07/Visma.Addo.Model.Entities.Enums" />
+					<xs:element minOccurs="0" name="BankIdSsn"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="Cpr" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="Cvr" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="SSN" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="Secret" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="SigningMethod"
+						type="q2:SigningMethod"
+						xmlns:q2="http://schemas.datacontract.org/2004/07/Visma.Addo.Model.Entities.Enums" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="CampaignRecipientOverride"
+				nillable="true" type="tns:CampaignRecipientOverride" />
+		</xs:schema>

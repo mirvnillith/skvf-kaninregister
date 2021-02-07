@@ -1,0 +1,36 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus">
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_getsigningstatus_recipient.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus/recipient" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_enums_SigningStateEnum.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/SigningStateEnum" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_getsigningstatus_transaction.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus/transaction" />
+			<xs:complexType name="GetSigningStatus">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="CreatedOn"
+						type="xs:dateTime" />
+					<xs:element minOccurs="0" name="ExpiresOn"
+						type="xs:dateTime" />
+					<xs:element minOccurs="0" name="ExternalReferenceId"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="Recipients"
+						nillable="true" type="q1:ArrayOfGetSigningStatus.Recipient"
+						xmlns:q1="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus/recipient" />
+					<xs:element minOccurs="0" name="ReferenceNumber"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="SigningToken"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="State"
+						type="q2:SigningStateEnum"
+						xmlns:q2="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/SigningStateEnum" />
+					<xs:element minOccurs="0" name="Transactions"
+						nillable="true" type="q3:ArrayOfGetSigningStatus.Transaction"
+						xmlns:q3="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus/transaction" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="GetSigningStatus" nillable="true"
+				type="tns:GetSigningStatus" />
+		</xs:schema>

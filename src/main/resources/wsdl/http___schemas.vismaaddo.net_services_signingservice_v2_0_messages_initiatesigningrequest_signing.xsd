@@ -1,0 +1,50 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigningrequest/signing"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigningrequest/signing">
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_bccrecipientdata.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/bccrecipientdata" />
+			<xs:import schemaLocation="http___schemas.datacontract.org_2004_07_Visma.Addo.WebService.Contracts.v2_0.Messages.xsd"
+				namespace="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_recipientdata.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/recipientdata" />
+			<xs:import schemaLocation="http___schemas.datacontract.org_2004_07_Visma.Addo.Model.Entities.Distribution.xsd"
+				namespace="http://schemas.datacontract.org/2004/07/Visma.Addo.Model.Entities.Distribution" />
+			<xs:complexType name="Signing">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="AllowInboundEnclosures"
+						type="xs:boolean" />
+					<xs:element minOccurs="0" name="AllowRecipientComment"
+						type="xs:boolean" />
+					<xs:element minOccurs="0" name="BccRecipients"
+						nillable="true" type="q1:ArrayOfBccRecipientData"
+						xmlns:q1="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/bccrecipientdata" />
+					<xs:element minOccurs="0" name="Documents"
+						nillable="true" type="q2:ArrayOfSigningDocument"
+						xmlns:q2="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					<xs:element minOccurs="0" name="EnclosureDocuments"
+						nillable="true" type="q3:ArrayOfSigningDocument"
+						xmlns:q3="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					<xs:element minOccurs="0" name="ExternalReferenceId"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="Recipients"
+						nillable="true" type="q4:ArrayOfRecipientData"
+						xmlns:q4="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/recipientdata" />
+					<xs:element minOccurs="0" name="ReferenceNumber"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="Sender" nillable="true"
+						type="q5:SenderData"
+						xmlns:q5="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+					<xs:element minOccurs="0" name="SenderComment"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="SigningDistribution"
+						nillable="true" type="q6:SigningDistributionModel"
+						xmlns:q6="http://schemas.datacontract.org/2004/07/Visma.Addo.Model.Entities.Distribution" />
+					<xs:element minOccurs="0" name="SigningSequence"
+						nillable="true" type="q7:SequenceOrder"
+						xmlns:q7="http://schemas.datacontract.org/2004/07/Visma.Addo.WebService.Contracts.v2_0.Messages" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="Signing" nillable="true"
+				type="tns:Signing" />
+		</xs:schema>

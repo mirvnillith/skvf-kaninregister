@@ -1,0 +1,26 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/MessageTypeEnum"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/MessageTypeEnum">
+			<xs:simpleType name="MessageTypeEnum">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="None" />
+					<xs:enumeration value="Mail" />
+					<xs:enumeration value="Sms" />
+					<xs:enumeration value="Eboks" />
+					<xs:enumeration value="SafeCloudPrivate" />
+					<xs:enumeration value="EboksCompany" />
+					<xs:enumeration value="SafeCloudCompany" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:element name="MessageTypeEnum" nillable="true"
+				type="tns:MessageTypeEnum" />
+			<xs:complexType name="ArrayOfMessageTypeEnum">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="unbounded"
+						name="MessageTypeEnum" type="tns:MessageTypeEnum" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="ArrayOfMessageTypeEnum" nillable="true"
+				type="tns:ArrayOfMessageTypeEnum" />
+		</xs:schema>

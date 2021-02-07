@@ -1,0 +1,31 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus/signing"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/getsigningstatus/signing">
+			<xs:import schemaLocation="http___schemas.vismaaddo.net_services_signingservice_v2_0_messages_enums_SigningStateEnum.xsd"
+				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/SigningStateEnum" />
+			<xs:complexType
+				name="ArrayOfGetCampaignsResponse.Signing">
+				<xs:sequence>
+					<xs:element minOccurs="0" maxOccurs="unbounded"
+						name="GetCampaignsResponse.Signing" nillable="true"
+						type="tns:GetCampaignsResponse.Signing" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="ArrayOfGetCampaignsResponse.Signing"
+				nillable="true" type="tns:ArrayOfGetCampaignsResponse.Signing" />
+			<xs:complexType name="GetCampaignsResponse.Signing">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="State"
+						type="q1:SigningStateEnum"
+						xmlns:q1="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/SigningStateEnum" />
+					<xs:element minOccurs="0" name="Token" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="TransactionState"
+						type="q2:TransactionStateEnum"
+						xmlns:q2="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/enums/SigningStateEnum" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="GetCampaignsResponse.Signing"
+				nillable="true" type="tns:GetCampaignsResponse.Signing" />
+		</xs:schema>

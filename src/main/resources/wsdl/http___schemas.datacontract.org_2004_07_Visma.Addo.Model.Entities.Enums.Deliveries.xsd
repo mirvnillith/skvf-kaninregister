@@ -1,0 +1,25 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.datacontract.org/2004/07/Visma.Addo.Model.Entities.Enums.Deliveries"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.datacontract.org/2004/07/Visma.Addo.Model.Entities.Enums.Deliveries">
+			<xs:simpleType name="DeliveryMethod">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="None" />
+					<xs:enumeration value="Email" />
+					<xs:enumeration value="Apoteker" />
+					<xs:enumeration value="Nordea" />
+					<xs:enumeration value="Callback" />
+					<xs:enumeration value="EboksPrivate" />
+					<xs:enumeration value="GoogleDrive" />
+					<xs:enumeration value="Sftp" />
+					<xs:enumeration value="CommonEmail" />
+					<xs:enumeration value="VismaHrm" />
+					<xs:enumeration value="VismaHr" />
+					<xs:enumeration value="SafeCloudPrivate" />
+					<xs:enumeration value="SafeCloudCompany" />
+					<xs:enumeration value="EboksCompany" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:element name="DeliveryMethod" nillable="true"
+				type="tns:DeliveryMethod" />
+		</xs:schema>

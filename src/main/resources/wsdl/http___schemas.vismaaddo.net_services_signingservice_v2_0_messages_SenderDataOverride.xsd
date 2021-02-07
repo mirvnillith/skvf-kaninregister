@@ -1,0 +1,19 @@
+		<xs:schema elementFormDefault="qualified"
+			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/SenderDataOverride"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/SenderDataOverride">
+			<xs:complexType name="SenderDataOverride">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="CompanyName"
+						nillable="true" type="xs:string" />
+					<xs:element minOccurs="0" name="Email" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="Name" nillable="true"
+						type="xs:string" />
+					<xs:element minOccurs="0" name="Phone" nillable="true"
+						type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="SenderDataOverride" nillable="true"
+				type="tns:SenderDataOverride" />
+		</xs:schema>
