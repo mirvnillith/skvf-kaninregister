@@ -405,10 +405,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			if (bunnyDTO.getOwner() != null) {
 				if (bunnyDTO.getOwner().isEmpty()) {
 					// Anonymous new owner
-					bunnyDTO.setOwner(registry.add(new Owner()
-							.setFirstName("Ny")
-							.setLastName("Ägare")
-							.setPublicOwner(false)));
+					bunnyDTO.setOwner(registry.add(new Owner().deactivate()));
 				} else if (owners.get(bunnyDTO.getOwner()) == null) {
 					throw new WebApplicationException(NOT_FOUND);
 				}
@@ -572,5 +569,23 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	@Override
 	public void approveOwner(String id, ApprovalDTO approvalDTO) {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void deactivateOwner(String id) {
+		
+		process(() -> {
+			
+			validateSession(id);
+			Owner owner = validateOwner(id, false);
+
+			if (owner.isActivated()) {
+				owner.deactivate();
+				registry.update(owner);
+			}
+			removeCookie();
+			
+			return Void.class;
+		});
 	}
 }

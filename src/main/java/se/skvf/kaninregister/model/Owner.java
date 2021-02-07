@@ -195,4 +195,17 @@ public class Owner extends Entity {
 		filter.put("Uppfödare", b -> TRUE.equals(onlyBreeders) ? booleanFromString(b) : true);
 		return filter;
 	}
+
+	public Owner deactivate() {
+		firstName = "Ny";
+		lastName = "Ägare";
+		email = null;
+		userName = null;
+		password = null;
+		publicOwner = false;
+		breeder = false;
+		breederName = null;
+		publicBreeder = false;
+		return this;
+	}
 }

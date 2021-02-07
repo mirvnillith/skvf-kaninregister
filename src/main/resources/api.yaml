@@ -160,7 +160,7 @@ paths:
     post:
       tags: [BunnyRegistry]
       operationId: activateOwner
-      summary: Activates owner.
+      summary: Activates owner account
       parameters:
         - name: id
           in: path
@@ -186,6 +186,25 @@ paths:
           description: Owner not found
         '409':
           description: User name already in use
+          
+  /owners/{id}/deactivate:
+    post:
+      tags: [BunnyRegistry]
+      operationId: deactivateOwner
+      summary: Deactivates owner account
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Owner deactivated
+        '401':
+          description: Session required, of activated owner
+        '404':
+          description: Owner not found
           
   /owners/{id}/approve:
     post:
