@@ -31,6 +31,7 @@ import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceGetSigni
 import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceInitiateSigningValidationFaultFaultFaultMessage;
 import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceLoginValidationFaultFaultFaultMessage;
 import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceLogoutValidationFaultFaultFaultMessage;
+import net.vismaaddo.schemas.services.signingservice.v2_0.SigningService_Service;
 import net.vismaaddo.schemas.services.signingservice.v2_0.messages.generatedocumentresponse.recipient.GetSigningResponseRecipient;
 import net.vismaaddo.schemas.services.signingservice.v2_0.messages.getsigningstatus.GetSigningStatus;
 import net.vismaaddo.schemas.services.signingservice.v2_0.messages.initiatesigningrequest.InitiateSigningRequest;
@@ -52,9 +53,9 @@ public class AddoSigningService {
 	@Value("${skvf.addo.password}")
 	private String password;
 	
-	private synchronized SigningService getService() {
+	private synchronized SigningService getService() throws IOException {
 		if (service == null) {
-			
+			service = new SigningService_Service().getSigning();
 		}
 		return service;
 	}
@@ -189,7 +190,7 @@ public class AddoSigningService {
 		return document;
 	}
 
-	private void logout(String session) {
+	private void logout(String session) throws IOException {
 		try {
 			getService().logout(session);
 		} catch (SigningServiceLogoutValidationFaultFaultFaultMessage e) {

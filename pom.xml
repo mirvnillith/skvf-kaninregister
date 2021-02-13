@@ -54,6 +54,7 @@
 			    <version>2.6</version>
 			    <configuration>
 			        <wsdlDirectory>${project.basedir}/src/main/resources/wsdl</wsdlDirectory>
+			        <wsdlLocation>/wsdl/VismaAddo.wsdl</wsdlLocation>
 			        <keep>true</keep>
 			        <sourceDestDir>${project.build.directory}/generated-sources/jaxws/java</sourceDestDir>
 			        <extension>true</extension>

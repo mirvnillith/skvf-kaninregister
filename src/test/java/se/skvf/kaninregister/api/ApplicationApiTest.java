@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import se.skvf.kaninregister.addo.AddoSigningService;
 import se.skvf.kaninregister.data.Database;
 import se.skvf.kaninregister.drive.GoogleDrive;
 import se.skvf.kaninregister.model.Registry;
@@ -37,6 +38,8 @@ public class ApplicationApiTest {
 
 		@MockBean
 		GoogleDrive googleDrive;
+		@MockBean
+		AddoSigningService addoSigningService;
 		@MockBean
 		Database database;
 		
