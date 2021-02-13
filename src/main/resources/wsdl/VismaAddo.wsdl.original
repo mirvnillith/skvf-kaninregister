@@ -323,6 +323,10 @@
 			targetNamespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/"
 			xmlns:xs="http://www.w3.org/2001/XMLSchema">
 			<xs:import
+				namespace="http://www.microsoft.com/practices/EnterpriseLibrary/2007/01/wcf/validation" />
+			<xs:import
+				namespace="http://schemas.datacontract.org/2004/07/Microsoft.Practices.EnterpriseLibrary.Validation.Integration.WCF" />
+			<xs:import
 				namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
 			<xs:import
 				namespace="http://schemas.vismaaddo.net/services/signingservice/v2_0/messages/initiatesigningrequest" />

@@ -24,8 +24,8 @@ public class ExtractWsdlSchemas {
 		while (removeUntil(lines, "<xs:schema")) {
 			List<String> schema = readUntil(lines, "</xs:schema>");
 			importSchemaLocations(schema);
-			String nameSpace = getNameSpaceId(schema+" ...");
-			System.out.println(nameSpace);
+			String nameSpace = getNameSpaceId(schema);
+			System.out.println(nameSpace + " ...");
 			writeLines(new File(wsdl.getParentFile(), nameSpace + ".xsd"), schema);
 		}
 		

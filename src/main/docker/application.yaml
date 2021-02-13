@@ -2,3 +2,6 @@ skvf:
  google:
   credentials: "${GOOGLE_CREDENTIALS}"
   folder: "${GOOGLE_FOLDER}"
+ addo:
+  email: "${ADDO_EMAIL}"
+  password: "${ADDO_PASSWORD}"
