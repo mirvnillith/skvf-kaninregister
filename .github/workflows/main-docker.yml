@@ -22,4 +22,4 @@ jobs:
       - name: Login to Docker Hub
         run: docker login -u mirvnillith -p ${{ secrets.DOCKER_TOKEN }}
       - name: Publish Docker image
-        run: docker push mirvnillith/skvf-kaninregister
+        run: docker push mirvnillith/skvf-kaninregister:main-SNAPSHOT
