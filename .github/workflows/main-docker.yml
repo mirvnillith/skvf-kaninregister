@@ -20,7 +20,7 @@ jobs:
       - name: Maven install
         run: mvn -B clean install
       - name: Get version
-        run: echo "::set-output name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Login to Docker Hub
         run: docker login -u mirvnillith -p ${{ secrets.DOCKER_TOKEN }}
       - name: Publish Docker image
