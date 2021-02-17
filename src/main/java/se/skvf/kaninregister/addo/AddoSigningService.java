@@ -1,5 +1,6 @@
 package se.skvf.kaninregister.addo;
 
+import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.distributionmethodenum.DistributionMethodEnum.NONE;
 import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingmethodenum.SigningMethodEnum.BANK_ID;
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.ws.BindingProvider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,6 +50,8 @@ public class AddoSigningService {
 	
 	private SigningService service;
 	
+	@Value("${skvf.addo.url}")
+	private String url;
 	@Value("${skvf.addo.email}")
 	private String email;
 	@Value("${skvf.addo.password}")
@@ -56,6 +60,7 @@ public class AddoSigningService {
 	private synchronized SigningService getService() throws IOException {
 		if (service == null) {
 			service = new SigningService_Service().getSigning();
+			((BindingProvider)service).getRequestContext().put(ENDPOINT_ADDRESS_PROPERTY, url);
 		}
 		return service;
 	}

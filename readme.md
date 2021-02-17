@@ -14,6 +14,18 @@ Kaninregistret kräver följande konfigureringar:
 
 **OBS:** Ha aldrig med dessa värden i källkod eller andra filer du lagrar i GitHub!!!
 
+##### ADDO_URL
+
+URL till Visma Addo signeringstjänst.
+
+##### ADDO_USERNAME
+
+Visma Addo användarnamn.
+
+##### ADDO_PASSWORD
+
+Visma Addo lösenord.
+
 ##### GOOGLE_CREDENTIALS
 
 Autentiseringsuppgifter för Google Drive, där Kaninregistret kommer att ha en egen yta.

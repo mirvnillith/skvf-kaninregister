@@ -19,7 +19,9 @@ jobs:
           java-version: 11.0.4
       - name: Maven install
         run: mvn -B clean install
+      - name: Get version
+        run: echo ::set-env name=VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
       - name: Login to Docker Hub
         run: docker login -u mirvnillith -p ${{ secrets.DOCKER_TOKEN }}
       - name: Publish Docker image
-        run: docker push mirvnillith/skvf-kaninregister:main-SNAPSHOT
+        run: docker push mirvnillith/skvf-kaninregister:$VERSION
