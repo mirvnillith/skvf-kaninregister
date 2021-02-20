@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -105,6 +106,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 		verify(response).addCookie(cookie.capture());
 		assertThat(cookie.getValue())
 			.satisfies(c -> assertEquals(sessionId, c.getValue()))
+			.satisfies(c -> assertTrue(c.getSecure()))
 			.satisfies(c -> assertEquals(add ? -1 : 0, c.getMaxAge()))
 			.satisfies(c -> assertEquals(api.getClass().getSimpleName(), c.getName()));
 	}
