@@ -15,8 +15,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 
-import javax.annotation.Generated;
-
 class RegistryRuntimeTest {
 
 	void performance(Registry registry) throws Exception {
