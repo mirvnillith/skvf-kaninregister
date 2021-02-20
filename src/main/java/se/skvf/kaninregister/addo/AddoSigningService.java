@@ -2,8 +2,9 @@ package se.skvf.kaninregister.addo;
 
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.distributionmethodenum.DistributionMethodEnum.NONE;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingmethodenum.SigningMethodEnum.BANK_ID;
+import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingmethodenum.SigningMethodEnum.SWEDISH_BANK_ID;
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
+import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.commons.codec.digest.DigestUtils.digest;
 import static org.apache.commons.codec.digest.DigestUtils.getSha512Digest;
 import static org.apache.commons.io.FileUtils.readFileToByteArray;
@@ -44,6 +45,8 @@ import net.vismaaddo.schemas.services.signingservice.v2_0.messages.recipientdata
 @Component
 public class AddoSigningService {
 
+	static final String SIGNING_NAME = "Datahantering i SKVFs kaninregister";
+
 	private static final DatatypeFactory DATATYPE_FACTORY = DatatypeFactory.newDefaultInstance();
 
 	private static final Log LOG = LogFactory.getLog(AddoSigningService.class);
@@ -56,6 +59,14 @@ public class AddoSigningService {
 	private String email;
 	@Value("${skvf.addo.password}")
 	private String password;
+	
+	void setEmail(String email) {
+		this.email = email;
+	}
+	
+	void setPassword(String password) {
+		this.password = password;
+	}
 	
 	private synchronized SigningService getService() throws IOException {
 		if (service == null) {
@@ -77,7 +88,7 @@ public class AddoSigningService {
 			signing.setAllowRecipientComment(false);
 			
 			InitiateSigningRequest request = new InitiateSigningRequest();
-			request.setName("Datahantering i SKVFs kaninregister");
+			request.setName(SIGNING_NAME);
 			request.setStartDate(DATATYPE_FACTORY.newXMLGregorianCalendar(new GregorianCalendar()));
 			request.setSigningData(signing);
 			
@@ -166,7 +177,7 @@ public class AddoSigningService {
 		recipient.setSendDistributionNotification(false);
 		recipient.setSendWelcomeNotification(false);
 		recipient.setDistributionMethod(NONE);
-		recipient.setSigningMethod(BANK_ID);
+		recipient.setSigningMethod(SWEDISH_BANK_ID);
 		recipient.setSwedishSsn(personnummer);
 		return recipient;
 	}
@@ -177,7 +188,7 @@ public class AddoSigningService {
 		return documents;
 	}
 
-	private static SenderData createSender() {
+	static SenderData createSender() {
 		SenderData sender = new SenderData();
 		sender.setName("Kaninregistret");
 		sender.setCompanyName("Sveriges Kaninvälfärdsförening");
@@ -187,7 +198,7 @@ public class AddoSigningService {
 
 	private static SigningDocument createDocument(File file, MimeType type) throws IOException {
 		SigningDocument document = new SigningDocument();
-		document.setData(new String(encodeBase64(readFileToByteArray(file))));
+		document.setData(encodeBase64String(readFileToByteArray(file)));
 		document.setId(file.getName());
 		document.setMimeType(type.toString());
 		document.setName(file.getName());
@@ -216,7 +227,7 @@ public class AddoSigningService {
 		return session;
 	}
 
-	private static String sha64(String string) {
+	static String sha64(String string) {
 		return new String(encodeBase64(digest(getSha512Digest(), string.getBytes())));
 	}
 }
