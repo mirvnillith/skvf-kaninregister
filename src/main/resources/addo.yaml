@@ -184,7 +184,7 @@ components:
          MimeType:
           type: string
           enum:
-           - application/pdf
+           - PDF
          IsShared:
            type: boolean
            
@@ -212,29 +212,13 @@ components:
          Address:
            type: string
          AuthenticationMethod:
-           type: string
-           enum:
-            - 0 # None
-            - 1 # NemIdPrivate
-            - 2 # NemIdPrivateNoSsn (deprecated, same as NemIdPrivate)
-            - 3 # TwoFactorVerification
-            - 4 # Siths
-            - 7 # NemIdEmployee
-            - 8 # NorwegianBankId
-            - 9 # SwedishBankId
-            - 10 # NorwegianBankIdMobile
-            - 11 # SecretCode
+           type: integer
          CVR:
            type: string
          Cpr:
            type: string
          DistributionMethod:
            type: integer
-           enum:
-             - 1 # None
-             - 2 # MessageWithDocuments
-             - 3 # MessageWithoutDocuments
-             - 4 # Eboks
          Email:
            type: string
          Id:
@@ -255,17 +239,6 @@ components:
            type: boolean
          SigningMethod:
            type: integer
-           enum:
-            - 1 # NemId
-            - 2 # Stylus
-            - 3 # BankID
-            - 4 # NemIdMoces
-            - 5 # SwedishBankID
-            - 6 # Accept
-            - 7 # NoBankIDMobile (deprecated, same as BankId)
-            - 8 # NemIdPocesNoSsn (deprecated, same as NemId)
-            - 9 # FinnishTupas
-            - 10 # Siths
          TemplateData:
             $ref: '#/components/schemas/TemplateDataDTO'
          Title:

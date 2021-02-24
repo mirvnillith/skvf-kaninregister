@@ -1,18 +1,22 @@
 package se.skvf.kaninregister.addo;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static net.vismaaddo.api.DocumentDTO.MimeTypeEnum.APPLICATION_PDF;
+import static net.vismaaddo.api.DocumentDTO.MimeTypeEnum.PDF;
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.commons.codec.digest.DigestUtils.digest;
 import static org.apache.commons.codec.digest.DigestUtils.getSha512Digest;
-import static org.apache.commons.io.FileUtils.readFileToByteArray;
+import static org.apache.commons.io.IOUtils.copy;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static se.skvf.kaninregister.addo.DistributionMethod.NONE;
+import static se.skvf.kaninregister.addo.SigningMethod.SWEDISH_BANKID;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -20,17 +24,21 @@ import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.ext.logging.LoggingInInterceptor;
+import org.apache.cxf.ext.logging.LoggingOutInterceptor;
+import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.vismaaddo.api.DocumentDTO;
 import net.vismaaddo.api.InitiateSigningRequestDTO;
 import net.vismaaddo.api.LoginRequestDTO;
 import net.vismaaddo.api.RecipientDTO;
-import net.vismaaddo.api.RecipientDTO.DistributionMethodEnum;
-import net.vismaaddo.api.RecipientDTO.SigningMethodEnum;
 import net.vismaaddo.api.SenderDTO;
 import net.vismaaddo.api.SigningDTO;
 import net.vismaaddo.api.SigningDataDTO;
@@ -40,10 +48,6 @@ import net.vismaaddo.api.VismaAddoApi;
 
 @Component
 public class AddoSigningService {
-
-	static final SigningMethodEnum SWEDISH_BANKID = RecipientDTO.SigningMethodEnum.NUMBER_5;
-
-	static final DistributionMethodEnum NO_DISTRIBUTION = RecipientDTO.DistributionMethodEnum.NUMBER_1;
 
 	static final String SIGNING_NAME = "Datahantering i SKVFs kaninregister";
 
@@ -60,6 +64,10 @@ public class AddoSigningService {
 	@Value("${skvf.dev.addo:false}")
 	private boolean test;
 	
+	void setUrl(String url) {
+		this.url = url;
+	}
+	
 	void setEmail(String email) {
 		this.email = email;
 	}
@@ -71,21 +79,30 @@ public class AddoSigningService {
 	@PostConstruct
 	public void setup() throws Exception {
 		
-		addo = JAXRSClientFactory.create(url, VismaAddoApi.class, asList(new JacksonJaxbJsonProvider()));
+		ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(NON_NULL);
+		JacksonJaxbJsonProvider jsonProvider = new JacksonJaxbJsonProvider();
+		jsonProvider.setMapper(mapper);
+		
+		addo = JAXRSClientFactory.create(url, VismaAddoApi.class, asList(jsonProvider));
 		
 		if (test) {
-			new AddoRuntimeTest().test(this, url);
+			ClientConfiguration config = WebClient.getConfig(addo);
+			config.getInInterceptors().add(new LoggingInInterceptor());
+			LoggingOutInterceptor loggingOutInterceptor = new LoggingOutInterceptor();
+			config.getOutInterceptors().add(loggingOutInterceptor);
+			new AddoRuntimeTest().test(this);
 		}
 	}
 	
-	public Signing startSigning(String personnummer, File pdf) throws IOException {
+	public Signing startSigning(String personnummer, InputStream pdf, String filename) throws IOException {
 		
 		return inSession(session -> {
 
 			SigningDataDTO signingData = new SigningDataDTO();
 			signingData.setSender(createSender());
 			signingData.setRecipients(singletonList(createRecipient(personnummer)));
-			signingData.setDocuments(singletonList(createDocument(pdf)));
+			signingData.setDocuments(singletonList(createDocument(pdf, filename)));
 			signingData.setAllowInboundEnclosures(false);
 			signingData.setAllowRecipientComment(false);
 			
@@ -99,13 +116,12 @@ public class AddoSigningService {
 			request.setRequest(signingRequest);
 			
 			LOG.info("initiateSigning(" + session + ")");
-			System.out.println(request);
 			String token = addo.initiateSigning(request).getSigningToken();
 			LOG.info("initiateSigning(" + session + "): " + token);
 			
 			SigningStatusDTO status = getSigningStatus(session, token);
 			
-			return new Signing(token, status.getRecipients().get(0).getTransactions().get(0).getTransactionToken());
+			return new Signing(url, token, status.getRecipients().get(0).getTransactions().get(0).getTransactionToken());
 		});
 	}
 
@@ -181,7 +197,7 @@ public class AddoSigningService {
 		recipient.setSendDistributionDocument(false);
 		recipient.setSendDistributionNotification(false);
 		recipient.setSendWelcomeNotification(false);
-		recipient.setDistributionMethod(NO_DISTRIBUTION);
+		recipient.setDistributionMethod(NONE);
 		recipient.setSigningMethod(SWEDISH_BANKID);
 		recipient.setSSN(personnummer);
 		return recipient;
@@ -195,12 +211,14 @@ public class AddoSigningService {
 		return sender;
 	}
 
-	private static DocumentDTO createDocument(File file) throws IOException {
+	private static DocumentDTO createDocument(InputStream pdf, String filename) throws IOException {
 		DocumentDTO document = new DocumentDTO();
-		document.setData(encodeBase64String(readFileToByteArray(file)));
-		document.setId(file.getName());
-		document.setMimeType(APPLICATION_PDF);
-		document.setName(file.getName());
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		copy(pdf, bytes);
+		document.setData(encodeBase64String(bytes.toByteArray()));
+		document.setId(filename);
+		document.setMimeType(PDF);
+		document.setName(filename);
 		document.setIsShared(false);
 		return document;
 	}
@@ -227,7 +245,8 @@ public class AddoSigningService {
 				session = session.substring(0, session.length() - 1);
 			}
 		}
-		if (isBlank(session)) {
+		if (isBlank(session) || 
+				session.equals("00000000-0000-0000-0000-000000000000")) {
 			throw new IOException("Addo login failed");
 		}
 		LOG.info("login(): " + session);

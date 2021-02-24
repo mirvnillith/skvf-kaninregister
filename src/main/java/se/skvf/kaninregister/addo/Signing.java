@@ -2,10 +2,14 @@ package se.skvf.kaninregister.addo;
 
 public class Signing {
 
-	private String token;
-	private String transaction;
+	private static String PATH = "/SigningPortal/?token=";
 	
-	public Signing(String token, String transaction) {
+	private final String url;
+	private final String token;
+	private final String transaction;
+	
+	public Signing(String url, String token, String transaction) {
+		this.url = url;
 		this.token = token;
 		this.transaction = transaction;
 	}
@@ -14,7 +18,7 @@ public class Signing {
 		return token;
 	}
 	
-	public String getTransaction() {
-		return transaction;
+	public String getTransactionUrl() {
+		return url + PATH + transaction;
 	}
 }
