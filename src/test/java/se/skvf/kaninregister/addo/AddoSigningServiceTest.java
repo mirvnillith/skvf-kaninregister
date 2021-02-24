@@ -1,34 +1,29 @@
 package se.skvf.kaninregister.addo;
 
 import static java.nio.charset.Charset.defaultCharset;
+import static java.util.Collections.singletonList;
 import static java.util.UUID.randomUUID;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.distributionmethodenum.DistributionMethodEnum.NONE;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingmethodenum.SigningMethodEnum.SWEDISH_BANK_ID;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingstateenum.SigningStateEnum.CAMPAIGN_STARTED;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingstateenum.SigningStateEnum.COMPLETED;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingstateenum.SigningStateEnum.CREATED;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingstateenum.SigningStateEnum.EXPIRED;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingstateenum.SigningStateEnum.FAILED;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingstateenum.SigningStateEnum.REJECTED;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingstateenum.SigningStateEnum.STARTED;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingstateenum.SigningStateEnum.STOPPED;
+import static net.vismaaddo.api.DocumentDTO.MimeTypeEnum.APPLICATION_PDF;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.commons.io.FileUtils.write;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.util.MimeTypeUtils.APPLICATION_OCTET_STREAM;
+import static se.skvf.kaninregister.addo.AddoSigningService.NO_DISTRIBUTION;
+import static se.skvf.kaninregister.addo.AddoSigningService.SWEDISH_BANKID;
 import static se.skvf.kaninregister.addo.AddoSigningService.sha64;
+import static se.skvf.kaninregister.addo.SigningState.CAMPAIGN_STARTED;
+import static se.skvf.kaninregister.addo.SigningState.COMPLETED;
+import static se.skvf.kaninregister.addo.SigningState.CREATED;
+import static se.skvf.kaninregister.addo.SigningState.EXPIRED;
+import static se.skvf.kaninregister.addo.SigningState.FAILED;
+import static se.skvf.kaninregister.addo.SigningState.REJECTED;
+import static se.skvf.kaninregister.addo.SigningState.STARTED;
+import static se.skvf.kaninregister.addo.SigningState.STOPPED;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.GregorianCalendar;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Stream;
 
 import javax.ws.rs.WebApplicationException;
@@ -43,20 +38,17 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningService;
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceGetSigningStatusValidationFaultFaultFaultMessage;
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceGetSigningValidationFaultFaultFaultMessage;
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceInitiateSigningValidationFaultFaultFaultMessage;
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceLoginValidationFaultFaultFaultMessage;
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceLogoutValidationFaultFaultFaultMessage;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingstateenum.SigningStateEnum;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.generatedocumentresponse.GetSigningResponse;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.generatedocumentresponse.recipient.ArrayOfGetSigningResponseRecipient;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.generatedocumentresponse.recipient.GetSigningResponseRecipient;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.getsigningstatus.GetSigningStatus;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.initiatesigningrequest.InitiateSigningRequest;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.initiatesigningrequest.signing.Signing;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.initiatesigningresponse.InitiateSigningResponse;
+import net.vismaaddo.api.InitiateSigningRequestDTO;
+import net.vismaaddo.api.InitiateSigningResponseDTO;
+import net.vismaaddo.api.LoginRequestDTO;
+import net.vismaaddo.api.RecipientStatusDTO;
+import net.vismaaddo.api.SigningDTO;
+import net.vismaaddo.api.SigningDataDTO;
+import net.vismaaddo.api.SigningRecipientDTO;
+import net.vismaaddo.api.SigningRequestDTO;
+import net.vismaaddo.api.SigningStatusDTO;
+import net.vismaaddo.api.TransactionStatusDTO;
+import net.vismaaddo.api.VismaAddoApi;
 import se.skvf.kaninregister.BunnyTest;
 
 public class AddoSigningServiceTest extends BunnyTest {
@@ -69,10 +61,13 @@ public class AddoSigningServiceTest extends BunnyTest {
 	private AddoSigningService service;
 
 	@Mock
-	private SigningService addo;
+	private VismaAddoApi addo;
 
 	@Captor
-	private ArgumentCaptor<InitiateSigningRequest> signingRequest;
+	private ArgumentCaptor<LoginRequestDTO> loginRequest;
+	
+	@Captor
+	private ArgumentCaptor<InitiateSigningRequestDTO> signingRequest;
 	
 	private String email;
 	private String password;
@@ -88,12 +83,20 @@ public class AddoSigningServiceTest extends BunnyTest {
 	@Test
 	public void startSigning_loginError() throws Exception {
 		
-		SigningServiceLoginValidationFaultFaultFaultMessage error = mockLoginError();
+		WebApplicationException error = mockLoginError();
 		
-		IOException exception = assertThrows(IOException.class, () -> service.startSigning(null, null, null));
-		assertThat(exception.getCause()).isSameAs(error);
+		WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.startSigning(null, null));
+		assertThat(exception).isSameAs(error);
+		
+		verifyLogin();
 	}
 	
+	private void verifyLogin() {
+		assertThat(loginRequest.getValue())
+			.extracting("email", "password")
+			.containsExactly(email, sha64(password));
+	}
+
 	@Test
 	public void startSigning_signingError() throws Exception {
 		
@@ -105,12 +108,12 @@ public class AddoSigningServiceTest extends BunnyTest {
 		
 		String session = mockSession();
 		
-		SigningServiceInitiateSigningValidationFaultFaultFaultMessage error = new SigningServiceInitiateSigningValidationFaultFaultFaultMessage(randomUUID().toString(), null);
-		when(addo.initiateSigning(eq(session), signingRequest.capture(), isNull())).thenThrow(error);
+		WebApplicationException error = new WebApplicationException(randomUUID().toString());
+		when(addo.initiateSigning(signingRequest.capture())).thenThrow(error);
 		try {
 
-			IOException exception = assertThrows(IOException.class, () -> service.startSigning(pnr, file, APPLICATION_OCTET_STREAM));
-			assertThat(exception.getCause()).isSameAs(error);
+			WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.startSigning(pnr, file));
+			assertThat(exception).isSameAs(error);
 			
 		} finally {
 			verifySession(session);
@@ -128,11 +131,11 @@ public class AddoSigningServiceTest extends BunnyTest {
 		
 		String session = mockSession();
 		
-		WebApplicationException error = new WebApplicationException(randomUUID().toString());
-		when(addo.initiateSigning(eq(session), signingRequest.capture(), isNull())).thenThrow(error);
+		NullPointerException error = new NullPointerException(randomUUID().toString());
+		when(addo.initiateSigning(signingRequest.capture())).thenThrow(error);
 		try {
 			
-			IOException exception = assertThrows(IOException.class, () -> service.startSigning(pnr, file, APPLICATION_OCTET_STREAM));
+			IOException exception = assertThrows(IOException.class, () -> service.startSigning(pnr, file));
 			assertThat(exception.getCause()).isSameAs(error);
 			
 		} finally {
@@ -151,46 +154,64 @@ public class AddoSigningServiceTest extends BunnyTest {
 		
 		String session = mockSession();
 		
-		InitiateSigningResponse signingResponse = new InitiateSigningResponse();
+		InitiateSigningResponseDTO signingResponse = new InitiateSigningResponseDTO();
 		signingResponse.setSigningToken(randomUUID().toString());
 		
-		when(addo.initiateSigning(eq(session), signingRequest.capture(), isNull())).thenReturn(signingResponse);
+		when(addo.initiateSigning(signingRequest.capture())).thenReturn(signingResponse);
+		
+		SigningStatusDTO statusResponse = new SigningStatusDTO();
+		RecipientStatusDTO recipient = new RecipientStatusDTO();
+		TransactionStatusDTO transaction = new TransactionStatusDTO();
+		transaction.setTransactionToken(randomUUID().toString());
+		recipient.setTransactions(singletonList(transaction));
+		statusResponse.setRecipients(singletonList(recipient));
+		
+		when(addo.getSigningStatus(session, signingResponse.getSigningToken())).thenReturn(statusResponse);
+
 		try {
 		
-			assertThat(service.startSigning(pnr, file, APPLICATION_OCTET_STREAM))
+			Signing signing = service.startSigning(pnr, file);
+			assertThat(signing.getToken())
 				.isEqualTo(signingResponse.getSigningToken());
+			assertThat(signing.getTransaction())
+				.isEqualTo(transaction.getTransactionToken());
 
-			InitiateSigningRequest request = signingRequest.getValue();
-			assertThat(request.getName())
-				.isEqualTo(AddoSigningService.SIGNING_NAME);
-			assertThat(request.getStartDate().toGregorianCalendar())
-				.isLessThanOrEqualTo(new GregorianCalendar());
+			InitiateSigningRequestDTO request = signingRequest.getValue();
+			assertThat(request.getToken())
+				.isEqualTo(session);
 			
-			Signing signing = request.getSigningData();
-			assertThat(signing.getSender())
+			SigningRequestDTO signingRequest = request.getRequest();
+			assertThat(signingRequest.getName())
+				.isEqualTo(AddoSigningService.SIGNING_NAME);
+			assertThat(signingRequest.getStartDate())
+				.startsWith("/Date(")
+				.endsWith(")/");
+			
+			SigningDataDTO signingData = signingRequest.getSigningData();
+			assertThat(signingData.getSender())
 				.usingRecursiveComparison()
 				.isEqualTo(AddoSigningService.createSender());
-			assertThat(signing.isAllowInboundEnclosures())
+			assertThat(signingData.getAllowInboundEnclosures())
 				.isFalse();
-			assertThat(signing.isAllowRecipientComment())
+			assertThat(signingData.getAllowRecipientComment())
 				.isFalse();
 			
-			assertThat(signing.getRecipients().getRecipientDatas())
+			assertThat(signingData.getRecipients())
 				.hasSize(1)
 				.allSatisfy(r -> {
-					assertThat(r.isSendDistributionDocument()).isFalse();
-					assertThat(r.isSendDistributionNotification()).isFalse();
-					assertThat(r.isSendWelcomeNotification()).isFalse();
-					assertThat(r.getDistributionMethod()).isEqualTo(NONE);
-					assertThat(r.getSigningMethod()).isEqualTo(SWEDISH_BANK_ID);
-					assertThat(r.getSwedishSsn()).isEqualTo(pnr);
+					assertThat(r.getSendDistributionDocument()).isFalse();
+					assertThat(r.getSendDistributionNotification()).isFalse();
+					assertThat(r.getSendWelcomeNotification()).isFalse();
+					assertThat(r.getDistributionMethod()).isEqualTo(NO_DISTRIBUTION);
+					assertThat(r.getSigningMethod()).isEqualTo(SWEDISH_BANKID);
+					assertThat(r.getSSN()).isEqualTo(pnr);
 				});
 			
-			assertThat(signing.getDocuments().getSigningDocuments())
+			assertThat(signingData.getDocuments())
 				.hasSize(1)
 				.allSatisfy(d -> {
 					assertThat(d.getName()).isEqualTo(file.getName());
-					assertThat(d.getMimeType()).isEqualTo(APPLICATION_OCTET_STREAM.toString());
+					assertThat(d.getMimeType()).isEqualTo(APPLICATION_PDF);
 					assertThat(d.getData()).isEqualTo(encodeBase64String(data.getBytes()));
 				});
 			
@@ -202,10 +223,12 @@ public class AddoSigningServiceTest extends BunnyTest {
 	@Test
 	public void checkSigning_loginError() throws Exception {
 		
-		SigningServiceLoginValidationFaultFaultFaultMessage error = mockLoginError();
+		WebApplicationException error = mockLoginError();
 		
-		IOException exception = assertThrows(IOException.class, () -> service.checkSigning(null));
-		assertThat(exception.getCause()).isSameAs(error);
+		WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.checkSigning(null));
+		assertThat(exception).isSameAs(error);
+		
+		verifyLogin();
 	}
 	
 	@Test
@@ -215,12 +238,12 @@ public class AddoSigningServiceTest extends BunnyTest {
 		
 		String session = mockSession();
 		
-		SigningServiceGetSigningStatusValidationFaultFaultFaultMessage error = new SigningServiceGetSigningStatusValidationFaultFaultFaultMessage(token, null);
+		WebApplicationException error = new WebApplicationException(token);
 		when(addo.getSigningStatus(session, token)).thenThrow(error);
 		try {
 			
-			IOException exception = assertThrows(IOException.class, () -> service.checkSigning(token));
-			assertThat(exception.getCause()).isSameAs(error);
+			WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.checkSigning(token));
+			assertThat(exception).isSameAs(error);
 			
 		} finally {
 			verifySession(session);
@@ -234,7 +257,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 		
 		String session = mockSession();
 		
-		WebApplicationException error = new WebApplicationException(token);
+		NullPointerException error = new NullPointerException(token);
 		when(addo.getSigningStatus(session, token)).thenThrow(error);
 		try {
 			
@@ -248,13 +271,13 @@ public class AddoSigningServiceTest extends BunnyTest {
 	
 	@ParameterizedTest
 	@MethodSource("signingStatusScenarios")
-	public void checkSigning(SigningStateEnum state, Optional<Boolean> expectedStatus) throws Exception {
+	public void checkSigning(int state, Optional<Boolean> expectedStatus) throws Exception {
 		
 		String token = randomUUID().toString();
 		
 		String session = mockSession();
 		
-		GetSigningStatus statusResponse = new GetSigningStatus();
+		SigningStatusDTO statusResponse = new SigningStatusDTO();
 		statusResponse.setState(state);
 		
 		when(addo.getSigningStatus(session, token)).thenReturn(statusResponse);
@@ -283,10 +306,12 @@ public class AddoSigningServiceTest extends BunnyTest {
 	@Test
 	public void getSignature_loginError() throws Exception {
 		
-		SigningServiceLoginValidationFaultFaultFaultMessage error = mockLoginError();
+		WebApplicationException error = mockLoginError();
 		
-		IOException exception = assertThrows(IOException.class, () -> service.getSignature(null));
-		assertThat(exception.getCause()).isSameAs(error);
+		WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.getSignature(null));
+		assertThat(exception).isSameAs(error);
+		
+		verifyLogin();
 	}
 	
 	@Test
@@ -296,12 +321,12 @@ public class AddoSigningServiceTest extends BunnyTest {
 		
 		String session = mockSession();
 		
-		SigningServiceGetSigningValidationFaultFaultFaultMessage error = new SigningServiceGetSigningValidationFaultFaultFaultMessage(token, null);
+		WebApplicationException error = new WebApplicationException(token);
 		when(addo.getSigning(session, token)).thenThrow(error);
 		try {
 			
-			IOException exception = assertThrows(IOException.class, () -> service.getSignature(token));
-			assertThat(exception.getCause()).isSameAs(error);
+			WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.getSignature(token));
+			assertThat(exception).isSameAs(error);
 			
 		} finally {
 			verifySession(session);
@@ -315,7 +340,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 		
 		String session = mockSession();
 		
-		WebApplicationException error = new WebApplicationException(token);
+		NullPointerException error = new NullPointerException(token);
 		when(addo.getSigning(session, token)).thenThrow(error);
 		try {
 			
@@ -334,12 +359,10 @@ public class AddoSigningServiceTest extends BunnyTest {
 		
 		String session = mockSession();
 		
-		GetSigningResponse signingResponse = new GetSigningResponse();
-		ArrayOfGetSigningResponseRecipient recipients = new ArrayOfGetSigningResponseRecipient();
-		GetSigningResponseRecipient recipient = new GetSigningResponseRecipient();
+		SigningDTO signingResponse = new SigningDTO();
+		SigningRecipientDTO recipient = new SigningRecipientDTO();
 		recipient.setXmlData(randomUUID().toString());
-		recipients.getGetSigningResponseRecipients().add(recipient);
-		signingResponse.setRecipients(recipients);
+		signingResponse.setRecipients(singletonList(recipient));
 		
 		when(addo.getSigning(session, token)).thenReturn(signingResponse);
 		try {
@@ -352,21 +375,18 @@ public class AddoSigningServiceTest extends BunnyTest {
 	}
 	
 	private void verifySession(String session) throws Exception {
-		verify(addo).logout(session);
+		verifyLogin();
 	}
 
 	private String mockSession() throws Exception {
 		String session = randomUUID().toString();
-		when(addo.login(email, sha64(password))).thenReturn(session);
-		if (new Random().nextBoolean()) {
-			doThrow(new SigningServiceLogoutValidationFaultFaultFaultMessage(session, null)).when(addo).logout(session);
-		}
+		when(addo.login(loginRequest.capture())).thenReturn(session);
 		return session;
 	}
 	
-	private SigningServiceLoginValidationFaultFaultFaultMessage mockLoginError() throws Exception {
-		SigningServiceLoginValidationFaultFaultFaultMessage error = new SigningServiceLoginValidationFaultFaultFaultMessage(randomUUID().toString(), null);
-		when(addo.login(email, sha64(password))).thenThrow(error);
+	private WebApplicationException mockLoginError() throws Exception {
+		WebApplicationException error = new WebApplicationException(randomUUID().toString());
+		when(addo.login(loginRequest.capture())).thenThrow(error);
 		return error;
 	}
 }

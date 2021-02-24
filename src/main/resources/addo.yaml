@@ -1,0 +1,412 @@
+openapi: 3.0.0
+info:
+  title: Visma Addo API
+  version: "2.0"
+  
+tags:
+  - name: VismaAddo
+    
+paths:
+  /WebService/v2.0/restsigningservice.svc/Login:
+    post:
+      tags: [VismaAddo]
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestDTO'
+      responses:
+        '200':
+          description: Session token
+          content:
+            text/plain:
+              schema:
+                type: string
+  /WebService/v2.0/restsigningservice.svc/InitiateSigning:
+    post:
+      tags: [VismaAddo]
+      operationId: initiateSigning
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitiateSigningRequestDTO'
+      responses:
+        '200':
+          description: Signing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitiateSigningResponseDTO'
+  /WebService/v2.0/restsigningservice.svc/GetSigningStatus:
+    get:
+      tags: [VismaAddo]
+      operationId: getSigningStatus
+      parameters:
+        - name: token
+          in: query
+          schema:
+            type: string
+        - name: signingToken
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Signing status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SigningStatusDTO'
+  /WebService/v2.0/restsigningservice.svc/GetSigningWithoutDocuments:
+    get:
+      tags: [VismaAddo]
+      operationId: getSigning
+      parameters:
+        - name: token
+          in: query
+          schema:
+            type: string
+        - name: signingToken
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Signing status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SigningDTO'
+          
+components:
+  schemas:
+    LoginRequestDTO:
+       type: object
+       properties:
+         email:
+           type: string
+         password:
+           type: string
+           
+    InitiateSigningRequestDTO:
+       type: object
+       properties:
+         token:
+           type: string
+         request:
+           $ref: '#/components/schemas/SigningRequestDTO'
+           
+    SigningRequestDTO:
+       type: object
+       properties:
+         DistributionUrl:
+           type: string
+         DocumentSignedUrl:
+           type: string
+         ExpirationUrl:
+           type: string
+         Name:
+           type: string
+         RejectionUrl:
+           type: string
+         SigningData:
+           $ref: '#/components/schemas/SigningDataDTO'
+         SigningTemplateId:
+           type: string
+         StartDate:
+           format: /Date(<UNIX timestamp>)/
+           type: string
+         TransactionStateChangedUrl:
+           type: string
+           
+    SigningDataDTO:
+       type: object
+       properties:
+         AllowInboundEnclosures:
+          type: boolean
+         AllowRecipientComment:
+          type: boolean
+         BccRecipients:
+          type: array
+          items: 
+            $ref: '#/components/schemas/BccRecipientDTO'
+         Documents:
+          type: array
+          items: 
+            $ref: '#/components/schemas/DocumentDTO'
+         EnclosureDocuments:
+          type: array
+          items: 
+            $ref: '#/components/schemas/DocumentDTO'
+         ExternalReferenceId:
+          type: string
+         Recipients:
+          type: array
+          items: 
+            $ref: '#/components/schemas/RecipientDTO'
+         ReferenceNumber:
+          type: string
+         Sender:
+            $ref: '#/components/schemas/SenderDTO'
+         SenderComment:
+          type: string
+         SigningSequence:
+            $ref: '#/components/schemas/SigningSequenceDTO'
+           
+    SigningSequenceDTO:
+       type: object
+       properties:
+        SigningSequenceItems:
+          type: array
+          items: 
+            $ref: '#/components/schemas/SigningSequenceItemDTO'
+            
+    SigningSequenceItemDTO:
+       type: object
+       properties:
+        RecipientId:
+          type: string
+        SequenceNumber:
+          type: integer
+            
+    DocumentDTO:
+       type: object
+       properties:
+         Id:
+          type: string
+         Data:
+           type: string
+           format: base64
+         Name:
+           type: string
+         MimeType:
+          type: string
+          enum:
+           - application/pdf
+         IsShared:
+           type: boolean
+           
+    SenderDTO:
+       type: object
+       properties:
+         Name:
+          type: string
+         Email:
+           type: string
+         CompanyName:
+           type: string
+           
+    BccRecipientDTO:
+       type: object
+       properties:
+         Name:
+          type: string
+         Email:
+           type: string
+           
+    RecipientDTO:
+       type: object
+       properties:
+         Address:
+           type: string
+         AuthenticationMethod:
+           type: string
+           enum:
+            - 0 # None
+            - 1 # NemIdPrivate
+            - 2 # NemIdPrivateNoSsn (deprecated, same as NemIdPrivate)
+            - 3 # TwoFactorVerification
+            - 4 # Siths
+            - 7 # NemIdEmployee
+            - 8 # NorwegianBankId
+            - 9 # SwedishBankId
+            - 10 # NorwegianBankIdMobile
+            - 11 # SecretCode
+         CVR:
+           type: string
+         Cpr:
+           type: string
+         DistributionMethod:
+           type: integer
+           enum:
+             - 1 # None
+             - 2 # MessageWithDocuments
+             - 3 # MessageWithoutDocuments
+             - 4 # Eboks
+         Email:
+           type: string
+         Id:
+           type: string
+         Name:
+           type: string
+         PID:
+           type: string
+         Phone:
+           type: string
+         SSN:
+           type: string
+         SendDistributionDocument:
+           type: boolean
+         SendDistributionNotification:
+           type: boolean
+         SendWelcomeNotification:
+           type: boolean
+         SigningMethod:
+           type: integer
+           enum:
+            - 1 # NemId
+            - 2 # Stylus
+            - 3 # BankID
+            - 4 # NemIdMoces
+            - 5 # SwedishBankID
+            - 6 # Accept
+            - 7 # NoBankIDMobile (deprecated, same as BankId)
+            - 8 # NemIdPocesNoSsn (deprecated, same as NemId)
+            - 9 # FinnishTupas
+            - 10 # Siths
+         TemplateData:
+            $ref: '#/components/schemas/TemplateDataDTO'
+         Title:
+           type: string
+         TupasSsn:
+           type: string
+            
+    TemplateDataDTO:
+       type: object
+       properties:
+         Items:
+          type: array
+          items: 
+            $ref: '#/components/schemas/TemplateItemDTO'
+            
+    TemplateItemDTO:
+       type: object
+       properties:
+         Name:
+          type: string
+         Value:
+          type: string
+         Items:
+          type: array
+          items: 
+            $ref: '#/components/schemas/TemplateItemDTO'
+           
+       
+    InitiateSigningResponseDTO:
+       type: object
+       properties:
+         SigningToken:
+           type: string
+           
+    SigningStatusDTO:
+       type: object
+       properties:
+         CreatedOn:
+           type: string
+           format: /Date(<UNIX timestamp>)/
+         ExpiresOn:
+           type: string
+           format: /Date(<UNIX timestamp>)/
+         Recipients:
+           type: array
+           items:
+             $ref: '#/components/schemas/RecipientStatusDTO'
+         ReferenceNumber:
+          type: string
+         SigningToken:
+           type: string
+         State:
+           type: integer
+         
+    RecipientStatusDTO:
+       type: object
+       properties:
+         Name:
+           type: string
+         Title:
+           type: string
+         Email:
+           type: string
+         AdditionalData:
+           type: string
+         Transactions:
+           type: array
+           items:
+             $ref: '#/components/schemas/TransactionStatusDTO'
+         
+    TransactionStatusDTO:
+       type: object
+       properties:
+        TransactionToken:
+          type: string
+        State:
+          type: integer
+          
+    SigningDTO:
+       type: object
+       properties:
+         Name:
+          type: string
+         SigningToken:
+          type: string
+         Recipients:
+           type: array
+           items:
+             $ref: '#/components/schemas/SigningRecipientDTO'
+         Enclosures:
+           type: array
+           items:
+             $ref: '#/components/schemas/SigningEnclosureDTO'
+         ReferenceNumber:
+          type: string
+         Documents:
+           type: array
+           items:
+             $ref: '#/components/schemas/SigningDocumentDTO'
+         CreatedOn:
+           type: string
+           format: /Date(<UNIX timestamp>)/
+         ExpiresOn:
+           type: string
+           format: /Date(<UNIX timestamp>)/
+        
+    SigningRecipientDTO:
+       type: object
+       properties:
+         Name:
+           type: string
+         XmlData:
+           type: string
+         CustomId:
+           type: string
+         SignatureSubject:
+           type: string
+         SignatureIdentifier:
+           type: string
+         Title:
+           type: string
+         AdditionalData:
+           type: string
+           
+    SigningDocumentDTO:
+       type: object
+       properties:
+         Name:
+          type: string
+         Data:
+           type: string
+           format: byte
+         MimeType:
+           type: string
+          
+    SigningEnclosureDTO:
+      allOf:
+        - $ref: '#/components/schemas/SigningDocumentDTO'
+        - type: object
+          properties:
+            IsInbound:
+              type: boolean
+            IsApproved:
+              type: boolean

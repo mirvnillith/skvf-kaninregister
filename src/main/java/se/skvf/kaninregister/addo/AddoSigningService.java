@@ -1,8 +1,9 @@
 package se.skvf.kaninregister.addo;
 
-import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.distributionmethodenum.DistributionMethodEnum.NONE;
-import static net.vismaaddo.schemas.services.signingservice.v2_0.messages.enums.signingmethodenum.SigningMethodEnum.SWEDISH_BANK_ID;
+import static java.lang.System.currentTimeMillis;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static net.vismaaddo.api.DocumentDTO.MimeTypeEnum.APPLICATION_PDF;
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.commons.codec.digest.DigestUtils.digest;
@@ -12,46 +13,43 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.GregorianCalendar;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.ws.BindingProvider;
+import javax.annotation.PostConstruct;
+import javax.ws.rs.WebApplicationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.datacontract.schemas._2004._07.visma_addo_webservice_contracts_v2_0.ArrayOfSigningDocument;
-import org.datacontract.schemas._2004._07.visma_addo_webservice_contracts_v2_0.SenderData;
-import org.datacontract.schemas._2004._07.visma_addo_webservice_contracts_v2_0.SigningDocument;
+import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MimeType;
 
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningService;
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceGetSigningStatusValidationFaultFaultFaultMessage;
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceGetSigningValidationFaultFaultFaultMessage;
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceInitiateSigningValidationFaultFaultFaultMessage;
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceLoginValidationFaultFaultFaultMessage;
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningServiceLogoutValidationFaultFaultFaultMessage;
-import net.vismaaddo.schemas.services.signingservice.v2_0.SigningService_Service;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.generatedocumentresponse.recipient.GetSigningResponseRecipient;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.getsigningstatus.GetSigningStatus;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.initiatesigningrequest.InitiateSigningRequest;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.initiatesigningrequest.signing.Signing;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.recipientdata.ArrayOfRecipientData;
-import net.vismaaddo.schemas.services.signingservice.v2_0.messages.recipientdata.RecipientData;
+import net.vismaaddo.api.DocumentDTO;
+import net.vismaaddo.api.InitiateSigningRequestDTO;
+import net.vismaaddo.api.LoginRequestDTO;
+import net.vismaaddo.api.RecipientDTO;
+import net.vismaaddo.api.RecipientDTO.DistributionMethodEnum;
+import net.vismaaddo.api.RecipientDTO.SigningMethodEnum;
+import net.vismaaddo.api.SenderDTO;
+import net.vismaaddo.api.SigningDTO;
+import net.vismaaddo.api.SigningDataDTO;
+import net.vismaaddo.api.SigningRequestDTO;
+import net.vismaaddo.api.SigningStatusDTO;
+import net.vismaaddo.api.VismaAddoApi;
 
 @Component
 public class AddoSigningService {
 
-	static final String SIGNING_NAME = "Datahantering i SKVFs kaninregister";
+	static final SigningMethodEnum SWEDISH_BANKID = RecipientDTO.SigningMethodEnum.NUMBER_5;
 
-	private static final DatatypeFactory DATATYPE_FACTORY = DatatypeFactory.newDefaultInstance();
+	static final DistributionMethodEnum NO_DISTRIBUTION = RecipientDTO.DistributionMethodEnum.NUMBER_1;
+
+	static final String SIGNING_NAME = "Datahantering i SKVFs kaninregister";
 
 	private static final Log LOG = LogFactory.getLog(AddoSigningService.class);
 	
-	private SigningService service;
+	private VismaAddoApi addo;
 	
 	@Value("${skvf.addo.url}")
 	private String url;
@@ -59,6 +57,8 @@ public class AddoSigningService {
 	private String email;
 	@Value("${skvf.addo.password}")
 	private String password;
+	@Value("${skvf.dev.addo:false}")
+	private boolean test;
 	
 	void setEmail(String email) {
 		this.email = email;
@@ -68,36 +68,52 @@ public class AddoSigningService {
 		this.password = password;
 	}
 	
-	private synchronized SigningService getService() throws IOException {
-		if (service == null) {
-			service = new SigningService_Service().getSigning();
-			((BindingProvider)service).getRequestContext().put(ENDPOINT_ADDRESS_PROPERTY, url);
+	@PostConstruct
+	public void setup() throws Exception {
+		
+		addo = JAXRSClientFactory.create(url, VismaAddoApi.class, asList(new JacksonJaxbJsonProvider()));
+		
+		if (test) {
+			new AddoRuntimeTest().test(this, url);
 		}
-		return service;
 	}
 	
-	public String startSigning(String personnummer, File file, MimeType type) throws IOException {
+	public Signing startSigning(String personnummer, File pdf) throws IOException {
 		
 		return inSession(session -> {
 
-			Signing signing = new Signing();
-			signing.setSender(createSender());
-			signing.setRecipients(recipients(createRecipient(personnummer)));
-			signing.setDocuments(documents(createDocument(file, type)));
-			signing.setAllowInboundEnclosures(false);
-			signing.setAllowRecipientComment(false);
+			SigningDataDTO signingData = new SigningDataDTO();
+			signingData.setSender(createSender());
+			signingData.setRecipients(singletonList(createRecipient(personnummer)));
+			signingData.setDocuments(singletonList(createDocument(pdf)));
+			signingData.setAllowInboundEnclosures(false);
+			signingData.setAllowRecipientComment(false);
 			
-			InitiateSigningRequest request = new InitiateSigningRequest();
-			request.setName(SIGNING_NAME);
-			request.setStartDate(DATATYPE_FACTORY.newXMLGregorianCalendar(new GregorianCalendar()));
-			request.setSigningData(signing);
+			SigningRequestDTO signingRequest = new SigningRequestDTO();
+			signingRequest.setName(SIGNING_NAME);
+			signingRequest.setSigningData(signingData);
+			signingRequest.setStartDate("/Date(" + currentTimeMillis() + ")/");
 			
-			try {
-				return getService().initiateSigning(session, request, null).getSigningToken();
-			} catch (SigningServiceInitiateSigningValidationFaultFaultFaultMessage e) {
-				throw new IOException("Addo signing creation failed", e);
-			}
+			InitiateSigningRequestDTO request = new InitiateSigningRequestDTO();
+			request.setToken(session);
+			request.setRequest(signingRequest);
+			
+			LOG.info("initiateSigning(" + session + ")");
+			System.out.println(request);
+			String token = addo.initiateSigning(request).getSigningToken();
+			LOG.info("initiateSigning(" + session + "): " + token);
+			
+			SigningStatusDTO status = getSigningStatus(session, token);
+			
+			return new Signing(token, status.getRecipients().get(0).getTransactions().get(0).getTransactionToken());
 		});
+	}
+
+	private SigningStatusDTO getSigningStatus(String session, String token) {
+		LOG.info("getSigningStatus(" + session + "," + token + ")");
+		SigningStatusDTO status = addo.getSigningStatus(session, token);
+		LOG.info("getSigningStatus(" + session + "," + token + "): " + status.getState());
+		return status;
 	}
 	
 	private static interface SessionCall<T> {
@@ -109,6 +125,9 @@ public class AddoSigningService {
 		try {
 			try {
 				return call.call(session);
+			} catch (WebApplicationException e) {
+				LOG.error("Addo error", e);
+				throw e;
 			} catch (IOException e) {
 				LOG.error("Unexpected error", e);
 				throw e;
@@ -130,22 +149,18 @@ public class AddoSigningService {
 		
 		return inSession(session -> {
 			
-			try {
-				GetSigningStatus status = getService().getSigningStatus(session, token);
+				SigningStatusDTO status = getSigningStatus(session, token);
 				switch (status.getState()) {
-				case COMPLETED:
+				case SigningState.COMPLETED:
 					return Optional.of(true);
-				case EXPIRED:
-				case FAILED:
-				case REJECTED:
-				case STOPPED:
+				case SigningState.FAILED:
+				case SigningState.REJECTED:
+				case SigningState.STOPPED:
+				case SigningState.EXPIRED:
 					return Optional.of(false);
 				default:
 					return Optional.empty();
 				}
-			} catch (SigningServiceGetSigningStatusValidationFaultFaultFaultMessage e) {
-				throw new IOException("Addo signing status failed", e);
-			}
 		});
 	}
 
@@ -153,77 +168,69 @@ public class AddoSigningService {
 		
 		return inSession(session -> {
 			
-				return getSigner(token, session).getXmlData();
+			LOG.info("getSigning(" + session + "," + token + ")");
+			SigningDTO signing = addo.getSigning(session, token);
+			LOG.info("getSigning(" + session + "," + token + "): " + signing.getName());
+			
+			return signing.getRecipients().get(0).getXmlData();
 		});
 	}
-
-	private GetSigningResponseRecipient getSigner(String token, String session) throws IOException {
-		try {
-			return getService().getSigning(session, token).getRecipients().getGetSigningResponseRecipients().get(0);
-		} catch (SigningServiceGetSigningValidationFaultFaultFaultMessage e) {
-			throw new IOException("Addo signer failed", e);
-		}
-	}
 	
-	private static ArrayOfRecipientData recipients(RecipientData... recipient) {
-		ArrayOfRecipientData recipients = new ArrayOfRecipientData();
-		Stream.of(recipient).forEach(recipients.getRecipientDatas()::add);
-		return recipients;	
-	}
-
-	private static RecipientData createRecipient(String personnummer) {
-		RecipientData recipient = new RecipientData();
+	private static RecipientDTO createRecipient(String personnummer) {
+		RecipientDTO recipient = new RecipientDTO();
 		recipient.setSendDistributionDocument(false);
 		recipient.setSendDistributionNotification(false);
 		recipient.setSendWelcomeNotification(false);
-		recipient.setDistributionMethod(NONE);
-		recipient.setSigningMethod(SWEDISH_BANK_ID);
-		recipient.setSwedishSsn(personnummer);
+		recipient.setDistributionMethod(NO_DISTRIBUTION);
+		recipient.setSigningMethod(SWEDISH_BANKID);
+		recipient.setSSN(personnummer);
 		return recipient;
 	}
 
-	private static ArrayOfSigningDocument documents(SigningDocument... document) {
-		ArrayOfSigningDocument documents = new ArrayOfSigningDocument();
-		Stream.of(document).forEach(documents.getSigningDocuments()::add);
-		return documents;
-	}
-
-	static SenderData createSender() {
-		SenderData sender = new SenderData();
+	static SenderDTO createSender() {
+		SenderDTO sender = new SenderDTO();
 		sender.setName("Kaninregistret");
 		sender.setCompanyName("Sveriges Kaninvälfärdsförening");
 		sender.setEmail("kaninregistret@skvf.se");
 		return sender;
 	}
 
-	private static SigningDocument createDocument(File file, MimeType type) throws IOException {
-		SigningDocument document = new SigningDocument();
+	private static DocumentDTO createDocument(File file) throws IOException {
+		DocumentDTO document = new DocumentDTO();
 		document.setData(encodeBase64String(readFileToByteArray(file)));
 		document.setId(file.getName());
-		document.setMimeType(type.toString());
+		document.setMimeType(APPLICATION_PDF);
 		document.setName(file.getName());
 		document.setIsShared(false);
 		return document;
 	}
 
 	private void logout(String session) throws IOException {
-		try {
-			getService().logout(session);
-		} catch (SigningServiceLogoutValidationFaultFaultFaultMessage e) {
-			LOG.warn("Logout failed", e);
-		}
+//		try {
+//			//getService().logout(session);
+//		} catch (SigningServiceLogoutValidationFaultFaultFaultMessage e) {
+//			LOG.warn("Logout failed", e);
+//		}
 	}
 
 	private String login() throws IOException {
-		String session;
-		try {
-			session = getService().login(email, sha64(password));
-			if (isBlank(session)) {
-				throw new IOException("Addo login failed");
+		LoginRequestDTO request = new LoginRequestDTO();
+		request.setEmail(email);
+		request.setPassword(sha64(password));
+		LOG.info("login()");
+		String session = addo.login(request);
+		if (session != null) {
+			if (session.startsWith("\"")) {
+				session = session.substring(1);
 			}
-		} catch (SigningServiceLoginValidationFaultFaultFaultMessage e) {
-			throw new IOException("Addo login failed", e);
+			if (session.endsWith("\"")) {
+				session = session.substring(0, session.length() - 1);
+			}
 		}
+		if (isBlank(session)) {
+			throw new IOException("Addo login failed");
+		}
+		LOG.info("login(): " + session);
 		return session;
 	}
 
