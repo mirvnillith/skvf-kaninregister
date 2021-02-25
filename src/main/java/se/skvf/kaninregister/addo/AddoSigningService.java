@@ -4,6 +4,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.UUID.randomUUID;
 import static net.vismaaddo.api.DocumentDTO.MimeTypeEnum.PDF;
 import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
@@ -16,7 +17,7 @@ import static se.skvf.kaninregister.addo.SigningMethod.SWEDISH_BANKID;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URL;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -95,14 +96,14 @@ public class AddoSigningService {
 		}
 	}
 	
-	public Signing startSigning(String personnummer, InputStream pdf, String filename) throws IOException {
+	public Signing startSigning(String personnummer, URL pdf) throws IOException {
 		
 		return inSession(session -> {
 
 			SigningDataDTO signingData = new SigningDataDTO();
 			signingData.setSender(createSender());
 			signingData.setRecipients(singletonList(createRecipient(personnummer)));
-			signingData.setDocuments(singletonList(createDocument(pdf, filename)));
+			signingData.setDocuments(singletonList(createDocument(pdf)));
 			signingData.setAllowInboundEnclosures(false);
 			signingData.setAllowRecipientComment(false);
 			
@@ -199,6 +200,7 @@ public class AddoSigningService {
 		recipient.setSendWelcomeNotification(false);
 		recipient.setDistributionMethod(NONE);
 		recipient.setSigningMethod(SWEDISH_BANKID);
+		recipient.setName("Kaninägare");
 		recipient.setSSN(personnummer);
 		return recipient;
 	}
@@ -211,14 +213,14 @@ public class AddoSigningService {
 		return sender;
 	}
 
-	private static DocumentDTO createDocument(InputStream pdf, String filename) throws IOException {
+	private static DocumentDTO createDocument(URL pdf) throws IOException {
 		DocumentDTO document = new DocumentDTO();
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		copy(pdf, bytes);
+		copy(pdf.openStream(), bytes);
 		document.setData(encodeBase64String(bytes.toByteArray()));
-		document.setId(filename);
+		document.setId(randomUUID().toString());
 		document.setMimeType(PDF);
-		document.setName(filename);
+		document.setName(pdf.toString());
 		document.setIsShared(false);
 		return document;
 	}

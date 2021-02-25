@@ -1,8 +1,8 @@
 package se.skvf.kaninregister.addo;
 
-import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -10,7 +10,7 @@ class AddoRuntimeTest {
 
 	void test(AddoSigningService service) throws IOException {
 		
-		Signing signing = service.startSigning("PNR", currentThread().getContextClassLoader().getResourceAsStream("minimal.pdf"), "minimal.pdf");
+		Signing signing = service.startSigning("PNR", new File("src/test/resources/minimal.pdf").toURI().toURL());
 		System.out.println(signing.getTransactionUrl());
 		
 		Optional<Boolean> status = null;
