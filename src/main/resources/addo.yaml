@@ -23,6 +23,22 @@ paths:
             text/plain:
               schema:
                 type: string
+  /WebService/v2.0/restsigningservice.svc/GetSigningTemplates:
+    get:
+      tags: [VismaAddo]
+      operationId: getSigningTemplates
+      parameters:
+        - name: token
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Signing templates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SigningTemplatesDTO'
   /WebService/v2.0/restsigningservice.svc/InitiateSigning:
     post:
       tags: [VismaAddo]
@@ -383,3 +399,19 @@ components:
               type: boolean
             IsApproved:
               type: boolean
+              
+    SigningTemplatesDTO:
+       type: object
+       properties:
+         SigningTemplateItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/SigningTemplateDTO'
+         
+    SigningTemplateDTO:
+       type: object
+       properties:
+         Id:
+           type: string
+         SigningMethod:
+           type: integer

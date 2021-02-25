@@ -10,13 +10,13 @@ class AddoRuntimeTest {
 
 	void test(AddoSigningService service) throws IOException {
 		
-		Signing signing = service.startSigning("PNR", new File("src/test/resources/minimal.pdf").toURI().toURL());
+		Signing signing = service.startSigning(new File("src/test/resources/minimal.pdf").toURI().toURL());
 		System.out.println(signing.getTransactionUrl());
 		
 		Optional<Boolean> status = null;
-		while (status == null) {
+		while (status == null || status.isEmpty()) {
 			try {
-				sleep(10*1000);
+				sleep(10 * 1000);
 			} catch (InterruptedException ignored) {
 			}
 			status = service.checkSigning(signing.getToken());

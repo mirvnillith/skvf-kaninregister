@@ -9,8 +9,11 @@ import static org.apache.commons.io.FileUtils.writeByteArrayToFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import static se.skvf.kaninregister.addo.AddoSigningService.SIGNING_COMMENT;
+import static se.skvf.kaninregister.addo.AddoSigningService.SIGNING_NAME;
 import static se.skvf.kaninregister.addo.AddoSigningService.sha64;
 import static se.skvf.kaninregister.addo.DistributionMethod.NONE;
+import static se.skvf.kaninregister.addo.SigningMethod.FINNISH_TUPAS;
 import static se.skvf.kaninregister.addo.SigningMethod.SWEDISH_BANKID;
 import static se.skvf.kaninregister.addo.SigningState.CAMPAIGN_STARTED;
 import static se.skvf.kaninregister.addo.SigningState.COMPLETED;
@@ -48,6 +51,8 @@ import net.vismaaddo.api.SigningDataDTO;
 import net.vismaaddo.api.SigningRecipientDTO;
 import net.vismaaddo.api.SigningRequestDTO;
 import net.vismaaddo.api.SigningStatusDTO;
+import net.vismaaddo.api.SigningTemplateDTO;
+import net.vismaaddo.api.SigningTemplatesDTO;
 import net.vismaaddo.api.TransactionStatusDTO;
 import net.vismaaddo.api.VismaAddoApi;
 import se.skvf.kaninregister.BunnyTest;
@@ -89,7 +94,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 		
 		WebApplicationException error = mockLoginError();
 		
-		WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.startSigning(null, null));
+		WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.startSigning(null));
 		assertThat(exception).isSameAs(error);
 		
 		verifyLogin();
@@ -104,16 +109,16 @@ public class AddoSigningServiceTest extends BunnyTest {
 	@Test
 	public void startSigning_signingError() throws Exception {
 		
-		String pnr = randomUUID().toString();
 		URL pdf = url(new byte[0]);
 		
 		String session = mockSession();
+		mockTemplate(session);
 		
 		WebApplicationException error = new WebApplicationException(randomUUID().toString());
 		when(addo.initiateSigning(signingRequest.capture())).thenThrow(error);
 		try {
 
-			WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.startSigning(pnr, pdf));
+			WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.startSigning(pdf));
 			assertThat(exception).isSameAs(error);
 			
 		} finally {
@@ -121,6 +126,27 @@ public class AddoSigningServiceTest extends BunnyTest {
 		}
 	}
 	
+	private String mockTemplate(String session) {
+		
+		String templateId = randomUUID().toString();
+		
+		SigningTemplatesDTO templates = new SigningTemplatesDTO();
+		
+		SigningTemplateDTO tupasTemplate = new SigningTemplateDTO();
+		tupasTemplate.setId(randomUUID().toString());
+		tupasTemplate.setSigningMethod(FINNISH_TUPAS);
+		templates.getSigningTemplateItems().add(tupasTemplate);
+		
+		SigningTemplateDTO bankIdTemplate = new SigningTemplateDTO();
+		bankIdTemplate.setId(templateId);
+		bankIdTemplate.setSigningMethod(SWEDISH_BANKID);
+		templates.getSigningTemplateItems().add(bankIdTemplate);
+		
+		when(addo.getSigningTemplates(session)).thenReturn(templates);
+		
+		return templateId;
+	}
+
 	private static URL url(byte[] content) throws IOException {
 		File file = createTempFile("addo", "pdf");
 		file.deleteOnExit();
@@ -130,16 +156,16 @@ public class AddoSigningServiceTest extends BunnyTest {
 	@Test
 	public void startSigning_apiError() throws Exception {
 		
-		String pnr = randomUUID().toString();
 		URL pdf = url(new byte[0]);
 		
 		String session = mockSession();
+		mockTemplate(session);
 		
 		NullPointerException error = new NullPointerException(randomUUID().toString());
 		when(addo.initiateSigning(signingRequest.capture())).thenThrow(error);
 		try {
 			
-			IOException exception = assertThrows(IOException.class, () -> service.startSigning(pnr, pdf));
+			IOException exception = assertThrows(IOException.class, () -> service.startSigning(pdf));
 			assertThat(exception.getCause()).isSameAs(error);
 			
 		} finally {
@@ -150,11 +176,11 @@ public class AddoSigningServiceTest extends BunnyTest {
 	@Test
 	public void startSigning() throws Exception {
 		
-		String pnr = randomUUID().toString();
 		String data = randomUUID().toString();
 		URL pdf = url(data.getBytes());
 		
 		String session = mockSession();
+		String templateId = mockTemplate(session);
 		
 		InitiateSigningResponseDTO signingResponse = new InitiateSigningResponseDTO();
 		signingResponse.setSigningToken(randomUUID().toString());
@@ -172,7 +198,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 
 		try {
 		
-			Signing signing = service.startSigning(pnr, pdf);
+			Signing signing = service.startSigning(pdf);
 			assertThat(signing.getToken())
 				.isEqualTo(signingResponse.getSigningToken());
 			assertThat(signing.getTransactionUrl())
@@ -185,7 +211,9 @@ public class AddoSigningServiceTest extends BunnyTest {
 			
 			SigningRequestDTO signingRequest = request.getRequest();
 			assertThat(signingRequest.getName())
-				.isEqualTo(AddoSigningService.SIGNING_NAME);
+				.isEqualTo(SIGNING_NAME);
+			assertThat(signingRequest.getSigningTemplateId())
+				.isEqualTo(templateId);
 			assertThat(signingRequest.getStartDate())
 				.startsWith("/Date(")
 				.endsWith(")/");
@@ -194,6 +222,8 @@ public class AddoSigningServiceTest extends BunnyTest {
 			assertThat(signingData.getSender())
 				.usingRecursiveComparison()
 				.isEqualTo(AddoSigningService.createSender());
+			assertThat(signingData.getSenderComment())
+				.isEqualTo(SIGNING_COMMENT);
 			assertThat(signingData.getAllowInboundEnclosures())
 				.isFalse();
 			assertThat(signingData.getAllowRecipientComment())
@@ -207,13 +237,12 @@ public class AddoSigningServiceTest extends BunnyTest {
 					assertThat(r.getSendWelcomeNotification()).isFalse();
 					assertThat(r.getDistributionMethod()).isEqualTo(NONE);
 					assertThat(r.getSigningMethod()).isEqualTo(SWEDISH_BANKID);
-					assertThat(r.getSSN()).isEqualTo(pnr);
 				});
 			
 			assertThat(signingData.getDocuments())
 				.hasSize(1)
 				.allSatisfy(d -> {
-					assertThat(d.getName()).isEqualTo(pdf.toString());
+					assertThat(d.getName()).startsWith("addo").endsWith("pdf");
 					assertThat(d.getMimeType()).isEqualTo(PDF);
 					assertThat(d.getData()).isEqualTo(encodeBase64String(data.getBytes()));
 				});

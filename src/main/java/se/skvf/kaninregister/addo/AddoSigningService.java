@@ -1,6 +1,7 @@
 package se.skvf.kaninregister.addo;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -45,12 +46,14 @@ import net.vismaaddo.api.SigningDTO;
 import net.vismaaddo.api.SigningDataDTO;
 import net.vismaaddo.api.SigningRequestDTO;
 import net.vismaaddo.api.SigningStatusDTO;
+import net.vismaaddo.api.SigningTemplateDTO;
 import net.vismaaddo.api.VismaAddoApi;
 
 @Component
 public class AddoSigningService {
 
 	static final String SIGNING_NAME = "Datahantering i SKVFs kaninregister";
+	static final String SIGNING_COMMENT = "Detta dokument beskriver hur vi hanterar din information i vårt register";
 
 	private static final Log LOG = LogFactory.getLog(AddoSigningService.class);
 	
@@ -64,6 +67,8 @@ public class AddoSigningService {
 	private String password;
 	@Value("${skvf.dev.addo:false}")
 	private boolean test;
+	
+	private String templateId;
 	
 	void setUrl(String url) {
 		this.url = url;
@@ -82,6 +87,7 @@ public class AddoSigningService {
 		
 		ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(NON_NULL);
+        mapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
 		JacksonJaxbJsonProvider jsonProvider = new JacksonJaxbJsonProvider();
 		jsonProvider.setMapper(mapper);
 		
@@ -96,22 +102,31 @@ public class AddoSigningService {
 		}
 	}
 	
-	public Signing startSigning(String personnummer, URL pdf) throws IOException {
+	public Signing startSigning(URL pdf) throws IOException {
 		
 		return inSession(session -> {
 
+			if (templateId == null) {
+				templateId = addo.getSigningTemplates(session).getSigningTemplateItems().stream()
+						.filter(st -> st.getSigningMethod() == SWEDISH_BANKID)
+						.map(SigningTemplateDTO::getId)
+						.findAny()
+						.orElseThrow(() -> new IOException("Unable to find a SWEDISH_BANKID template"));
+			}
+			
 			SigningDataDTO signingData = new SigningDataDTO();
 			signingData.setSender(createSender());
-			signingData.setRecipients(singletonList(createRecipient(personnummer)));
+			signingData.setRecipients(singletonList(createRecipient()));
 			signingData.setDocuments(singletonList(createDocument(pdf)));
 			signingData.setAllowInboundEnclosures(false);
 			signingData.setAllowRecipientComment(false);
+			signingData.setSenderComment(SIGNING_COMMENT);
 			
 			SigningRequestDTO signingRequest = new SigningRequestDTO();
 			signingRequest.setName(SIGNING_NAME);
+			signingRequest.setSigningTemplateId(templateId);
 			signingRequest.setSigningData(signingData);
 			signingRequest.setStartDate("/Date(" + currentTimeMillis() + ")/");
-			
 			InitiateSigningRequestDTO request = new InitiateSigningRequestDTO();
 			request.setToken(session);
 			request.setRequest(signingRequest);
@@ -193,7 +208,7 @@ public class AddoSigningService {
 		});
 	}
 	
-	private static RecipientDTO createRecipient(String personnummer) {
+	private static RecipientDTO createRecipient() {
 		RecipientDTO recipient = new RecipientDTO();
 		recipient.setSendDistributionDocument(false);
 		recipient.setSendDistributionNotification(false);
@@ -201,7 +216,7 @@ public class AddoSigningService {
 		recipient.setDistributionMethod(NONE);
 		recipient.setSigningMethod(SWEDISH_BANKID);
 		recipient.setName("Kaninägare");
-		recipient.setSSN(personnummer);
+		recipient.setEmail("kaninregistret@skvf.se");
 		return recipient;
 	}
 
@@ -220,7 +235,7 @@ public class AddoSigningService {
 		document.setData(encodeBase64String(bytes.toByteArray()));
 		document.setId(randomUUID().toString());
 		document.setMimeType(PDF);
-		document.setName(pdf.toString());
+		document.setName(pdf.getPath().substring(pdf.getPath().lastIndexOf('/')+1));
 		document.setIsShared(false);
 		return document;
 	}
