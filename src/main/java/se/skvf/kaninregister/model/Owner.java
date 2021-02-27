@@ -2,10 +2,13 @@ package se.skvf.kaninregister.model;
 
 import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import org.jasypt.util.password.PasswordEncryptor;
@@ -15,7 +18,7 @@ public class Owner extends Entity {
 
 	private static final PasswordEncryptor ENCRYPTOR = new StrongPasswordEncryptor();
 	
-	static final Collection<String> COLUMNS = asList(
+	static final List<String> COLUMNS = asList(
 			"Förnamn", 
 			"Efternamn", 
 			"Offentlig Ägare",
@@ -24,7 +27,8 @@ public class Owner extends Entity {
 			"Offentlig Uppfödare", 
 			"Användarnamn",
 			"Lösenord",
-			"E-post");
+			"E-post",
+			"Signatur");
 
 	private String firstName;
 	private String lastName;
@@ -35,10 +39,20 @@ public class Owner extends Entity {
 	private String userName;
 	private String password;
 	private String email;
+	private String signature;
 	
 	@Override
 	public Owner setId(String id) {
 		return (Owner) super.setId(id);
+	}
+	
+	public String getSignature() {
+		return signature;
+	}
+	
+	public Owner setSignature(String signature) {
+		this.signature = signature;
+		return this;
 	}
 	
 	public String getUserName() {
@@ -85,15 +99,25 @@ public class Owner extends Entity {
 		if (lastName == null) {
 			throw new IllegalStateException("Owner must have a last name");
 		}
-		map.put("Förnamn", firstName);
-		map.put("Efternamn", lastName);
-		map.put("Offentlig Ägare", toString(publicOwner));
-		map.put("Uppfödare", toString(breeder));
-		map.put("Uppfödarnamn", breederName);
-		map.put("Offentlig Uppfödare", toString(publicBreeder));
-		map.put("Användarnamn", userName);
-		map.put("Lösenord", password);
-		map.put("E-post", email);
+		
+		List<String> values = new ArrayList<String>(COLUMNS.size());
+		values.add(firstName);
+		values.add(lastName);
+		values.add(toString(publicOwner));
+		values.add(toString(breeder));
+		values.add(breederName);
+		values.add(toString(publicBreeder));
+		values.add(userName);
+		values.add(password);
+		values.add(email);
+		values.add(signature);
+		
+		if (values.size() != COLUMNS.size()) {
+			throw new IllegalStateException("Values do not match columns: "+values+" vs "+COLUMNS);			
+		}
+		for (int i=0; i<COLUMNS.size(); i++) {
+			map.put(COLUMNS.get(i), values.get(i));
+		}
 	}
 	
 	public static Owner from(Map<String, String> map) {
@@ -102,15 +126,27 @@ public class Owner extends Entity {
 	
 	protected Owner fromMap(Map<String, String> map) {
 		super.fromMap(map);
-		firstName = map.get("Förnamn");
-		lastName = map.get("Efternamn");
-		publicOwner = booleanFromString(map.get("Offentlig Ägare"));
-		breeder = booleanFromString(map.get("Uppfödare"));
-		breederName = map.get("Uppfödarnamn");
-		publicBreeder = booleanFromString(map.get("Offentlig Uppfödare"));
-		userName = map.get("Användarnamn");
-		password = map.get("Lösenord");
-		email = map.get("E-post");
+		
+		List<BiConsumer<Owner, String>> setters = asList(
+				Owner::setFirstName,
+				Owner::setLastName,
+				(o,v) -> o.setPublicOwner(booleanFromString(v)),
+				(o,v) -> o.setBreeder(booleanFromString(v)),
+				Owner::setBreederName,
+				(o,v) -> o.setPublicBreeder(booleanFromString(v)),
+				Owner::setUserName,
+				(o,v) -> o.password = v,
+				Owner::setEmail,
+				Owner::setSignature
+				);
+
+		if (setters.size() != COLUMNS.size()) {
+			throw new IllegalStateException("Values do not match columns: "+COLUMNS);			
+		}
+		for (int i=0; i<COLUMNS.size(); i++) {
+			setters.get(i).accept(this, map.get(COLUMNS.get(i)));
+		}
+		
 		return this;
 	}
 	
@@ -183,11 +219,11 @@ public class Owner extends Entity {
 	}
 
 	public boolean isActivated() {
-		return this.password != null;
+		return isNotEmpty(password);
 	}
 	
 	public boolean isApproved() {
-		return true;
+		return isNotEmpty(signature);
 	}
 
 	public static Map<String, Predicate<String>> onlyBreeders(Boolean onlyBreeders) {
@@ -197,15 +233,21 @@ public class Owner extends Entity {
 	}
 
 	public Owner deactivate() {
-		firstName = "Ny";
-		lastName = "Ägare";
-		email = null;
+		unapprove();
 		userName = null;
 		password = null;
+		return this;
+	}
+
+	public Owner unapprove() {
+		firstName = "Okänd";
+		lastName = "Ägare";
 		publicOwner = false;
 		breeder = false;
 		breederName = null;
 		publicBreeder = false;
+		email = null;
+		signature = null;
 		return this;
 	}
 }

@@ -17,7 +17,9 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 	@Test
 	public void createBunny() throws IOException {
 		
-		String ownerId = mockOwner().getId();
+		String ownerId = mockOwner()
+				.setSignature("-")
+				.getId();
 		mockSession(ownerId);
 		BunnyDTO dto = new BunnyDTO();
 		
@@ -35,7 +37,9 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 	@Test
 	public void createBunny_sameDtoOwner() throws IOException {
 		
-		String ownerId = mockOwner().getId();
+		String ownerId = mockOwner()
+				.setSignature("-")
+				.getId();
 		mockSession(ownerId);
 		BunnyDTO dto = new BunnyDTO();
 		dto.setOwner(ownerId);
@@ -54,7 +58,9 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 	@Test
 	public void createBunny_error() throws IOException {
 		
-		String ownerId = mockOwner().getId();
+		String ownerId = mockOwner()
+				.setSignature("-")
+				.getId();
 		mockSession(ownerId);
 		BunnyDTO dto = new BunnyDTO();
 		
@@ -99,6 +105,16 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 	public void createBunny_noSession() throws IOException {
 		
 		String ownerId = mockOwner().getId();
+		BunnyDTO dto = new BunnyDTO();
+		
+		assertError(UNAUTHORIZED, () -> api.createBunny(ownerId, dto));
+	}
+	
+	@Test
+	public void createBunny_notApproved() throws IOException {
+		
+		String ownerId = mockOwner().getId();
+		mockSession(ownerId);
 		BunnyDTO dto = new BunnyDTO();
 		
 		assertError(UNAUTHORIZED, () -> api.createBunny(ownerId, dto));

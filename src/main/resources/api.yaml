@@ -217,21 +217,34 @@ paths:
           required: true
           schema:
             type: string
-      requestBody:
-        description: Approval data
-        content:
-          application/json:
-            schema: 
-              $ref: '#/components/schemas/ApprovalDTO'
       responses:
         '200':
           description: Owner approved
         '204':
-          description: Approval pending
-        '400':
-          description: Invalid approval
+          description: Approval failed
+        '307':
+          description: Approval ongoing, show Location to user  
         '401':
           description: Session required, of owner
+        '404':
+          description: Owner not found
+          
+  /owners/{id}/unapprove:
+    post:
+      tags: [BunnyRegistry]
+      operationId: unapproveOwner
+      summary: Revokes approval of storage/usage of owner data.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Owner unapproved
+        '401':
+          description: Session required, of approved owner
         '404':
           description: Owner not found
           
@@ -560,14 +573,6 @@ components:
          password:
            type: string
            description: Password to set
-    ApprovalDTO:
-       type: object
-       required:
-         - contract
-       properties:
-         contract:
-           type: string
-           description: Contract identifier
     PasswordDTO:
        type: object
        required:

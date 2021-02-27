@@ -36,8 +36,37 @@ public class OwnerTest extends EntityTest<Owner> {
 	}
 	
 	@Test
+	public void signature() throws Exception {
+		assertAttribute("Signatur", Owner::setSignature, Owner::getSignature);
+	}
+	
+	@Test
 	public void userName() throws Exception {
 		assertAttribute("Användarnamn", Owner::setUserName, Owner::getUserName);
+	}
+	
+	@Test
+	public void activated() {
+		
+		Owner owner = create();
+		
+		assertThat(owner.isActivated()).isFalse();
+		owner.setPassword(randomUUID().toString());
+		assertThat(owner.isActivated()).isTrue();
+		owner.deactivate();
+		assertThat(owner.isActivated()).isFalse();
+	}
+	
+	@Test
+	public void approved() {
+		
+		Owner owner = create();
+		
+		assertThat(owner.isApproved()).isFalse();
+		owner.setSignature(randomUUID().toString());
+		assertThat(owner.isApproved()).isTrue();
+		owner.unapprove();
+		assertThat(owner.isApproved()).isFalse();
 	}
 	
 	@Test

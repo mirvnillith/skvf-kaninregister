@@ -16,10 +16,12 @@ public class SessionManager {
 	class Session {
 		private final String ownerId;
 		private long lastUsed;
+		private Map<String, Object> attributes;
 		
 		Session(String ownerId) {
 			this.ownerId = ownerId;
 			lastUsed = currentTimeMillis();
+			attributes = new HashMap<>();
 		}
 		
 		boolean is(String ownerId) {
@@ -32,6 +34,15 @@ public class SessionManager {
 		
 		boolean hasTimedOut() {
 			return (currentTimeMillis() - lastUsed) > timeoutSeconds * 1000;
+		}
+		
+		@SuppressWarnings("unchecked")
+		<T> T getAttribute(String attribute) {
+			return (T)attributes.get(attribute);
+		}
+		
+		void setAttribute(String attribute, Object value) {
+			attributes.put(attribute, value);
 		}
 	}
 	
@@ -82,5 +93,22 @@ public class SessionManager {
 
 	void setTimeout(int seconds) {
 		timeoutSeconds = seconds;
+	}
+
+	public synchronized void setAttribute(String session, String attribute, Object value) {
+		
+		if (sessions.containsKey(session)) {
+			sessions.get(session).setAttribute(attribute, value);
+		}
+	}
+	
+	public synchronized <T> T getAttribute(String session, String attribute) {
+		
+		if (!sessions.containsKey(session)) {
+			return null;
+		}
+		
+		T value = sessions.get(session).getAttribute(attribute);
+		return value;
 	}
 }

@@ -28,18 +28,10 @@ public class Registry {
 	private Table bunnies;
 	private Table owners;
 
-	private boolean test;
-	private boolean performance;
-	
 	@Value("${skvf.dev.test:false}")
-	public void setTest(boolean test) {
-		this.test = test;
-	}
-	
+	private boolean test;
 	@Value("${skvf.dev.performance:false}")
-	public void setPerformance(boolean performance) {
-		this.performance = performance;
-	}
+	private boolean performance;
 	
 	@PostConstruct
 	public void setup() throws Exception {

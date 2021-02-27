@@ -393,13 +393,16 @@ public class AddoSigningServiceTest extends BunnyTest {
 		
 		SigningDTO signingResponse = new SigningDTO();
 		SigningRecipientDTO recipient = new SigningRecipientDTO();
-		recipient.setXmlData(randomUUID().toString());
+		recipient.setSignatureIdentifier(randomUUID().toString());
+		recipient.setSignatureSubject(randomUUID().toString());
 		signingResponse.setRecipients(singletonList(recipient));
 		
 		when(addo.getSigning(session, token)).thenReturn(signingResponse);
 		try {
 			
-			assertThat(service.getSignature(token)).isEqualTo(recipient.getXmlData());
+			assertThat(service.getSignature(token))
+				.extracting("identifier", "subject")
+				.containsExactly(recipient.getSignatureIdentifier(), recipient.getSignatureSubject());
 			
 		} finally {
 			verifySession(session);

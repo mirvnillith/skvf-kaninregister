@@ -10,6 +10,7 @@ import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.TEMPORARY_REDIRECT;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -20,9 +21,13 @@ import static se.skvf.kaninregister.model.Owner.byUserName;
 import static se.skvf.kaninregister.model.Owner.onlyBreeders;
 
 import java.io.IOException;
+import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
@@ -38,7 +43,11 @@ import javax.ws.rs.ext.Provider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
+import se.skvf.kaninregister.addo.AddoSigningService;
+import se.skvf.kaninregister.addo.Signature;
+import se.skvf.kaninregister.addo.Signing;
 import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Owner;
 import se.skvf.kaninregister.model.Registry;
@@ -48,12 +57,22 @@ import se.skvf.kaninregister.model.Registry;
 public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 
 	private static final Log LOG = LogFactory.getLog(BunnyRegistryApiImpl.class);
+
+	static final String SESSION_SIGNING = "signing";
 	
 	@Autowired
 	private Registry registry;
-	
 	@Autowired
 	private SessionManager sessions;
+	@Autowired
+	private AddoSigningService signingService;
+	
+	@Value("${skvf.approval.url:}")
+	private String approvalUrl;
+	
+	void setApprovalUrl(String approvalUrl) {
+		this.approvalUrl = approvalUrl;
+	}
 	
 	@Context
 	private HttpServletRequest request;
@@ -177,10 +196,12 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		response.addCookie(cookie);
 	}
 	
-	private void validateSession(String ownerId) {
-		if (!sessions.isSession(getSession(), ownerId)) {
+	private String validateSession(String ownerId) {
+		String session = getSession();
+		if (!sessions.isSession(session, ownerId)) {
 			throw new WebApplicationException(UNAUTHORIZED);
 		}
+		return session;
 	}
 
 	@Override
@@ -407,7 +428,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			if (bunnyDTO.getOwner() != null) {
 				if (bunnyDTO.getOwner().isEmpty()) {
 					// Anonymous new owner
-					bunnyDTO.setOwner(registry.add(new Owner().deactivate()));
+					bunnyDTO.setOwner(registry.add(new Owner().deactivate().setFirstName("Ny")));
 				} else if (owners.get(bunnyDTO.getOwner()) == null) {
 					throw new WebApplicationException(NOT_FOUND);
 				}
@@ -569,21 +590,73 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public void approveOwner(String id, ApprovalDTO approvalDTO) {
-		// TODO Auto-generated method stub
+	public void approveOwner(String id) {
+		process(() -> {
+			
+			String session = validateSession(id);
+			Owner owner = validateOwner(id, false);
+			
+			if (!owner.isApproved()) {
+				Signing signing = sessions.getAttribute(session, SESSION_SIGNING);
+				
+				if (signing == null) {
+					if (isNotEmpty(approvalUrl)) {
+						signing = signingService.startSigning(new URL(approvalUrl));
+						sessions.setAttribute(session, SESSION_SIGNING, signing);
+						redirect(signing.getTransactionUrl());
+					} else {
+						registry.update(owner.setSignature("-"));
+					}
+				} else {
+					Optional<Boolean> signed = signingService.checkSigning(signing.getToken());
+					if (signed.isPresent()) {
+						if (signed.get()) {
+							Signature signature = signingService.getSignature(signing.getToken());
+							registry.update(owner.setSignature(approvalUrl + " " + signature.getIdentifier() + " (" + signature.getSubject() + "@" + timestamp() + ")"));							
+						} else {
+							throw new WebApplicationException(NO_CONTENT);
+						}
+					} else {
+						redirect(signing.getTransactionUrl());
+					}
+				}
+			}
+			
+			return Void.class;
+		});
+	}
+
+	private void redirect(String url) {
+		response.setHeader("Location", url);
+		throw new WebApplicationException(TEMPORARY_REDIRECT);
+	}
+	
+	private static String timestamp() {
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
+	}
+
+	@Override
+	public void unapproveOwner(String id) {
+		process(() -> {
+			
+			validateSession(id);
+			Owner owner = validateOwner(id, true);
+
+			registry.update(owner.unapprove());
+			
+			return Void.class;
+		});
 	}
 
 	@Override
 	public void deactivateOwner(String id) {
-		
 		process(() -> {
 			
 			validateSession(id);
 			Owner owner = validateOwner(id, false);
 
 			if (owner.isActivated()) {
-				owner.deactivate();
-				registry.update(owner);
+				registry.update(owner.deactivate());
 			}
 			removeCookie();
 			

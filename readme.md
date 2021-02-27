@@ -14,17 +14,21 @@ Kaninregistret kräver följande konfigureringar:
 
 **OBS:** Ha aldrig med dessa värden i källkod eller andra filer du lagrar i GitHub!!!
 
+##### APPROVAL_URL
+
+URL till PDF att signera (lämnas tom för ingen signering).
+
 ##### ADDO_URL
 
-URL till Visma Addo signeringstjänst.
+URL till Visma Addo signeringstjänst (lämna tom om APPROVAL_URL är tom).
 
 ##### ADDO_USERNAME
 
-Visma Addo användarnamn.
+Visma Addo användarnamn (lämna tom om APPROVAL_URL är tom).
 
 ##### ADDO_PASSWORD
 
-Visma Addo lösenord.
+Visma Addo lösenord (lämna tom om APPROVAL_URL är tom).
 
 ##### GOOGLE_CREDENTIALS
 
@@ -42,4 +46,4 @@ Skapa en mapp i din Google Drive och dela den med Service Account ovan via dess 
 
 Kaningregistret går även att köra utanför Docker, men kräver då en `application.yaml` i arbetskatalogen. Kopiera från `src/main/docker` och ersätt miljövariablerna med värden.
 
-Dessutom finns två flaggor, `skvf.dev.test` och `skvf.dev.performance`, för provkörning och/eller prestandakörning automatiskt vid uppstart.
+Dessutom finns tre flaggor, `skvf.dev.test`, `skvf.dev.performance` och `skvf.dev.addo`, för provkörning och/eller prestandakörning automatiskt vid uppstart.

@@ -87,6 +87,9 @@ public class ApplicationApiTest {
 		loginDTO.setPassword(breederPassword);
 		api.login(loginDTO);
 		
+		// ... approves ...
+		api.approveOwner(breeder.getId());
+		
 		// .. and creates a bunny
 		BunnyDTO bunny = new BunnyDTO();
 		bunny.setBreeder(breeder.getId());
@@ -121,6 +124,7 @@ public class ApplicationApiTest {
 		loginDTO.setUserName(activation.getUserName());
 		loginDTO.setPassword(activation.getPassword());
 		OwnerDTO owner = api.login(loginDTO);
+		api.approveOwner(owner.getId());
 		BunnyDTO rename = new BunnyDTO();
 		rename.setName("My Bunny");
 		bunny = api.updateBunny(owner.getId(), bunny.getId(), rename);
@@ -138,6 +142,8 @@ public class ApplicationApiTest {
 		loginDTO.setUserName(breeder.getUserName());
 		loginDTO.setPassword(breederPassword);
 		api.login(loginDTO);
+		api.unapproveOwner(breeder.getId());
+		assertThat(api.getOwner(breeder.getId()).getFirstName()).isEqualTo("Okänd");
 		api.deleteOwner(breeder.getId());
 		
 		// Delete bunny ...

@@ -1,8 +1,11 @@
 skvf:
- google:
-  credentials: "${GOOGLE_CREDENTIALS}"
-  folder: "${GOOGLE_FOLDER}"
- addo:
-  url: "${ADDO_URL}"
-  email: "${ADDO_EMAIL}"
-  password: "${ADDO_PASSWORD}"
+  google:
+    credentials: "${GOOGLE_CREDENTIALS}"
+    folder: "${GOOGLE_FOLDER}"
+  addo:
+    url: "${ADDO_URL}"
+    email: "${ADDO_EMAIL}"
+    password: "${ADDO_PASSWORD}"
+  approval:
+    url: "${APPROVAL_URL}"
+  

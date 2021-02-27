@@ -21,7 +21,8 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 		
 		String userName = randomUUID().toString();
 		Owner owner = mockOwner()
-				.setUserName(userName);
+				.setUserName(userName)
+				.setSignature("-");
 		String ownerId = owner.getId();
 		mockSession(ownerId);
 		
@@ -46,7 +47,8 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 	@Test
 	public void updateOwner_sameId() throws IOException {
 		
-		Owner owner = mockOwner();
+		Owner owner = mockOwner()
+				.setSignature("-");
 		String ownerId = owner.getId();
 		mockSession(ownerId);
 		
@@ -101,6 +103,18 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 	public void updateOwner_noSession() throws IOException {
 		
 		Owner owner = mockOwner();
+		
+		OwnerDTO dto = new OwnerDTO();
+		dto.setEmail(randomUUID().toString());
+		
+		assertError(UNAUTHORIZED, () -> api.updateOwner(owner.getId(), dto));
+	}
+	
+	@Test
+	public void updateOwner_notApproved() throws IOException {
+		
+		Owner owner = mockOwner();
+		mockSession(owner.getId());
 		
 		OwnerDTO dto = new OwnerDTO();
 		dto.setEmail(randomUUID().toString());

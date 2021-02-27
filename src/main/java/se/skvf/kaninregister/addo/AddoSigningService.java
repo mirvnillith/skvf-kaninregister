@@ -44,6 +44,7 @@ import net.vismaaddo.api.RecipientDTO;
 import net.vismaaddo.api.SenderDTO;
 import net.vismaaddo.api.SigningDTO;
 import net.vismaaddo.api.SigningDataDTO;
+import net.vismaaddo.api.SigningRecipientDTO;
 import net.vismaaddo.api.SigningRequestDTO;
 import net.vismaaddo.api.SigningStatusDTO;
 import net.vismaaddo.api.SigningTemplateDTO;
@@ -196,7 +197,7 @@ public class AddoSigningService {
 		});
 	}
 
-	public String getSignature(String token) throws IOException {
+	public Signature getSignature(String token) throws IOException {
 		
 		return inSession(session -> {
 			
@@ -204,7 +205,8 @@ public class AddoSigningService {
 			SigningDTO signing = addo.getSigning(session, token);
 			LOG.info("getSigning(" + session + "," + token + "): " + signing.getName());
 			
-			return signing.getRecipients().get(0).getXmlData();
+			SigningRecipientDTO signature = signing.getRecipients().get(0);
+			return new Signature(signature.getSignatureIdentifier(), signature.getSignatureSubject());
 		});
 	}
 	

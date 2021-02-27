@@ -29,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import se.skvf.kaninregister.BunnyTest;
+import se.skvf.kaninregister.addo.AddoSigningService;
 import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Owner;
 import se.skvf.kaninregister.model.Registry;
@@ -43,6 +44,8 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 	private HttpServletRequest request;
 	@Mock
 	protected SessionManager sessions;
+	@Mock
+	protected AddoSigningService signingService;
 	
 	@Mock
 	protected Registry registry;
