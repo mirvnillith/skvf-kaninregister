@@ -7,7 +7,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.UUID.randomUUID;
 import static net.vismaaddo.api.DocumentDTO.MimeTypeEnum.PDF;
-import static org.apache.commons.codec.binary.Base64.encodeBase64;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.commons.codec.digest.DigestUtils.digest;
 import static org.apache.commons.codec.digest.DigestUtils.getSha512Digest;
@@ -243,11 +242,6 @@ public class AddoSigningService {
 	}
 
 	private void logout(String session) throws IOException {
-//		try {
-//			//getService().logout(session);
-//		} catch (SigningServiceLogoutValidationFaultFaultFaultMessage e) {
-//			LOG.warn("Logout failed", e);
-//		}
 	}
 
 	private String login() throws IOException {
@@ -273,6 +267,6 @@ public class AddoSigningService {
 	}
 
 	static String sha64(String string) {
-		return new String(encodeBase64(digest(getSha512Digest(), string.getBytes())));
+		return encodeBase64String(digest(getSha512Digest(), string.getBytes()));
 	}
 }

@@ -69,6 +69,10 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 		when(request.getCookies()).thenReturn(new Cookie[0]);
 	}
 	
+	protected void setApprovalUrl(String url) {
+		impl.setApprovalUrl(url);
+	}
+	
 	protected String mockSession(String ownerId) {
 		String sessionId = randomUUID().toString();
 		Cookie cookie = new Cookie(impl.getClass().getSimpleName(), sessionId);
