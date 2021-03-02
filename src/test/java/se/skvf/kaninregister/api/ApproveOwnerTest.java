@@ -62,9 +62,9 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		
 		when(signingService.checkSigning(signing.getToken())).thenReturn(Optional.of(true));
 		
-		String identifier = randomUUID().toString();
 		String subject = randomUUID().toString();
-		when(signingService.getSignature(signing.getToken())).thenReturn(new Signature(identifier, subject));
+		String signature = randomUUID().toString();
+		when(signingService.getSignature(signing.getToken())).thenReturn(new Signature(subject, signature));
 		
 		api.approveOwner(owner.getId());
 		
@@ -73,8 +73,8 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		Owner updatedOwner = ownerArgument.getValue();
 		assertThat(updatedOwner.getSignature())
 			.startsWith(url.toString())
-			.contains(identifier)
-			.contains(subject);
+			.contains(subject)
+			.endsWith(signature);
 		assertThat(updatedOwner.isApproved()).isTrue();
 	}
 

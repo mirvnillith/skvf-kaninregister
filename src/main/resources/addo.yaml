@@ -75,7 +75,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SigningStatusDTO'
-  /WebService/v2.0/restsigningservice.svc/GetSigningWithoutDocuments:
+  /WebService/v2.0/restsigningservice.svc/GetSigning:
     get:
       tags: [VismaAddo]
       operationId: getSigning
@@ -388,6 +388,8 @@ components:
            type: string
            format: byte
          MimeType:
+           type: string
+         XmlDSig:
            type: string
           
     SigningEnclosureDTO:

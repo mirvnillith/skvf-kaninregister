@@ -7,6 +7,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.UUID.randomUUID;
 import static net.vismaaddo.api.DocumentDTO.MimeTypeEnum.PDF;
+import static org.apache.commons.codec.binary.Base64.decodeBase64;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.commons.codec.digest.DigestUtils.digest;
 import static org.apache.commons.codec.digest.DigestUtils.getSha512Digest;
@@ -43,6 +44,7 @@ import net.vismaaddo.api.RecipientDTO;
 import net.vismaaddo.api.SenderDTO;
 import net.vismaaddo.api.SigningDTO;
 import net.vismaaddo.api.SigningDataDTO;
+import net.vismaaddo.api.SigningDocumentDTO;
 import net.vismaaddo.api.SigningRecipientDTO;
 import net.vismaaddo.api.SigningRequestDTO;
 import net.vismaaddo.api.SigningStatusDTO;
@@ -205,7 +207,8 @@ public class AddoSigningService {
 			LOG.info("getSigning(" + session + "," + token + "): " + signing.getName());
 			
 			SigningRecipientDTO signature = signing.getRecipients().get(0);
-			return new Signature(signature.getSignatureIdentifier(), signature.getSignatureSubject());
+			SigningDocumentDTO document = signing.getDocuments().get(0);
+			return new Signature(signature.getSignatureSubject(), document.getXmlDSig());
 		});
 	}
 	

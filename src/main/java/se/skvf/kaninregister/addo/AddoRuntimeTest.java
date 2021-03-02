@@ -23,7 +23,7 @@ class AddoRuntimeTest {
 		}
 		
 		if (status.get()) {
-			System.out.println("XML: " + service.getSignature(signing.getToken()));
+			System.out.println("Signature: " + service.getSignature(signing.getToken()).getSignature());
 		} else {
 			System.out.println("FAILED");
 		}

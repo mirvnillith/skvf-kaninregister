@@ -48,6 +48,7 @@ import net.vismaaddo.api.LoginRequestDTO;
 import net.vismaaddo.api.RecipientStatusDTO;
 import net.vismaaddo.api.SigningDTO;
 import net.vismaaddo.api.SigningDataDTO;
+import net.vismaaddo.api.SigningDocumentDTO;
 import net.vismaaddo.api.SigningRecipientDTO;
 import net.vismaaddo.api.SigningRequestDTO;
 import net.vismaaddo.api.SigningStatusDTO;
@@ -396,13 +397,16 @@ public class AddoSigningServiceTest extends BunnyTest {
 		recipient.setSignatureIdentifier(randomUUID().toString());
 		recipient.setSignatureSubject(randomUUID().toString());
 		signingResponse.setRecipients(singletonList(recipient));
+		SigningDocumentDTO document = new SigningDocumentDTO();
+		document.setXmlDSig(randomUUID().toString());
+		signingResponse.setDocuments(singletonList(document));
 		
 		when(addo.getSigning(session, token)).thenReturn(signingResponse);
 		try {
 			
 			assertThat(service.getSignature(token))
-				.extracting("identifier", "subject")
-				.containsExactly(recipient.getSignatureIdentifier(), recipient.getSignatureSubject());
+				.extracting("subject", "signature")
+				.containsExactly(recipient.getSignatureSubject(), document.getXmlDSig());
 			
 		} finally {
 			verifySession(session);

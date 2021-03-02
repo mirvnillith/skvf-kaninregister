@@ -612,7 +612,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 					if (signed.isPresent()) {
 						if (signed.get()) {
 							Signature signature = signingService.getSignature(signing.getToken());
-							registry.update(owner.setSignature(approvalUrl + " " + signature.getIdentifier() + " (" + signature.getSubject() + "@" + timestamp() + ")"));							
+							registry.update(owner.setSignature(approvalUrl + " (" + signature.getSubject() + "@" + timestamp() + ") "+signature.getSignature()));							
 						} else {
 							throw new WebApplicationException(NO_CONTENT);
 						}
