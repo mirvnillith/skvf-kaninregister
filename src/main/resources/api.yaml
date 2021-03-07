@@ -63,25 +63,6 @@ paths:
           description: Incoming OwnerDTO must not contain an ID, but must have a user name
         '401':
           description: Session NOT allowed
-    get:
-      tags: [BunnyRegistry]
-      operationId: getOwners
-      summary: Returns a list of owners.
-      parameters:
-        - name: onlyBreeders
-          in: query
-          schema:
-            type: boolean
-            default: false
-      responses:
-        '200':
-          description: List of owners
-          content:
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/OwnerList'
-        '401':
-          description: Session required
                 
   /owners/{id}:
     get:
@@ -326,6 +307,37 @@ paths:
         '401':
           description: Session required, of owner
           
+  /owners/{owner}/bunnies/claim:
+    post:
+      tags: [BunnyRegistry]
+      operationId: claimBunny
+      summary: Claim an existing bunny.
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Bunny claim, provided by previous owner.
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/BunnyClaimDTO'
+      responses:
+        '200':
+          description: Bunny claimed
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/BunnyDTO'
+        '400':
+          description: If Incoming BunnyDTO has an ID, it must match the path.
+        '401':
+          description: Session required, of approved owner
+        '404':
+          description: Owner or bunny not found
+          
   /owners/{owner}/bunnies/{bunny}:
     put:
       tags: [BunnyRegistry]
@@ -343,7 +355,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Bunny to update, missing fields are unchanged. Owner may be different from path and will transfer bunny ownership.
+        description: Bunny to update, missing fields are unchanged.
         content:
           application/json:
             schema: 
@@ -380,10 +392,40 @@ paths:
         '204':
           description: Bunny deleted
         '401':
-          description: Session required, of owner
+          description: Session required, of approved owner
         '404':
           description: Owner or bunny not found
       
+  /owners/{owner}/bunnies/{bunny}/transfer:
+    put:
+      tags: [BunnyRegistry]
+      operationId: transferBunny
+      summary: Transfers an owned bunny.
+      parameters:
+        - name: owner
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: bunny
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Bunny transfer
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/BunnyTransferDTO'
+        '400':
+          description: If Incoming BunnyDTO has an ID, it must match the path.
+        '401':
+          description: Session required, of approved owner
+        '404':
+          description: Owner or bunny not found
+
   /bunnies:
     get:
       tags: [BunnyRegistry]
@@ -431,10 +473,10 @@ paths:
         '404':
           description: Bunny not found
           
-  /bunnies/{id}/revert:
+  /bunnies/{id}/reclaim:
     get:
       tags: [BunnyRegistry]
-      operationId: revertBunnyOwner
+      operationId: reclaimBunny
       summary: Reverts bunny to previous owner
       description: The previous owner can revert a bunny if the new owner is not activated
       parameters:
@@ -511,14 +553,7 @@ paths:
 
 components:
   schemas:
-    OwnerList:
-      type: object
-      properties:
-        owners:
-          type: array
-          items: 
-            $ref: '#/components/schemas/OwnerListDTO'
-    OwnerListDTO:
+    OwnerDTO:
       type: object
       properties:
         id:
@@ -532,19 +567,14 @@ components:
           readOnly: true
         breederName:
           type: string
-    OwnerDTO:
-      allOf:
-        - $ref: '#/components/schemas/OwnerListDTO'
-        - type: object
-          properties:
-            email:
-              type: string
-            publicOwner:
-              type: boolean
-            breeder:
-              type: boolean
-            publicBreeder:
-              type: boolean
+        email:
+          type: string
+        publicOwner:
+          type: boolean
+        breeder:
+          type: boolean
+        publicBreeder:
+          type: boolean
             
     LoginDTO:
        type: object
@@ -597,15 +627,27 @@ components:
       properties:
         id:
           type: string
-        owner:
-          type: string
         name:
+          type: string
+        claimToken:
+          type: string
+    BunnyTransferDTO:
+      type: object
+      properties:
+        claimToken:
+          type: string
+    BunnyClaimDTO:
+      type: object
+      properties:
+        claimToken:
           type: string
     BunnyDTO:
       allOf:
         - $ref: '#/components/schemas/BunnyListDTO'
         - type: object
           properties:
+            owner:
+              type: string
             previousOwner:
               type: string
               readOnly: true

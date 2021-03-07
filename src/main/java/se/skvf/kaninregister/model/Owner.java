@@ -1,6 +1,5 @@
 package se.skvf.kaninregister.model;
 
-import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
@@ -226,12 +225,6 @@ public class Owner extends Entity {
 		return isNotEmpty(signature);
 	}
 
-	public static Map<String, Predicate<String>> onlyBreeders(Boolean onlyBreeders) {
-		Map<String, Predicate<String>> filter = new HashMap<>();
-		filter.put("Uppfödare", b -> TRUE.equals(onlyBreeders) ? booleanFromString(b) : true);
-		return filter;
-	}
-
 	public Owner deactivate() {
 		unapprove();
 		userName = null;
@@ -249,5 +242,11 @@ public class Owner extends Entity {
 		email = null;
 		signature = null;
 		return this;
+	}
+
+	public static Owner newOwner() {
+		return new Owner()
+				.setFirstName("Ny")
+				.setLastName("Ägare");
 	}
 }

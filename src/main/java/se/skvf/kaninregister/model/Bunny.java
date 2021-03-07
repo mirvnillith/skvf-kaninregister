@@ -95,6 +95,12 @@ public class Bunny extends Entity {
 		return filter;
 	}
 	
+	public static Map<String, Predicate<String>> byPreviousOwner(String id) {
+		Map<String, Predicate<String>> filter = new HashMap<>();
+		filter.put("Tidigare Ägare", id::equals);
+		return filter;
+	}
+	
 	public static Map<String, Predicate<String>> byBreeder(String id) {
 		Map<String, Predicate<String>> filter = new HashMap<>();
 		filter.put("Uppfödare", id::equals);

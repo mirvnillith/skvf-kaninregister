@@ -69,62 +69,35 @@ public class ApplicationApiTest {
 		
 		// Breeder creates an account ...
 		OwnerDTO breeder = new OwnerDTO();
-		breeder.setUserName(randomUUID().toString());
-		breeder.setFirstName(randomUUID().toString());
-		breeder.setLastName(randomUUID().toString());
-		breeder = api.createOwner(breeder);
-		
-		// ... and activates by user name
-		ActivationDTO activation = new ActivationDTO();
-		activation.setUserName(breeder.getUserName());
-		activation.setPassword(randomUUID().toString());
-		api.activateOwner(breeder.getId(), activation);
-		
-		// Breeder logs in ...
-		LoginDTO loginDTO = new LoginDTO();
-		loginDTO.setUserName(breeder.getUserName());
-		String breederPassword = activation.getPassword();
-		loginDTO.setPassword(breederPassword);
-		api.login(loginDTO);
-		
-		// ... approves ...
-		api.approveOwner(breeder.getId());
+		String breederPassword = createApprovedOwner(breeder);
 		
 		// .. and creates a bunny
 		BunnyDTO bunny = new BunnyDTO();
 		bunny.setBreeder(breeder.getId());
 		bunny.setName("Bunny");
-		bunny.setOwner(breeder.getId());
 		bunny = api.createBunny(breeder.getId(), bunny);
 		
 		// Time passes
 		api.logout();
-		api.login(loginDTO);
+		login(breeder, breederPassword);
 		
 		// Breeder sells bunny to a new owner ...
-		BunnyDTO transfer = new BunnyDTO();
-		transfer.setOwner("");
-		bunny = api.updateBunny(breeder.getId(), bunny.getId(), transfer);
+		api.transferBunny(breeder.getId(), bunny.getId());
 		// ... reverts ...
-		bunny = api.revertBunnyOwner(bunny.getId());
+		bunny = api.reclaimBunny(bunny.getId());
 		// ... and sells again
-		bunny = api.updateBunny(breeder.getId(), bunny.getId(), transfer);
+		BunnyTransferDTO transfer = api.transferBunny(breeder.getId(), bunny.getId());
 		
 		api.logout();
 		
-		// New owner activates by bunny ...
-		activation = new ActivationDTO();
-		activation.setBunny(bunny.getId());
-		activation.setUserName(randomUUID().toString());
-		String ownerPassword = randomUUID().toString();
-		activation.setPassword(ownerPassword);
-		api.activateOwner(bunny.getOwner(), activation);
+		// New owner creates an account ...
+		OwnerDTO owner = new OwnerDTO();
+		String ownerPassword = createApprovedOwner(owner);
 		
-		// ... and renames bunny
-		loginDTO.setUserName(activation.getUserName());
-		loginDTO.setPassword(activation.getPassword());
-		OwnerDTO owner = api.login(loginDTO);
-		api.approveOwner(owner.getId());
+		// ... and claims bunny
+		BunnyClaimDTO claim = new BunnyClaimDTO();
+		claim.setClaimToken(transfer.getClaimToken());
+		bunny = api.claimBunny(owner.getId(), claim);
 		BunnyDTO rename = new BunnyDTO();
 		rename.setName("My Bunny");
 		bunny = api.updateBunny(owner.getId(), bunny.getId(), rename);
@@ -139,22 +112,45 @@ public class ApplicationApiTest {
 			.satisfies(b -> assertThat(b.getName()).isEqualTo("My Bunny"));
 		
 		// Delete breeder
-		loginDTO.setUserName(breeder.getUserName());
-		loginDTO.setPassword(breederPassword);
-		api.login(loginDTO);
+		login(breeder, breederPassword);
 		api.unapproveOwner(breeder.getId());
 		assertThat(api.getOwner(breeder.getId()).getFirstName()).isEqualTo("Okänd");
 		api.deleteOwner(breeder.getId());
 		
 		// Delete bunny ...
-		loginDTO.setUserName(owner.getUserName());
-		loginDTO.setPassword(ownerPassword);
-		api.login(loginDTO);
+		login(owner, ownerPassword);
 		api.deleteBunny(owner.getId(), bunny.getId());
 		// ... and owner
 		api.deleteOwner(owner.getId());
 		
 		assertThat(registry.findBunnies(ALL)).isEmpty();
 		assertThat(registry.findOwners(ALL)).isEmpty();
+	}
+
+	private String createApprovedOwner(OwnerDTO owner) {
+		
+		owner.setUserName(randomUUID().toString());
+		owner.setFirstName(randomUUID().toString());
+		owner.setLastName(randomUUID().toString());
+		OwnerDTO created = api.createOwner(owner);
+		owner.setId(created.getId());
+		
+		ActivationDTO activation = new ActivationDTO();
+		activation.setUserName(owner.getUserName());
+		activation.setPassword(randomUUID().toString());
+		api.activateOwner(owner.getId(), activation);
+		
+		login(owner, activation.getPassword());
+		
+		api.approveOwner(owner.getId());
+		
+		return activation.getPassword();
+	}
+
+	private void login(OwnerDTO owner, String password) {
+		LoginDTO loginDTO = new LoginDTO();
+		loginDTO.setUserName(owner.getUserName());
+		loginDTO.setPassword(password);
+		api.login(loginDTO);
 	}
 }

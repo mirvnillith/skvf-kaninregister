@@ -5,6 +5,7 @@ import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -21,13 +22,33 @@ public class GetOwnerBunniesTest extends BunnyRegistryApiTest {
 		
 		Owner owner = mockOwner();
 		mockSession(owner.getId());
-		Bunny bunny = mockBunny();
+		Bunny bunny = mockBunny()
+				.setOwner(owner.getId());
 		
 		when(registry.findBunnies(filterArgument.capture())).thenReturn(singleton(bunny));
 		
 		BunnyListDTO dto = api.getOwnerBunnies(owner.getId()).getBunnies().get(0);
 		
 		assertBunny(dto, bunny);
+	}
+	
+	@Test
+	public void getOwnerBunnies_transferred() throws IOException {
+		
+		Owner owner = mockOwner();
+		mockSession(owner.getId());
+		
+		Owner newOwner = mockOwner();
+		Bunny bunny = mockBunny()
+				.setOwner(newOwner.getId())
+				.setPreviousOwner(owner.getId());
+		
+		when(registry.findBunnies(filterArgument.capture())).thenReturn(singleton(bunny));
+		
+		assertThat(api.getOwnerBunnies(owner.getId()).getBunnies())
+			.hasSize(2)
+			.anySatisfy(own -> assertThat(own.getClaimToken()).isNull())
+			.anySatisfy(transfer -> assertThat(transfer.getClaimToken()).isEqualTo(newOwner.getId()));
 	}
 	
 	@Test

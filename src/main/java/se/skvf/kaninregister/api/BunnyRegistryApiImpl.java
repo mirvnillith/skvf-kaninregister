@@ -5,6 +5,7 @@ import static java.util.Collections.singleton;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
@@ -17,15 +18,15 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static se.skvf.kaninregister.model.Bunny.byBreeder;
 import static se.skvf.kaninregister.model.Bunny.byOwner;
+import static se.skvf.kaninregister.model.Bunny.byPreviousOwner;
 import static se.skvf.kaninregister.model.Owner.byUserName;
-import static se.skvf.kaninregister.model.Owner.onlyBreeders;
+import static se.skvf.kaninregister.model.Owner.newOwner;
 
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -130,7 +131,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		BunnyListDTO dto = new BunnyListDTO();
 		dto.setId(bunny.getId());
 		dto.setName(bunny.getName());
-		dto.setOwner(bunny.getOwner());
 		return dto;
 	}
 	
@@ -145,16 +145,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setBreeder(owner.isBreeder());
 		dto.setBreederName(owner.getBreederName());
 		dto.setPublicBreeder(owner.isPublicBreeder());
-		return dto;
-	}
-	
-	private static OwnerListDTO toListDTO(Owner owner) {
-		OwnerListDTO dto = new OwnerListDTO();
-		dto.setId(owner.getId());
-		dto.setFirstName(owner.getFirstName());
-		dto.setLastName(owner.getLastName());
-		dto.setUserName(owner.getUserName());
-		dto.setBreederName(owner.getBreederName());
 		return dto;
 	}
 	
@@ -316,33 +306,33 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			validateSession(id);
 			validateOwner(id, false);
 			
-			return toBunnyList(registry.findBunnies(byOwner(id)));
+			BunnyList bunnies = toBunnyList(registry.findBunnies(byOwner(id)));
+			addTransferBunnies(bunnies, id);
+			return bunnies;
 		});
 	}
 
-	private static BunnyList toBunnyList(Collection<Bunny> bunnies) {
+	private void addTransferBunnies(BunnyList bunnies, String id) throws IOException {
+		Collection<Bunny> transfers = registry.findBunnies(byPreviousOwner(id));
+		if (transfers.size() > 0) {
+			Set<String> newOwners = transfers.stream().map(Bunny::getOwner).collect(toSet());
+			Map<String, Owner> owners = registry.findOwners(newOwners).stream().collect(toMap(Owner::getId, identity()));
+			for (Bunny transfer : transfers) {
+				if (!owners.get(transfer.getOwner()).isActivated()) {
+					BunnyListDTO dto = toListDTO(transfer);
+					dto.setClaimToken(transfer.getOwner());
+					bunnies.getBunnies().add(dto);
+				}
+			}
+		}
+	}
+
+	private BunnyList toBunnyList(Collection<Bunny> bunnies) throws IOException {
 		BunnyList list = new BunnyList();
 		list.setBunnies(bunnies.stream().map(BunnyRegistryApiImpl::toListDTO).collect(Collectors.toList()));
 		return list;
 	}
 	
-	private static OwnerList toOwnerList(Collection<Owner> owners) {
-		OwnerList list = new OwnerList();
-		list.setOwners(owners.stream().map(BunnyRegistryApiImpl::toListDTO).collect(Collectors.toList()));
-		return list;
-	}
-
-	@Override
-	public OwnerList getOwners(Boolean onlyBreeders) {
-		return process(() -> {
-			
-			if (getSession() == null) {
-				throw new WebApplicationException(UNAUTHORIZED);
-			}
-			return toOwnerList(registry.findOwners(onlyBreeders(onlyBreeders)));
-		});
-	}
-
 	@Override
 	public OwnerDTO login(LoginDTO loginDTO) {
 		return process(() -> {
@@ -407,32 +397,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		return process(() -> {
 			
 			validateSession(ownerId);
-			
-			Set<String> ownerIds = new HashSet<>();
-			ownerIds.add(ownerId);
-			if (bunnyDTO.getBreeder() != null) {
-				ownerIds.add(bunnyDTO.getBreeder());
-			}
-			if (isNotEmpty(bunnyDTO.getOwner())) {
-				ownerIds.add(bunnyDTO.getOwner());
-			}
-			
-			Map<String, Owner> owners = registry.findOwners(ownerIds).stream().collect(toMap(Owner::getId, identity()));
-			if (owners.get(ownerId) == null) {
-				throw new WebApplicationException(NOT_FOUND);
-			}
-			if (bunnyDTO.getBreeder() != null &&
-					owners.get(bunnyDTO.getBreeder()) == null) {
-				throw new WebApplicationException(NOT_FOUND);
-			}
-			if (bunnyDTO.getOwner() != null) {
-				if (bunnyDTO.getOwner().isEmpty()) {
-					// Anonymous new owner
-					bunnyDTO.setOwner(registry.add(new Owner().deactivate().setFirstName("Ny")));
-				} else if (owners.get(bunnyDTO.getOwner()) == null) {
-					throw new WebApplicationException(NOT_FOUND);
-				}
-			}
+			validateOwner(ownerId, true);
 			
 			if (bunnyDTO.getId() != null &&
 					!bunnyDTO.getId().equals(bunnyId)) {
@@ -440,10 +405,11 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			}
 			Bunny bunny = validateBunny(bunnyId);
 			
-			if (bunnyDTO.getOwner() != null && 
-					!bunny.getOwner().equals(bunnyDTO.getOwner())) {
-				bunny.setPreviousOwner(bunny.getOwner());
+			if (bunnyDTO.getBreeder() != null &&
+					!bunnyDTO.getBreeder().equals(bunny.getBreeder())) {
+				bunnyDTO.setBreeder("");
 			}
+			
 			update(bunny, bunnyDTO);
 			registry.update(bunny);
 			return toDTO(bunny);
@@ -453,7 +419,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private static void update(Bunny bunny, BunnyDTO dto) {
 		ofNullable(dto.getBreeder()).ifPresent(bunny::setBreeder);
 		ofNullable(dto.getName()).ifPresent(bunny::setName);
-		ofNullable(dto.getOwner()).ifPresent(bunny::setOwner);
 	}
 	
 	private static void update(Owner owner, OwnerDTO dto) {
@@ -525,7 +490,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public BunnyDTO revertBunnyOwner(String id) {
+	public BunnyDTO reclaimBunny(String id) {
 		return process(() -> {
 
 			if (getSession() == null) {
@@ -661,6 +626,54 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			removeCookie();
 			
 			return Void.class;
+		});
+	}
+
+	@Override
+	public BunnyDTO claimBunny(String owner, BunnyClaimDTO claim) {
+		return process(() -> {
+			
+			validateSession(owner);
+			Owner newOwner = validateOwner(owner, true);
+			Owner tempOwner = validateOwner(claim.getClaimToken(), false);
+			if (tempOwner.isActivated()) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			
+			Collection<Bunny> bunnies = registry.findBunnies(byOwner(tempOwner.getId()));
+			if (bunnies.isEmpty()) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			Bunny bunny = bunnies.iterator().next();
+			
+			bunny.setOwner(newOwner.getId());
+			registry.update(bunny);
+			registry.remove(tempOwner);
+			
+			return toDTO(bunny);
+		});
+	}
+
+	@Override
+	public BunnyTransferDTO transferBunny(String ownerId, String bunnyId) {
+		return process(() -> {
+			
+			validateSession(ownerId);
+			validateOwner(ownerId, true);
+			
+			Bunny bunny = validateBunny(bunnyId);
+			if (!bunny.getOwner().equals(ownerId)) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			
+			String newOwnerId = registry.add(newOwner());
+			bunny.setPreviousOwner(ownerId);
+			bunny.setOwner(newOwnerId);
+			registry.update(bunny);
+			
+			BunnyTransferDTO dto = new BunnyTransferDTO();
+			dto.setClaimToken(newOwnerId);
+			return dto;
 		});
 	}
 }

@@ -17,10 +17,10 @@ import org.junit.jupiter.api.Test;
 import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Owner;
 
-public class RevertBunnyTest extends BunnyRegistryApiTest {
+public class ReclaimBunnyTest extends BunnyRegistryApiTest {
 
 	@Test
-	public void revertBunny() throws IOException {
+	public void reclaimBunny() throws IOException {
 		
 		Owner owner = mockOwner();
 		Owner previousOwner = mockOwner();
@@ -30,18 +30,18 @@ public class RevertBunnyTest extends BunnyRegistryApiTest {
 		bunny.setOwner(owner.getId());
 		bunny.setPreviousOwner(previousOwner.getId());
 		
-		BunnyDTO reverted = api.revertBunnyOwner(bunny.getId());
+		BunnyDTO reclaimed = api.reclaimBunny(bunny.getId());
 		
 		verify(registry).update(bunnyArgument.capture());
 		verify(registry).remove(owner);
 		
-		assertBunny(reverted, bunnyArgument.getValue());
-		assertThat(reverted.getOwner()).isEqualTo(previousOwner.getId());
-		assertThat(reverted.getPreviousOwner()).isNull();
+		assertBunny(reclaimed, bunnyArgument.getValue());
+		assertThat(reclaimed.getOwner()).isEqualTo(previousOwner.getId());
+		assertThat(reclaimed.getPreviousOwner()).isNull();
 	}
 	
 	@Test
-	public void revertBunny_error() throws IOException {
+	public void reclaimBunny_error() throws IOException {
 		
 		Owner owner = mockOwner();
 		Owner previousOwner = mockOwner();
@@ -53,11 +53,11 @@ public class RevertBunnyTest extends BunnyRegistryApiTest {
 		
 		doThrow(NullPointerException.class).when(registry).update(bunny);
 		
-		assertError(INTERNAL_SERVER_ERROR, () -> api.revertBunnyOwner(bunny.getId()));
+		assertError(INTERNAL_SERVER_ERROR, () -> api.reclaimBunny(bunny.getId()));
 	}
 	
 	@Test
-	public void revertBunny_activatedOwner() throws IOException {
+	public void reclaimBunny_activatedOwner() throws IOException {
 		
 		Owner owner = mockOwner();
 		owner.setPassword(randomUUID().toString());
@@ -68,22 +68,22 @@ public class RevertBunnyTest extends BunnyRegistryApiTest {
 		bunny.setOwner(owner.getId());
 		bunny.setPreviousOwner(previousOwner.getId());
 		
-		assertError(CONFLICT, () -> api.revertBunnyOwner(bunny.getId()));
+		assertError(CONFLICT, () -> api.reclaimBunny(bunny.getId()));
 	}
 	
 	@Test
-	public void revertBunny_noPreviousOwner() throws IOException {
+	public void reclaimBunny_noPreviousOwner() throws IOException {
 		
 		Owner owner = mockOwner();
 		mockSession(owner.getId());
 		
 		Bunny bunny = mockBunny();
 		
-		assertError(BAD_REQUEST, () -> api.revertBunnyOwner(bunny.getId()));
+		assertError(BAD_REQUEST, () -> api.reclaimBunny(bunny.getId()));
 	}
 	
 	@Test
-	public void revertBunny_notPreviousOwner() throws IOException {
+	public void reclaimBunny_notPreviousOwner() throws IOException {
 		
 		Owner owner = mockOwner();
 		mockSession(owner.getId());
@@ -91,21 +91,21 @@ public class RevertBunnyTest extends BunnyRegistryApiTest {
 		Bunny bunny = mockBunny();
 		bunny.setPreviousOwner(randomUUID().toString());
 		
-		assertError(UNAUTHORIZED, () -> api.revertBunnyOwner(bunny.getId()));
+		assertError(UNAUTHORIZED, () -> api.reclaimBunny(bunny.getId()));
 	}
 	
 	@Test
-	public void revertBunny_unknownBunny() throws IOException {
+	public void reclaimBunny_unknownBunny() throws IOException {
 		
 		Owner owner = mockOwner();
 		mockSession(owner.getId());
 		
-		assertError(NOT_FOUND, () -> api.revertBunnyOwner(randomUUID().toString()));
+		assertError(NOT_FOUND, () -> api.reclaimBunny(randomUUID().toString()));
 	}
 	
 	@Test
-	public void revertBunny_noSession() throws IOException {
+	public void reclaimBunny_noSession() throws IOException {
 		
-		assertError(UNAUTHORIZED, () -> api.revertBunnyOwner(randomUUID().toString()));
+		assertError(UNAUTHORIZED, () -> api.reclaimBunny(randomUUID().toString()));
 	}
 }
