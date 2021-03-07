@@ -199,4 +199,20 @@ public class ActivateOwnerTest extends BunnyRegistryApiTest {
 
 		assertError(NOT_FOUND, () -> api.activateOwner(owner.getId(), dto));
 	}
+	
+	@Test
+	public void activate_emptyBunny() throws IOException {
+		
+		Owner owner = mockOwner();
+		
+		String userName = randomUUID().toString();
+		String password = randomUUID().toString();
+		
+		ActivationDTO dto = new ActivationDTO();
+		dto.setBunny("");
+		dto.setUserName(userName);
+		dto.setPassword(password);
+		
+		assertError(NOT_FOUND, () -> api.activateOwner(owner.getId(), dto));
+	}
 }

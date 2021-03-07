@@ -4,6 +4,7 @@ import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
@@ -36,6 +37,24 @@ public class DeactivateOwnerTest extends BunnyRegistryApiTest {
 		assertThat(updatedOwner.isPublicOwner()).isFalse();
 		assertThat(updatedOwner.isPublicBreeder()).isFalse();
 		assertThat(updatedOwner.isActivated()).isFalse();
+	}
+	
+	@Test
+	public void deactivate_inactive() throws IOException {
+		
+		Owner owner = mockOwner()
+				.setUserName(randomUUID().toString())
+				.setPublicOwner(true)
+				.setPublicBreeder(true);
+		String sessionId = mockSession(owner.getId());
+		
+		assertThat(owner.isActivated()).isFalse();
+		
+		api.deactivateOwner(owner.getId());
+		assertCookie(sessionId, false);
+		
+		verify(registry, never()).update(owner);
+		assertThat(owner.isActivated()).isFalse();
 	}
 	
 	@Test

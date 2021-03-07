@@ -29,8 +29,8 @@ public class UpdateBunnyTest extends BunnyRegistryApiTest {
 		reset(registry);
 		when(registry.findOwners(anyCollection())).thenReturn(asList(owner));
 		
-		Bunny bunny = mockBunny();
-		bunny.setOwner(owner.getId());
+		Bunny bunny = mockBunny()
+				.setOwner(owner.getId());
 		
 		BunnyDTO dto = new BunnyDTO();
 		dto.setName(randomUUID().toString());
@@ -42,6 +42,55 @@ public class UpdateBunnyTest extends BunnyRegistryApiTest {
 		
 		verify(registry).update(bunnyArgument.capture());
 		assertThat(bunnyArgument.getValue().getOwner()).isEqualTo(owner.getId());
+	}
+	
+	@Test
+	public void updateBunny_sameBreeder() throws IOException {
+		
+		Owner owner = mockOwner()
+				.setSignature(randomUUID().toString());
+		mockSession(owner.getId());
+		reset(registry);
+		when(registry.findOwners(anyCollection())).thenReturn(asList(owner));
+		
+		Bunny bunny = mockBunny()
+				.setOwner(owner.getId())
+				.setBreeder(owner.getId());
+		
+		BunnyDTO dto = new BunnyDTO();
+		dto.setBreeder(owner.getId());
+		
+		dto = api.updateBunny(owner.getId(), bunny.getId(), dto);
+		
+		assertThat(dto.getOwner()).isEqualTo(owner.getId());
+		
+		verify(registry).update(bunnyArgument.capture());
+		assertThat(bunnyArgument.getValue().getBreeder()).isEqualTo(owner.getId());
+	}
+	
+	@Test
+	public void updateBunny_sameId() throws IOException {
+		
+		Owner owner = mockOwner()
+				.setSignature(randomUUID().toString());
+		mockSession(owner.getId());
+		reset(registry);
+		when(registry.findOwners(anyCollection())).thenReturn(asList(owner));
+		
+		Bunny bunny = mockBunny()
+				.setOwner(owner.getId())
+				.setBreeder(owner.getId());
+		
+		BunnyDTO dto = new BunnyDTO();
+		dto.setId(bunny.getId());
+		dto.setName(randomUUID().toString());
+		
+		dto = api.updateBunny(owner.getId(), bunny.getId(), dto);
+		
+		assertThat(dto.getOwner()).isEqualTo(owner.getId());
+		
+		verify(registry).update(bunnyArgument.capture());
+		assertThat(bunnyArgument.getValue().getName()).isEqualTo(dto.getName());
 	}
 	
 	@Test

@@ -52,6 +52,25 @@ public class GetOwnerBunniesTest extends BunnyRegistryApiTest {
 	}
 	
 	@Test
+	public void getOwnerBunnies_transferredActivated() throws IOException {
+		
+		Owner owner = mockOwner();
+		mockSession(owner.getId());
+		
+		Owner newOwner = mockOwner()
+				.setPassword(randomUUID().toString());
+		Bunny bunny = mockBunny()
+				.setOwner(newOwner.getId())
+				.setPreviousOwner(owner.getId());
+		
+		when(registry.findBunnies(filterArgument.capture())).thenReturn(singleton(bunny));
+		
+		assertThat(api.getOwnerBunnies(owner.getId()).getBunnies())
+			.hasSize(1)
+			.anySatisfy(own -> assertThat(own.getClaimToken()).isNull());
+	}
+	
+	@Test
 	public void getOwnerBunnies_noSession() throws IOException {
 		
 		String ownerId = randomUUID().toString();
