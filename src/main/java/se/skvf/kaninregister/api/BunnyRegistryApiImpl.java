@@ -676,4 +676,12 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			return dto;
 		});
 	}
+
+	@Override
+	public void signOffline(String token, OfflineSignatureDTO dto) {
+		process(() -> {
+			signingService.setSigningState(token, dto.getSubject(), dto.getSuccess());
+			return Void.class;
+			});
+	}
 }

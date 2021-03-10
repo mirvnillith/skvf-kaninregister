@@ -41,6 +41,27 @@ paths:
         '200':
           description: Owner logged out
           
+  /signOffline/{token}:
+    post:
+      tags: [BunnyRegistry]
+      operationId: signOffline
+      summary: Offline signature
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Signature details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OfflineSignatureDTO'
+      responses:
+        '200':
+          description: Signature stored
+          
   /owners:
     post:
       tags: [BunnyRegistry]
@@ -653,3 +674,13 @@ components:
               readOnly: true
             breeder:
               type: string
+              
+    OfflineSignatureDTO:
+      type: object
+      required:
+        - success
+      properties:
+        subject:
+          type: string
+        success:
+          type: boolean
