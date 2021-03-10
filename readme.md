@@ -20,15 +20,15 @@ URL till PDF att signera (lämnas tom för ingen signering).
 
 ##### ADDO_URL
 
-URL till Visma Addo signeringstjänst (lämna tom om APPROVAL_URL är tom).
+URL till Visma Addo signeringstjänst (lämnas tom för offline-signering eller om APPROVAL_URL är tom).
 
 ##### ADDO_USERNAME
 
-Visma Addo användarnamn (lämna tom om APPROVAL_URL är tom).
+Visma Addo användarnamn (lämnas tom för offline-signering eller om APPROVAL_URL är tom).
 
 ##### ADDO_PASSWORD
 
-Visma Addo lösenord (lämna tom om APPROVAL_URL är tom).
+Visma Addo lösenord (lämnas tom för offline-signering eller om APPROVAL_URL är tom).
 
 ##### GOOGLE_CREDENTIALS
 
