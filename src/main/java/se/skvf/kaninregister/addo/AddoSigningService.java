@@ -5,12 +5,14 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static net.vismaaddo.api.DocumentDTO.MimeTypeEnum.PDF;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.commons.codec.digest.DigestUtils.digest;
 import static org.apache.commons.codec.digest.DigestUtils.getSha512Digest;
 import static org.apache.commons.io.IOUtils.copy;
+import static org.apache.commons.lang3.StringUtils.isAnyEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static se.skvf.kaninregister.addo.DistributionMethod.NONE;
 import static se.skvf.kaninregister.addo.SigningMethod.SWEDISH_BANKID;
@@ -18,6 +20,8 @@ import static se.skvf.kaninregister.addo.SigningMethod.SWEDISH_BANKID;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -60,16 +64,18 @@ public class AddoSigningService {
 	
 	private VismaAddoApi addo;
 	
-	@Value("${skvf.addo.url}")
+	@Value("${skvf.addo.url:}")
 	private String url;
-	@Value("${skvf.addo.email}")
+	@Value("${skvf.addo.email:}")
 	private String email;
-	@Value("${skvf.addo.password}")
+	@Value("${skvf.addo.password:}")
 	private String password;
 	@Value("${skvf.dev.addo:false}")
 	private boolean test;
 	
 	private String templateId;
+	
+	private Map<String, OfflineSigning> offlineSignings = new HashMap<>();
 	
 	void setUrl(String url) {
 		this.url = url;
@@ -81,6 +87,10 @@ public class AddoSigningService {
 	
 	void setPassword(String password) {
 		this.password = password;
+	}
+	
+	private boolean isOffline() {
+		return isAnyEmpty(url, email, password);
 	}
 	
 	@PostConstruct
@@ -103,7 +113,13 @@ public class AddoSigningService {
 		}
 	}
 	
-	public Signing startSigning(URL pdf) throws IOException {
+	public synchronized Signing startSigning(URL pdf) throws IOException {
+		
+		if (isOffline()) {
+			OfflineSigning signing = new OfflineSigning();
+			offlineSignings.put(signing.getToken(), signing);
+			return signing;
+		}
 		
 		return inSession(session -> {
 
@@ -178,7 +194,11 @@ public class AddoSigningService {
 	 * @param token
 	 * @return true if signing successful, false if signing failed and empty if signing ongoing
 	 */
-	public Optional<Boolean> checkSigning(String token) throws IOException {
+	public synchronized Optional<Boolean> checkSigning(String token) throws IOException {
+		
+		if (isOffline()) {
+			return ofNullable(offlineSignings.get(token)).map(OfflineSigning::getState);
+		}
 		
 		return inSession(session -> {
 			
@@ -197,7 +217,21 @@ public class AddoSigningService {
 		});
 	}
 
-	public Signature getSignature(String token) throws IOException {
+	public synchronized void setSigningState(String token, String subject, boolean success) {
+		ofNullable(offlineSignings.get(token))
+			.ifPresent(os -> os.setState(subject, success));
+	}
+	
+	public synchronized Signature getSignature(String token) throws IOException {
+		
+		if (isOffline()) {
+			OfflineSigning signing = offlineSignings.get(token);
+			if (signing == null) {
+				return null;
+			}
+			offlineSignings.remove(token);
+			return signing.getSignature();
+		}
 		
 		return inSession(session -> {
 			
