@@ -130,21 +130,17 @@ public class ApplicationApiTest {
 	private String createApprovedOwner(OwnerDTO owner) {
 		
 		owner.setUserName(randomUUID().toString());
-		owner.setFirstName(randomUUID().toString());
-		owner.setLastName(randomUUID().toString());
-		OwnerDTO created = api.createOwner(owner);
-		owner.setId(created.getId());
 		
-		ActivationDTO activation = new ActivationDTO();
-		activation.setUserName(owner.getUserName());
-		activation.setPassword(randomUUID().toString());
-		api.activateOwner(owner.getId(), activation);
+		CreateOwnerDTO newOwner = new CreateOwnerDTO();
+		newOwner.setUserName(owner.getUserName());
+		newOwner.setPassword(randomUUID().toString());
+		owner.setId(api.createOwner(newOwner).getId());
 		
-		login(owner, activation.getPassword());
+		login(owner, newOwner.getPassword());
 		
 		api.approveOwner(owner.getId());
 		
-		return activation.getPassword();
+		return newOwner.getPassword();
 	}
 
 	private void login(OwnerDTO owner, String password) {

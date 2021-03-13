@@ -148,19 +148,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		return dto;
 	}
 	
-	private static Owner toOwner(OwnerDTO dto) {
-		Owner owner= new Owner().setId(dto.getId())
-				.setFirstName(dto.getFirstName())
-				.setLastName(dto.getLastName())
-				.setEmail(dto.getEmail())
-				.setUserName(dto.getUserName())
-				.setBreederName(dto.getBreederName());
-		ofNullable(dto.getPublicOwner()).ifPresent(owner::setPublicOwner);
-		ofNullable(dto.getBreeder()).ifPresent(owner::setBreeder);
-		ofNullable(dto.getPublicBreeder()).ifPresent(owner::setPublicBreeder);
-		return owner;
-	}
-
 	private String getSession() {
 		return ofNullable(getSessionCookie())
 				.map(Cookie::getValue)
@@ -192,25 +179,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			throw new WebApplicationException(UNAUTHORIZED);
 		}
 		return session;
-	}
-
-	@Override
-	public OwnerDTO createOwner(OwnerDTO ownerDTO) {
-		return process(() -> {
-			
-			if (getSession() != null) {
-				throw new WebApplicationException(UNAUTHORIZED);
-			}
-			
-			if (ownerDTO.getId() != null ||
-					ownerDTO.getUserName() == null) {
-				throw new WebApplicationException(BAD_REQUEST);
-			}
-			
-			ownerDTO.setId(registry.add(toOwner(ownerDTO)));
-			return ownerDTO;
-		
-		});
 	}
 
 	@Override
@@ -450,42 +418,29 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public void activateOwner(String id, ActivationDTO activationDTO) {
-		process(() -> {
+	public OwnerDTO createOwner(CreateOwnerDTO creationDTO) {
+		return process(() -> {
 			
 			if (getSession() != null) {
 				throw new WebApplicationException(UNAUTHORIZED);								
 			}
 			
-			Owner owner = validateOwner(id, false);
-			
-			if (owner.isActivated()) {
-				throw new WebApplicationException(NO_CONTENT);				
-			}
-			
-			if (activationDTO.getBunny() != null) {
-				Bunny bunny = validateBunny(activationDTO.getBunny());
-				if (!bunny.getOwner().equals(owner.getId())) {
+			if (isBlank(creationDTO.getUserName())) {
 					throw new WebApplicationException(BAD_REQUEST);
-				}
-			}
-			if (owner.getUserName() != null) {
-				if (!owner.getUserName().equals(activationDTO.getUserName())) {
-					throw new WebApplicationException(BAD_REQUEST);
-				}
-			} else if (registry.findOwners(byUserName(activationDTO.getUserName())).size() > 0) {
+			} else if (registry.findOwners(byUserName(creationDTO.getUserName())).size() > 0) {
 				throw new WebApplicationException(CONFLICT);
 			}
 			
-			if (isAllBlank(activationDTO.getPassword())) {
+			if (isBlank(creationDTO.getPassword())) {
 				throw new WebApplicationException(BAD_REQUEST);
 			}
 			
-			owner.setUserName(activationDTO.getUserName())
-				.setPassword(activationDTO.getPassword());
-			registry.update(owner);
+			Owner owner = Owner.newOwner()
+					.setUserName(creationDTO.getUserName())
+					.setPassword(creationDTO.getPassword());
+			registry.add(owner);
 			
-			return Void.class;
+			return toDTO(owner);
 		});
 	}
 

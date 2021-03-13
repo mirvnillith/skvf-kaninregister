@@ -68,11 +68,11 @@ paths:
       operationId: createOwner
       summary: Creates a new owner.
       requestBody:
-        description: Owner to create, without ID
+        description: Owner to create
         content:
           application/json:
             schema: 
-              $ref: '#/components/schemas/OwnerDTO'
+              $ref: '#/components/schemas/CreateOwnerDTO'
       responses:
         '200':
           description: Owner created
@@ -81,9 +81,11 @@ paths:
               schema: 
                 $ref: '#/components/schemas/OwnerDTO'
         '400':
-          description: Incoming OwnerDTO must not contain an ID, but must have a user name
+          description: Invalid user name or password
         '401':
           description: Session NOT allowed
+        '409':
+          description: User name already in use
                 
   /owners/{id}:
     get:
@@ -157,37 +159,6 @@ paths:
           description: Session required, of owner
         '404':
           description: Owner not found
-          
-  /owners/{id}/activate:
-    post:
-      tags: [BunnyRegistry]
-      operationId: activateOwner
-      summary: Activates owner account
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Activation data
-        content:
-          application/json:
-            schema: 
-              $ref: '#/components/schemas/ActivationDTO'
-      responses:
-        '200':
-          description: Owner activated
-        '204':
-          description: Owner already activated
-        '400':
-          description: Invalid user name or password
-        '401':
-          description: Session NOT allowed
-        '404':
-          description: Owner not found
-        '409':
-          description: User name already in use
           
   /owners/{id}/deactivate:
     post:
@@ -609,21 +580,16 @@ components:
          password:
            type: string
            description: Owner password
-    ActivationDTO:
+    CreateOwnerDTO:
        type: object
        required:
          - userName
          - password
        properties:
-         bunny:
-           type: string
-           description: Any bunny owned (required if owner has no previous user name)
          userName:
            type: string
-           description: User name to set
          password:
            type: string
-           description: Password to set
     PasswordDTO:
        type: object
        required:
