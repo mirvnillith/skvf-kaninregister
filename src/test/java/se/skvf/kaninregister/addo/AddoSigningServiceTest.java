@@ -9,6 +9,7 @@ import static org.apache.commons.io.FileUtils.writeByteArrayToFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import static se.skvf.kaninregister.addo.AddoSigningService.ONE_DAY;
 import static se.skvf.kaninregister.addo.AddoSigningService.SIGNING_COMMENT;
 import static se.skvf.kaninregister.addo.AddoSigningService.SIGNING_NAME;
 import static se.skvf.kaninregister.addo.AddoSigningService.sha64;
@@ -54,6 +55,7 @@ import net.vismaaddo.api.SigningRequestDTO;
 import net.vismaaddo.api.SigningStatusDTO;
 import net.vismaaddo.api.SigningTemplateDTO;
 import net.vismaaddo.api.SigningTemplatesDTO;
+import net.vismaaddo.api.TemplateOverrideDTO;
 import net.vismaaddo.api.TransactionStatusDTO;
 import net.vismaaddo.api.VismaAddoApi;
 import se.skvf.kaninregister.BunnyTest;
@@ -209,6 +211,14 @@ public class AddoSigningServiceTest extends BunnyTest {
 			InitiateSigningRequestDTO request = signingRequest.getValue();
 			assertThat(request.getToken())
 				.isEqualTo(session);
+
+			TemplateOverrideDTO templateOverride = request.getTemplateOverride();
+			assertThat(templateOverride.getDuration())
+				.isEqualTo(ONE_DAY);
+			assertThat(templateOverride.getNotificationInterval())
+				.isEqualTo(NONE);
+			assertThat(templateOverride.getLastReminder())
+				.isEqualTo(NONE);
 			
 			SigningRequestDTO signingRequest = request.getRequest();
 			assertThat(signingRequest.getName())

@@ -113,6 +113,18 @@ components:
            type: string
          request:
            $ref: '#/components/schemas/SigningRequestDTO'
+         templateOverride:
+           $ref: '#/components/schemas/TemplateOverrideDTO'
+           
+    TemplateOverrideDTO:
+       type: object
+       properties:
+         Duration:
+           type: string
+         NotificationInterval:
+           type: integer
+         LastReminder:
+           type: integer
            
     SigningRequestDTO:
        type: object

@@ -52,11 +52,13 @@ import net.vismaaddo.api.SigningRecipientDTO;
 import net.vismaaddo.api.SigningRequestDTO;
 import net.vismaaddo.api.SigningStatusDTO;
 import net.vismaaddo.api.SigningTemplateDTO;
+import net.vismaaddo.api.TemplateOverrideDTO;
 import net.vismaaddo.api.VismaAddoApi;
 
 @Component
 public class AddoSigningService {
 
+	static final String ONE_DAY = "P1D";
 	static final String SIGNING_NAME = "Datahantering i SKVFs kaninregister";
 	static final String SIGNING_COMMENT = "Detta dokument beskriver hur vi hanterar din information i vårt register";
 
@@ -147,6 +149,12 @@ public class AddoSigningService {
 			InitiateSigningRequestDTO request = new InitiateSigningRequestDTO();
 			request.setToken(session);
 			request.setRequest(signingRequest);
+			
+			TemplateOverrideDTO template = new TemplateOverrideDTO();
+			template.setDuration(ONE_DAY);
+			template.setNotificationInterval(NONE);
+			template.setLastReminder(NONE);
+			request.setTemplateOverride(template);
 			
 			LOG.info("initiateSigning(" + session + ")");
 			String token = addo.initiateSigning(request).getSigningToken();
