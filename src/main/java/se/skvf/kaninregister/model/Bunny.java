@@ -1,13 +1,19 @@
 package se.skvf.kaninregister.model;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
 public class Bunny extends Entity {
+
+	public enum IdentifierLocation {
+		LEFT_EAR, RIGHT_EAR, CHIP, RING
+	}
 
 	static final Collection<String> COLUMNS = asList("Ägare", "Tidigare Ägare", "Namn", "Uppfödare");
 
@@ -90,20 +96,33 @@ public class Bunny extends Entity {
 	}
 
 	public static Map<String, Predicate<String>> byOwner(String id) {
-		Map<String, Predicate<String>> filter = new HashMap<>();
-		filter.put("Ägare", id::equals);
-		return filter;
+		return Entity.by("Ägare", id);
 	}
 	
 	public static Map<String, Predicate<String>> byPreviousOwner(String id) {
-		Map<String, Predicate<String>> filter = new HashMap<>();
-		filter.put("Tidigare Ägare", id::equals);
-		return filter;
+		return Entity.by("Tidigare Ägare", id);
 	}
 	
 	public static Map<String, Predicate<String>> byBreeder(String id) {
-		Map<String, Predicate<String>> filter = new HashMap<>();
-		filter.put("Uppfödare", id::equals);
-		return filter;
+		return Entity.by("Uppfödare", id);
+	}
+	
+	public static Collection<Map<String, Predicate<String>>> byExactIdentifier(IdentifierLocation location, String identifier) throws IOException {
+		switch (location) {
+			case LEFT_EAR:
+				return singleton(Entity.by("Vänster Öra", identifier));
+			case RIGHT_EAR:
+				return singleton(Entity.by("Höger Öra", identifier));
+			case CHIP: {
+				Collection<Map<String, Predicate<String>>> chips = new ArrayList<>();
+				chips.add(Entity.by("Chip 1", identifier));
+				chips.add(Entity.by("Chip 2", identifier));
+				return chips;
+			}
+			case RING:
+				return singleton(Entity.by("Ring", identifier));
+			default:
+				throw new IOException("Unknown location: " + location);
+		}
 	}
 }

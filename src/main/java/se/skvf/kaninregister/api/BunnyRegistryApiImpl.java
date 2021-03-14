@@ -27,10 +27,12 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
@@ -49,6 +51,7 @@ import org.springframework.beans.factory.annotation.Value;
 import se.skvf.kaninregister.addo.AddoSigningService;
 import se.skvf.kaninregister.addo.Signature;
 import se.skvf.kaninregister.addo.Signing;
+import se.skvf.kaninregister.api.BunnyIdentifierDTO.LocationEnum;
 import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Owner;
 import se.skvf.kaninregister.model.Registry;
@@ -191,7 +194,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public BunnyList findBunnies(String identifier, String name) {
+	public BunnyList findBunnies(BunnyIdentifierDTO identifier) {
 		return process(() -> {
 
 			BunnyList list = new BunnyList();
@@ -646,5 +649,63 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			signingService.setSigningState(token, dto.getSubject(), dto.getSuccess());
 			return Void.class;
 			});
+	}
+
+	@Override
+	public void recoverOwner(String userName, RecoveryDTO recoveryDTO) {
+		process(() -> {
+			
+			if (getSession() != null) {
+				throw new WebApplicationException(UNAUTHORIZED);
+			}
+			
+			Collection<Owner> owners = registry.findOwners(byUserName(userName));
+			if (owners.isEmpty()) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			Owner owner = owners.iterator().next();
+			
+			Collection<Bunny> bunnies = byExactIdentifier(recoveryDTO.getBunnyIdentifier());
+			if (bunnies.size() != 1) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			Bunny bunny = bunnies.iterator().next();
+			
+			if (!bunny.getOwner().equals(owner.getId())) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			
+			if (isAllBlank(recoveryDTO.getNewPassword())) {
+				throw new WebApplicationException(BAD_REQUEST);
+			}
+			
+			owner.setPassword(recoveryDTO.getNewPassword());
+			registry.update(owner);
+			
+			return Void.class;
+		});
+	}
+
+	private Collection<Bunny> byExactIdentifier(BunnyIdentifierDTO bunnyIdentifier) throws IOException {
+		Set<Bunny> bunnies = new HashSet<Bunny>();
+		for (Map<String, Predicate<String>> filter : Bunny.byExactIdentifier(location(bunnyIdentifier.getLocation()), bunnyIdentifier.getIdentifier())) {
+			bunnies.addAll(registry.findBunnies(filter));
+		}
+		return bunnies;
+	}
+
+	private Bunny.IdentifierLocation location(LocationEnum location) {
+		switch (location) {
+			case LEFT_EAR:
+				return Bunny.IdentifierLocation.LEFT_EAR;
+			case RIGHT_EAR:
+				return Bunny.IdentifierLocation.RIGHT_EAR;
+			case CHIP:
+				return Bunny.IdentifierLocation.CHIP;
+			case RING:
+				return Bunny.IdentifierLocation.RING;
+			default:
+				throw new WebApplicationException(location.toString(), BAD_REQUEST);
+		}
 	}
 }

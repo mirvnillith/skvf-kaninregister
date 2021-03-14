@@ -248,6 +248,33 @@ paths:
         '404':
           description: Owner not found
           
+  /owners/{userName}/recover:
+    put:
+      tags: [BunnyRegistry]
+      operationId: recoverOwner
+      summary: Sets owner password.
+      parameters:
+        - name: userName
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Recovery data
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/RecoveryDTO'
+      responses:
+        '200':
+          description: Owner recovered
+        '400':
+          description: Invalid password
+        '401':
+          description: Session NOT allowed
+        '404':
+          description: Owner not found
+          
   /owners/{id}/bunnies:
     post:
       tags: [BunnyRegistry]
@@ -427,14 +454,10 @@ paths:
       parameters:
         - name: identifier
           in: query
+          required: true
           description: "Identifier template, with # as wildcard, for start of identifier"
           schema:
-            type: string
-        - name: name
-          in: query
-          description: Start of name
-          schema:
-            type: string
+            $ref: '#/components/schemas/BunnyIdentifierDTO'
       responses:
         '200':
           description: Bunnies found
@@ -608,6 +631,34 @@ components:
          newPassword:
            type: string
            description: New password to set
+           
+    RecoveryDTO:
+       type: object
+       required:
+         - bunnyIdentifier
+         - newPassword
+       properties:
+         bunnyIdentifier:
+           $ref: '#/components/schemas/BunnyIdentifierDTO'
+         newPassword:
+           type: string
+           description: New password to set
+           
+    BunnyIdentifierDTO:
+       type: object
+       required:
+         - location
+         - identifier
+       properties:
+         location:
+           type: string
+           enum:
+           - Left Ear
+           - Right Ear
+           - Chip
+           - Ring
+         identifier:
+           type: string
            
     BunnyList:
       type: object

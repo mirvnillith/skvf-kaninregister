@@ -4,6 +4,7 @@ import static se.skvf.kaninregister.data.Table.ID;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public abstract class Entity {
 
@@ -45,5 +46,35 @@ public abstract class Entity {
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "#" + id;
+	}
+	
+	public static Map<String, Predicate<String>> by(String field, String value) {
+		return by(field, value::equals);
+	}
+	
+	public static Map<String, Predicate<String>> by(String field, Predicate<String> predicate) {
+		Map<String, Predicate<String>> filter = new HashMap<>();
+		filter.put(field, predicate);
+		return filter;
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+
+		if (this == obj) {
+			return true;
+		}
+		
+		if (getClass().isInstance(obj)) {
+			Entity that = (Entity) obj;
+			return this.id.equals(that.id);
+		}
+		
+		return false;
 	}
 }
