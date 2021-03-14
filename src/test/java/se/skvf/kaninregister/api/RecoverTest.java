@@ -18,7 +18,6 @@ import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
-import se.skvf.kaninregister.api.BunnyIdentifierDTO.LocationEnum;
 import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Owner;
 
@@ -58,7 +57,7 @@ public class RecoverTest extends BunnyRegistryApiTest {
 	
 	private static BunnyIdentifierDTO bunnyIdentifier(String identifier) {
 		BunnyIdentifierDTO dto = new BunnyIdentifierDTO();
-		dto.setLocation(LocationEnum.values()[new Random().nextInt(LocationEnum.values().length)]);
+		dto.setLocation(BunnyIdentifierLocation.values()[new Random().nextInt(BunnyIdentifierLocation.values().length)]);
 		dto.setIdentifier(identifier);
 		return dto;
 	}

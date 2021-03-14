@@ -452,12 +452,18 @@ paths:
       summary: Finds bunnies
       description: At least of criteria is required for a result
       parameters:
+        - name: identifierLocation
+          in: query
+          required: true
+          description: "Identifier location"
+          schema:
+            $ref: '#/components/schemas/BunnyIdentifierLocation'
         - name: identifier
           in: query
           required: true
           description: "Identifier template, with # as wildcard, for start of identifier"
           schema:
-            $ref: '#/components/schemas/BunnyIdentifierDTO'
+            type: string
       responses:
         '200':
           description: Bunnies found
@@ -643,7 +649,15 @@ components:
          newPassword:
            type: string
            description: New password to set
-           
+    
+    BunnyIdentifierLocation:
+      type: string
+      enum:
+      - Left Ear
+      - Right Ear
+      - Chip
+      - Ring
+      
     BunnyIdentifierDTO:
        type: object
        required:
@@ -651,12 +665,7 @@ components:
          - identifier
        properties:
          location:
-           type: string
-           enum:
-           - Left Ear
-           - Right Ear
-           - Chip
-           - Ring
+           $ref: '#/components/schemas/BunnyIdentifierLocation'
          identifier:
            type: string
            

@@ -51,7 +51,6 @@ import org.springframework.beans.factory.annotation.Value;
 import se.skvf.kaninregister.addo.AddoSigningService;
 import se.skvf.kaninregister.addo.Signature;
 import se.skvf.kaninregister.addo.Signing;
-import se.skvf.kaninregister.api.BunnyIdentifierDTO.LocationEnum;
 import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Owner;
 import se.skvf.kaninregister.model.Registry;
@@ -194,7 +193,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public BunnyList findBunnies(BunnyIdentifierDTO identifier) {
+	public BunnyList findBunnies(BunnyIdentifierLocation location, String identifier) {
 		return process(() -> {
 
 			BunnyList list = new BunnyList();
@@ -694,7 +693,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		return bunnies;
 	}
 
-	private Bunny.IdentifierLocation location(LocationEnum location) {
+	private Bunny.IdentifierLocation location(BunnyIdentifierLocation location) {
 		switch (location) {
 			case LEFT_EAR:
 				return Bunny.IdentifierLocation.LEFT_EAR;
