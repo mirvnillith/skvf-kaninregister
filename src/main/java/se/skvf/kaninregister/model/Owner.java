@@ -21,7 +21,6 @@ public class Owner extends Entity {
 			"Förnamn", 
 			"Efternamn", 
 			"Offentlig Ägare",
-			"Uppfödare",
 			"Uppfödarnamn",
 			"Offentlig Uppfödare", 
 			"Användarnamn",
@@ -32,7 +31,6 @@ public class Owner extends Entity {
 	private String firstName;
 	private String lastName;
 	private boolean publicOwner;
-	private boolean breeder;
 	private String breederName;
 	private boolean publicBreeder;
 	private String userName;
@@ -103,7 +101,6 @@ public class Owner extends Entity {
 		values.add(firstName);
 		values.add(lastName);
 		values.add(toString(publicOwner));
-		values.add(toString(breeder));
 		values.add(breederName);
 		values.add(toString(publicBreeder));
 		values.add(userName);
@@ -130,7 +127,6 @@ public class Owner extends Entity {
 				Owner::setFirstName,
 				Owner::setLastName,
 				(o,v) -> o.setPublicOwner(booleanFromString(v)),
-				(o,v) -> o.setBreeder(booleanFromString(v)),
 				Owner::setBreederName,
 				(o,v) -> o.setPublicBreeder(booleanFromString(v)),
 				Owner::setUserName,
@@ -154,15 +150,6 @@ public class Owner extends Entity {
 		return super.toString() + ": " + firstName + " " + lastName;
 	}
 
-	public boolean isBreeder() {
-		return breeder;
-	}
-	
-	public Owner setBreeder(boolean breeder) {
-		this.breeder = breeder;
-		return this;
-	}
-	
 	public String getBreederName() {
 		return breederName;
 	}
@@ -236,7 +223,6 @@ public class Owner extends Entity {
 		firstName = "Okänd";
 		lastName = "Ägare";
 		publicOwner = false;
-		breeder = false;
 		breederName = null;
 		publicBreeder = false;
 		email = null;

@@ -24,7 +24,7 @@ public class getBunnyOwnerTest extends BunnyRegistryApiTest {
 		owner.setPublicOwner(true);
 		bunny.setOwner(owner.getId());
 		
-		OwnerDTO dto = api.getBunnyOwner(bunny.getId());
+		BunnyOwnerDTO dto = api.getBunnyOwner(bunny.getId());
 		
 		assertOwner(dto, owner);
 	}

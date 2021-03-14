@@ -142,9 +142,18 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setEmail(owner.getEmail());
 		dto.setUserName(owner.getUserName());
 		dto.setPublicOwner(owner.isPublicOwner());
-		dto.setBreeder(owner.isBreeder());
 		dto.setBreederName(owner.getBreederName());
 		dto.setPublicBreeder(owner.isPublicBreeder());
+		return dto;
+	}
+	
+	private static BunnyOwnerDTO toBunnyDTO(Owner owner) {
+		BunnyOwnerDTO dto = new BunnyOwnerDTO();
+		dto.setId(owner.getId());
+		dto.setFirstName(owner.getFirstName());
+		dto.setLastName(owner.getLastName());
+		dto.setEmail(owner.getEmail());
+		dto.setBreederName(owner.getBreederName());
 		return dto;
 	}
 	
@@ -199,14 +208,14 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public OwnerDTO getBunnyBreeder(String id) {
+	public BunnyOwnerDTO getBunnyBreeder(String id) {
 		return process(() -> {
 			
 			Owner breeder = validateOwner(validateBunny(id).getBreeder(), false);
 			if (breeder.isNotPublicBreeder()) {
 				throw new WebApplicationException(NO_CONTENT);
 			}
-			return toDTO(breeder);
+			return toBunnyDTO(breeder);
 		});
 	}
 
@@ -237,14 +246,14 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public OwnerDTO getBunnyOwner(String id) {
+	public BunnyOwnerDTO getBunnyOwner(String id) {
 		return process(() -> {
 			
 			Owner owner = validateOwner(validateBunny(id).getOwner(), false);
 			if (owner.isNotPublicOwner()) {
 				throw new WebApplicationException(NO_CONTENT);
 			}
-			return toDTO(owner);
+			return toBunnyDTO(owner);
 		});
 	}
 
@@ -394,7 +403,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		ofNullable(dto.getFirstName()).ifPresent(owner::setFirstName);
 		ofNullable(dto.getLastName()).ifPresent(owner::setLastName);
 		ofNullable(dto.getPublicOwner()).ifPresent(owner::setPublicOwner);
-		ofNullable(dto.getBreeder()).ifPresent(owner::setBreeder);
 		ofNullable(dto.getBreederName()).ifPresent(owner::setBreederName);
 		ofNullable(dto.getPublicBreeder()).ifPresent(owner::setPublicBreeder);
 	}

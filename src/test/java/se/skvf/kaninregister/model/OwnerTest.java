@@ -100,11 +100,6 @@ public class OwnerTest extends EntityTest<Owner> {
 	}
 	
 	@Test
-	public void breeder() throws Exception {
-		assertBooleanAttribute("Uppfödare", Owner::setBreeder, Owner::isBreeder);
-	}
-	
-	@Test
 	public void publicOwner() throws Exception {
 		assertBooleanAttribute("Offentlig Ägare", Owner::setPublicOwner, Owner::isPublicOwner);
 	}

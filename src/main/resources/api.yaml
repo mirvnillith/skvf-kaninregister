@@ -513,7 +513,7 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: '#/components/schemas/OwnerDTO'
+                $ref: '#/components/schemas/BunnyOwnerDTO'
         '204':
           description: Bunny has no public owner
         '404':
@@ -537,7 +537,7 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: '#/components/schemas/OwnerDTO'
+                $ref: '#/components/schemas/BunnyOwnerDTO'
         '204':
           description: Bunny has no public breeder
         '404':
@@ -545,7 +545,8 @@ paths:
 
 components:
   schemas:
-    OwnerDTO:
+
+    BunnyOwnerDTO:
       type: object
       properties:
         id:
@@ -554,19 +555,22 @@ components:
           type: string
         lastName:
           type: string
-        userName:
-          type: string
-          readOnly: true
         breederName:
           type: string
         email:
           type: string
-        publicOwner:
-          type: boolean
-        breeder:
-          type: boolean
-        publicBreeder:
-          type: boolean
+
+    OwnerDTO:
+      allOf:
+        - $ref: '#/components/schemas/BunnyOwnerDTO'
+        - type: object
+          properties:
+            userName:
+              type: string
+            publicOwner:
+              type: boolean
+            publicBreeder:
+              type: boolean
             
     LoginDTO:
        type: object
@@ -580,6 +584,7 @@ components:
          password:
            type: string
            description: Owner password
+           
     CreateOwnerDTO:
        type: object
        required:
@@ -590,6 +595,7 @@ components:
            type: string
          password:
            type: string
+           
     PasswordDTO:
        type: object
        required:
@@ -602,6 +608,7 @@ components:
          newPassword:
            type: string
            description: New password to set
+           
     BunnyList:
       type: object
       properties:
@@ -609,6 +616,7 @@ components:
           type: array
           items: 
             $ref: '#/components/schemas/BunnyListDTO'
+            
     BunnyListDTO:
       type: object
       properties:
@@ -618,16 +626,19 @@ components:
           type: string
         claimToken:
           type: string
+          
     BunnyTransferDTO:
       type: object
       properties:
         claimToken:
           type: string
+          
     BunnyClaimDTO:
       type: object
       properties:
         claimToken:
           type: string
+          
     BunnyDTO:
       allOf:
         - $ref: '#/components/schemas/BunnyListDTO'

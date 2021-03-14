@@ -32,7 +32,6 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 		dto.setLastName(randomUUID().toString());
 		dto.setUserName(randomUUID().toString());
 		dto.setPublicOwner(false);
-		dto.setBreeder(true);
 		dto.setBreederName(randomUUID().toString());
 		dto.setPublicBreeder(true);
 		
@@ -69,7 +68,6 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 		ofNullable(dto.getFirstName()).ifPresent(assertThat(updated.getFirstName())::isEqualTo);
 		ofNullable(dto.getLastName()).ifPresent(assertThat(updated.getLastName())::isEqualTo);
 		ofNullable(dto.getPublicOwner()).ifPresent(assertThat(updated.getPublicOwner())::isEqualTo);
-		ofNullable(dto.getBreeder()).ifPresent(assertThat(updated.getBreeder())::isEqualTo);
 		ofNullable(dto.getBreederName()).ifPresent(assertThat(updated.getBreederName())::isEqualTo);
 		ofNullable(dto.getPublicBreeder()).ifPresent(assertThat(updated.getPublicBreeder())::isEqualTo);
 	}

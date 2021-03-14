@@ -143,9 +143,18 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				() -> assertThat(actual.getUserName()).isEqualTo(expected.getUserName()),
 				() -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail()),
 				() -> assertThat(actual.isPublicOwner()).isEqualTo(expected.getPublicOwner()),
-				() -> assertThat(actual.isBreeder()).isEqualTo(expected.getBreeder()),
 				() -> assertThat(actual.getBreederName()).isEqualTo(expected.getBreederName()),
 				() -> assertThat(actual.isPublicBreeder()).isEqualTo(expected.getPublicBreeder())
+				);
+	}
+	
+	protected static void assertOwner(BunnyOwnerDTO expected, Owner actual) {
+		assertAll(
+				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
+				() -> assertThat(actual.getFirstName()).isEqualTo(expected.getFirstName()),
+				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName()),
+				() -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail()),
+				() -> assertThat(actual.getBreederName()).isEqualTo(expected.getBreederName())
 				);
 	}
 }
