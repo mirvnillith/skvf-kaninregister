@@ -1,6 +1,5 @@
 package se.skvf.kaninregister.api;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
@@ -16,9 +15,12 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static se.skvf.kaninregister.model.Bunny.WILDCARD;
 import static se.skvf.kaninregister.model.Bunny.byBreeder;
+import static se.skvf.kaninregister.model.Bunny.byExactIdentifier;
 import static se.skvf.kaninregister.model.Bunny.byOwner;
 import static se.skvf.kaninregister.model.Bunny.byPreviousOwner;
+import static se.skvf.kaninregister.model.Bunny.byWildcardIdentifier;
 import static se.skvf.kaninregister.model.Owner.byUserName;
 import static se.skvf.kaninregister.model.Owner.newOwner;
 
@@ -27,12 +29,10 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
@@ -196,8 +196,27 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	public BunnyList findBunnies(BunnyIdentifierLocation location, String identifier) {
 		return process(() -> {
 
+			if (location == null || identifier == null) {
+				throw new WebApplicationException(BAD_REQUEST);
+			}
+			
+			long wildcardCount = identifier.chars()
+					.filter(c -> c == WILDCARD)
+					.count();
+			if (wildcardCount > 2) {
+				throw new WebApplicationException(BAD_REQUEST);				
+			}
+			
+			Collection<Bunny> bunnies = registry.findBunnies(byWildcardIdentifier(location(location), identifier));
+			
+			if (bunnies.size()>100) {
+				throw new WebApplicationException(NO_CONTENT);
+			}
+			
 			BunnyList list = new BunnyList();
-			list.setBunnies(emptyList());
+			bunnies.stream()
+				.map(BunnyRegistryApiImpl::toListDTO)
+				.forEach(list.getBunnies()::add);
 			return list;
 		});
 	}
@@ -664,7 +683,14 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			}
 			Owner owner = owners.iterator().next();
 			
-			Collection<Bunny> bunnies = byExactIdentifier(recoveryDTO.getBunnyIdentifier());
+			BunnyIdentifierDTO bunnyIdentifier = recoveryDTO.getBunnyIdentifier();
+			if (bunnyIdentifier == null || 
+					bunnyIdentifier.getLocation() == null ||
+					bunnyIdentifier.getIdentifier() == null) {
+				throw new WebApplicationException(BAD_REQUEST);				
+			}
+			
+			Collection<Bunny> bunnies = registry.findBunnies(byExactIdentifier(location(bunnyIdentifier.getLocation()), bunnyIdentifier.getIdentifier()));
 			if (bunnies.size() != 1) {
 				throw new WebApplicationException(NOT_FOUND);
 			}
@@ -683,14 +709,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			return Void.class;
 		});
-	}
-
-	private Collection<Bunny> byExactIdentifier(BunnyIdentifierDTO bunnyIdentifier) throws IOException {
-		Set<Bunny> bunnies = new HashSet<Bunny>();
-		for (Map<String, Predicate<String>> filter : Bunny.byExactIdentifier(location(bunnyIdentifier.getLocation()), bunnyIdentifier.getIdentifier())) {
-			bunnies.addAll(registry.findBunnies(filter));
-		}
-		return bunnies;
 	}
 
 	private Bunny.IdentifierLocation location(BunnyIdentifierLocation location) {
