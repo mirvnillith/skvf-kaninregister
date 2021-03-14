@@ -209,7 +209,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			Collection<Bunny> bunnies = registry.findBunnies(byWildcardIdentifier(location(location), identifier));
 			
-			if (bunnies.size()>100) {
+			if (bunnies.size() > 10) {
 				throw new WebApplicationException(NO_CONTENT);
 			}
 			

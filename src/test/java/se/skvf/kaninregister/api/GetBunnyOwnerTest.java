@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Owner;
 
-public class getBunnyOwnerTest extends BunnyRegistryApiTest {
+public class GetBunnyOwnerTest extends BunnyRegistryApiTest {
 
 	@Test
 	public void getBunnyOwner() throws IOException {

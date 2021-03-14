@@ -461,7 +461,7 @@ paths:
         - name: identifier
           in: query
           required: true
-          description: "Identifier template, with # as wildcard, for start of identifier"
+          description: "Identifier template, with ? as wildcard"
           schema:
             type: string
       responses:
@@ -471,6 +471,10 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/BunnyList'
+        '204':
+          description: More than 10 bunnies found
+        '400':
+          description: Location/identifier not provided or more than 2 wildcards
                 
   /bunnies/{id}:
     get:

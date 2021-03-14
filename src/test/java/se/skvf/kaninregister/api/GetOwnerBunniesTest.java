@@ -1,5 +1,6 @@
 package se.skvf.kaninregister.api;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
@@ -25,11 +26,14 @@ public class GetOwnerBunniesTest extends BunnyRegistryApiTest {
 		Bunny bunny = mockBunny()
 				.setOwner(owner.getId());
 		
-		when(registry.findBunnies(filterArgument.capture())).thenReturn(singleton(bunny));
+		when(registry.findBunnies(filterArgument.capture())).thenReturn(singleton(bunny)).thenReturn(emptyList());
 		
-		BunnyListDTO dto = api.getOwnerBunnies(owner.getId()).getBunnies().get(0);
+		BunnyList bunnies = api.getOwnerBunnies(owner.getId());
 		
-		assertBunny(dto, bunny);
+		assertThat(bunnies.getBunnies())
+			.hasSize(1)
+			.allSatisfy(b -> assertBunny(bunny, b));
+
 	}
 	
 	@Test

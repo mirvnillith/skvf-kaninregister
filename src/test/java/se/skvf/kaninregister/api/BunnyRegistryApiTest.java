@@ -128,7 +128,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				);
 	}
 	
-	protected static void assertBunny(BunnyListDTO expected, Bunny actual) {
+	protected static void assertBunny(Bunny expected, BunnyListDTO actual) {
 		assertAll(
 				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
 				() -> assertThat(actual.getName()).isEqualTo(expected.getName())
