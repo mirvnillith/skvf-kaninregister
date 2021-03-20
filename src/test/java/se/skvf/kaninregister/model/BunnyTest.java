@@ -2,7 +2,9 @@ package se.skvf.kaninregister.model;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -21,7 +23,8 @@ public class BunnyTest extends EntityTest<Bunny> {
 	protected Bunny create() {
 		return new Bunny()
 				.setOwner(randomUUID().toString())
-				.setName(randomUUID().toString());
+				.setName(randomUUID().toString())
+				.setChip(randomUUID().toString());
 	}
 	
 	@Test
@@ -118,6 +121,25 @@ public class BunnyTest extends EntityTest<Bunny> {
 		assertMandatoryAttribute("Namn");
 	}
 	
+	@Test
+	public void mandatoryIdentifier() {
+		Bunny bunny = create()
+				.setChip(null);
+		
+		assertIdentifier(bunny, Bunny::setLeftEar);
+		assertIdentifier(bunny, Bunny::setRightEar);
+		assertIdentifier(bunny, Bunny::setChip);
+		assertIdentifier(bunny, Bunny::setRing);
+	}
+	
+	private static void assertIdentifier(Bunny bunny, BiFunction<Bunny, String, Bunny> identifier) {
+		assertThrows(IllegalStateException.class, () -> bunny.toMap());
+		identifier.apply(bunny, randomUUID().toString());
+		bunny.toMap();
+		identifier.apply(bunny, null);
+		assertThrows(IllegalStateException.class, () -> bunny.toMap());
+	}
+
 	@ParameterizedTest
 	@MethodSource("wildcardScenarios")
 	public void wildcards(String identifier, String wildcards, boolean match) {

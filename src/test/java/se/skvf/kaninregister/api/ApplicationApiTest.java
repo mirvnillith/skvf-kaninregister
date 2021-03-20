@@ -75,6 +75,7 @@ public class ApplicationApiTest {
 		BunnyDTO bunny = new BunnyDTO();
 		bunny.setBreeder(breeder.getId());
 		bunny.setName("Bunny");
+		bunny.setChip("munk");
 		bunny = api.createBunny(breeder.getId(), bunny);
 		
 		// Time passes

@@ -213,21 +213,21 @@ public class RegistryTest extends BunnyTest {
 	public void addBunny() throws Exception {
 		
 		assertAdd(wrap((Bunny b) -> registry.add(b)), 
-				bunnies, Bunny.class, Bunny::setName, Bunny::setOwner);
+				bunnies, Bunny.class, Bunny::setName, Bunny::setOwner, Bunny::setChip);
 	}
 	
 	@Test
 	public void updateBunny() throws Exception {
 		
 		assertUpdate(wrap((Bunny b) -> registry.update(b)), 
-				bunnies, Bunny.class, Bunny::setName, Bunny::setOwner);
+				bunnies, Bunny.class, Bunny::setName, Bunny::setOwner, Bunny::setChip);
 	}
 	
 	@Test
 	public void removeBunny() throws Exception {
 		
 		assertRemove(wrap((Bunny o) -> registry.remove(o)), 
-				bunnies, Bunny.class, Bunny::setName, Bunny::setOwner);
+				bunnies, Bunny.class, Bunny::setName, Bunny::setOwner, Bunny::setChip);
 	}
 	
 	@Test
@@ -235,6 +235,6 @@ public class RegistryTest extends BunnyTest {
 		
 		assertFind(wrap((Collection<String> ids) -> registry.findBunnies(ids)), 
 				wrap((Map<String, Predicate<String>> filters) -> registry.findBunnies(filters)), 
-				bunnies, Bunny.class, Bunny::setName, Bunny::setOwner);
+				bunnies, Bunny.class, Bunny::setName, Bunny::setOwner, Bunny::setChip);
 	}
 }

@@ -3,6 +3,7 @@ package se.skvf.kaninregister.model;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.isAllEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static se.skvf.kaninregister.model.Bunny.Gender.ofValue;
 import static se.skvf.kaninregister.model.Bunny.IdentifierLocation.CHIP;
@@ -241,11 +242,14 @@ public class Bunny extends Entity<Bunny> {
 	
 	@Override
 	protected void toMap(Map<String, String> map) {
-		if (owner == null) {
+		if (isEmpty(owner)) {
 			throw new IllegalStateException("Bunny must have an owner");
 		}
-		if (name == null) {
+		if (isEmpty(name)) {
 			throw new IllegalStateException("Bunny must have a name");
+		}
+		if (isAllEmpty(leftEar, rightEar, chip, ring)) {
+			throw new IllegalStateException("Bunny must have at least one identifier");
 		}
 
 		List<String> values = new ArrayList<String>(COLUMNS.size());
