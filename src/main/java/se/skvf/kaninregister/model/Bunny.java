@@ -6,19 +6,23 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-public class Bunny extends Entity {
+public class Bunny extends Entity<Bunny> {
 
 	public enum IdentifierLocation {
 		LEFT_EAR, RIGHT_EAR, CHIP, RING
 	}
 
-	static final Collection<String> COLUMNS = asList("Ägare", "Tidigare Ägare", "Namn", "Uppfödare");
+	static final List<String> COLUMNS = asList(
+			"Namn", 
+			"Ägare", 
+			"Tidigare Ägare", 
+			"Uppfödare");
 
 	public static final char WILDCARD = '?';
 
@@ -76,10 +80,15 @@ public class Bunny extends Entity {
 		if (name == null) {
 			throw new IllegalStateException("Bunny must have a name");
 		}
-		map.put("Ägare", owner);
-		map.put("Tidigare Ägare", previousOwner);
-		map.put("Namn", name);
-		map.put("Uppfödare", breeder);
+
+		
+		List<String> values = new ArrayList<String>(COLUMNS.size());
+		values.add(name);
+		values.add(owner);
+		values.add(previousOwner);
+		values.add(breeder);
+		
+		addToMap(map, COLUMNS, values);
 	}
 
 	@Override
@@ -93,11 +102,15 @@ public class Bunny extends Entity {
 
 	protected Bunny fromMap(Map<String, String> map) {
 		super.fromMap(map);
-		owner = map.get("Ägare");
-		previousOwner = map.get("Tidigare Ägare");
-		name = map.get("Namn");
-		breeder = map.get("Uppfödare");
-		return this;
+		
+		List<BiConsumer<Bunny, String>> setters = asList(
+				Bunny::setName,
+				Bunny::setOwner,
+				Bunny::setPreviousOwner,
+				Bunny::setBreeder
+				);
+
+		return setFromMap(map, COLUMNS, setters);
 	}
 
 	public static Map<String, Predicate<String>> byOwner(String id) {

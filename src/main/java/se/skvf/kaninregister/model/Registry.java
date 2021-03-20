@@ -88,21 +88,21 @@ public class Registry {
 		remove(bunnies, bunny);
 	}
 	
-	private void remove(Table table, Entity entity) throws IOException {
+	private void remove(Table table, Entity<?> entity) throws IOException {
 		if (entity.getId() == null) {
 			throw new IllegalStateException("Entity has no ID: " + entity);
 		}
 		table.remove(entity.getId());
 	}
 	
-	private void update(Table table, Entity entity) throws IOException {
+	private void update(Table table, Entity<?> entity) throws IOException {
 		if (entity.getId() == null) {
 			throw new IllegalStateException("Entity has no ID: " + entity);
 		}
 		table.update(entity.toMap());
 	}
 	
-	private String add(Table table, Entity entity) throws IOException {
+	private String add(Table table, Entity<?> entity) throws IOException {
 		if (entity.getId() != null) {
 			throw new IllegalStateException("Entity already has ID: " + entity);
 		}

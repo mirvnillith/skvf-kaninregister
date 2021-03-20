@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
-public class Owner extends Entity {
+public class Owner extends Entity<Owner> {
 
 	private static final PasswordEncryptor ENCRYPTOR = new StrongPasswordEncryptor();
 	
@@ -108,14 +108,9 @@ public class Owner extends Entity {
 		values.add(email);
 		values.add(signature);
 		
-		if (values.size() != COLUMNS.size()) {
-			throw new IllegalStateException("Values do not match columns: "+values+" vs "+COLUMNS);			
-		}
-		for (int i=0; i<COLUMNS.size(); i++) {
-			map.put(COLUMNS.get(i), values.get(i));
-		}
+		addToMap(map, COLUMNS, values);
 	}
-	
+
 	public static Owner from(Map<String, String> map) {
 		return new Owner().fromMap(map);
 	}
@@ -135,16 +130,9 @@ public class Owner extends Entity {
 				Owner::setSignature
 				);
 
-		if (setters.size() != COLUMNS.size()) {
-			throw new IllegalStateException("Values do not match columns: "+COLUMNS);			
-		}
-		for (int i=0; i<COLUMNS.size(); i++) {
-			setters.get(i).accept(this, map.get(COLUMNS.get(i)));
-		}
-		
-		return this;
+		return setFromMap(map, COLUMNS, setters);
 	}
-	
+
 	@Override
 	public String toString() {
 		return super.toString() + ": " + firstName + " " + lastName;

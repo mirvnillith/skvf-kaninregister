@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public abstract class EntityTest<E extends Entity> {
+public abstract class EntityTest<E extends Entity<?>> {
 
 	private final Function<Map<String, String>, E> from;
 	

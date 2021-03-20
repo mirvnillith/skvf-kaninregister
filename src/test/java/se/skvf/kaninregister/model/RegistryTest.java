@@ -53,7 +53,7 @@ public class RegistryTest extends BunnyTest {
 	}
 	
 	@SafeVarargs
-	private <E extends Entity> void assertAdd(Function<E, String> adder, Table table, Class<E> entityClass, BiFunction<E, String, E>... setters) throws Exception {
+	private <E extends Entity<?>> void assertAdd(Function<E, String> adder, Table table, Class<E> entityClass, BiFunction<E, String, E>... setters) throws Exception {
 		
 		E add = entityClass.getDeclaredConstructor().newInstance();
 		setValues(add, setters);
@@ -70,7 +70,7 @@ public class RegistryTest extends BunnyTest {
 	}
 	
 	@SafeVarargs
-	private <E extends Entity> void assertUpdate(Consumer<E> updater, Table table, Class<E> entityClass, BiFunction<E, String, E>... setters) throws Exception {
+	private <E extends Entity<?>> void assertUpdate(Consumer<E> updater, Table table, Class<E> entityClass, BiFunction<E, String, E>... setters) throws Exception {
 		
 		E update = entityClass.getDeclaredConstructor().newInstance();
 		setValues(update, setters);
@@ -85,7 +85,7 @@ public class RegistryTest extends BunnyTest {
 	}
 	
 	@SafeVarargs
-	private <E extends Entity> void assertRemove(Consumer<E> remover, Table table, Class<E> entityClass, BiFunction<E, String, E>... setters) throws Exception {
+	private <E extends Entity<?>> void assertRemove(Consumer<E> remover, Table table, Class<E> entityClass, BiFunction<E, String, E>... setters) throws Exception {
 		
 		E remove = entityClass.getDeclaredConstructor().newInstance();
 		setValues(remove, setters);
@@ -100,7 +100,7 @@ public class RegistryTest extends BunnyTest {
 	}
 	
 	@SafeVarargs
-	private <E extends Entity> void assertFind(Function<Collection<String>, Collection<E>> ids, Function<Map<String, Predicate<String>>, Collection<E>> filters, Table table, Class<E> entityClass, BiFunction<E, String, E>... setters) throws Exception {
+	private <E extends Entity<?>> void assertFind(Function<Collection<String>, Collection<E>> ids, Function<Map<String, Predicate<String>>, Collection<E>> filters, Table table, Class<E> entityClass, BiFunction<E, String, E>... setters) throws Exception {
 		
 		E find = entityClass.getDeclaredConstructor().newInstance();
 		setValues(find, setters);
@@ -118,17 +118,17 @@ public class RegistryTest extends BunnyTest {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <E extends Entity> void setValues(E entity, BiFunction<E, String, E>... setters) {
+	private <E extends Entity<?>> void setValues(E entity, BiFunction<E, String, E>... setters) {
 		for (BiFunction<E, String, E> setter : setters) {
 			setter.apply(entity, randomUUID().toString());
 		}
 	}
 
-	interface AddOperation<E extends Entity> {
+	interface AddOperation<E extends Entity<?>> {
 		String add(E entity) throws IOException;
 	}
 	
-	private static <E extends Entity> Function<E, String> wrap(AddOperation<E> adder) {
+	private static <E extends Entity<?>> Function<E, String> wrap(AddOperation<E> adder) {
 		return e -> {
 			try {
 				return adder.add(e);
@@ -138,11 +138,11 @@ public class RegistryTest extends BunnyTest {
 		};
 	}
 	
-	interface UpdateOperation<E extends Entity> {
+	interface UpdateOperation<E extends Entity<?>> {
 		void update(E entity) throws IOException;
 	}
 	
-	private static <E extends Entity> Consumer<E> wrap(UpdateOperation<E> updater) {
+	private static <E extends Entity<?>> Consumer<E> wrap(UpdateOperation<E> updater) {
 		return e -> {
 			try {
 				updater.update(e);
@@ -152,11 +152,11 @@ public class RegistryTest extends BunnyTest {
 		};
 	}
 	
-	interface IdsFinder<E extends Entity> {
+	interface IdsFinder<E extends Entity<?>> {
 		Collection<E> find(Collection<String> ids) throws IOException;
 	}
 	
-	private static <E extends Entity> Function<Collection<String>, Collection<E>> wrap(IdsFinder<E> finder) {
+	private static <E extends Entity<?>> Function<Collection<String>, Collection<E>> wrap(IdsFinder<E> finder) {
 		return ids -> {
 			try {
 				return finder.find(ids);
@@ -166,11 +166,11 @@ public class RegistryTest extends BunnyTest {
 		};
 	}
 	
-	interface FiltersFinder<E extends Entity> {
+	interface FiltersFinder<E extends Entity<?>> {
 		Collection<E> find(Map<String, Predicate<String>> filters) throws IOException;
 	}
 	
-	private static <E extends Entity> Function<Map<String, Predicate<String>>, Collection<E>> wrap(FiltersFinder<E> finder) {
+	private static <E extends Entity<?>> Function<Map<String, Predicate<String>>, Collection<E>> wrap(FiltersFinder<E> finder) {
 		return filters -> {
 			try {
 				return finder.find(filters);
