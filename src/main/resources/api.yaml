@@ -570,7 +570,7 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: '#/components/schemas/BunnyOwnerDTO'
+                $ref: '#/components/schemas/BunnyBreederDTO'
         '204':
           description: Bunny has no public breeder
         '404':
@@ -579,18 +579,26 @@ paths:
 components:
   schemas:
 
+    BunnyBreederDTO:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          
     BunnyOwnerDTO:
       type: object
       properties:
-        id:
-          type: string
         firstName:
           type: string
         lastName:
           type: string
-        breederName:
-          type: string
         email:
+          type: string
+        address:
+          type: string
+        phone:
           type: string
 
     OwnerDTO:
@@ -598,6 +606,13 @@ components:
         - $ref: '#/components/schemas/BunnyOwnerDTO'
         - type: object
           properties:
+            id:
+              type: string
+              readOnly: true
+            breederName:
+              type: string
+            breederEmail:
+              type: string
             userName:
               type: string
             publicOwner:

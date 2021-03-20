@@ -41,6 +41,16 @@ public class OwnerTest extends EntityTest<Owner> {
 	}
 	
 	@Test
+	public void address() throws Exception {
+		assertAttribute("Adress", Owner::setAddress, Owner::getAddress);
+	}
+	
+	@Test
+	public void phone() throws Exception {
+		assertAttribute("Telefon", Owner::setPhone, Owner::getPhone);
+	}
+	
+	@Test
 	public void userName() throws Exception {
 		assertAttribute("Användarnamn", Owner::setUserName, Owner::getUserName);
 	}
@@ -97,6 +107,11 @@ public class OwnerTest extends EntityTest<Owner> {
 	@Test
 	public void breederName() throws Exception {
 		assertAttribute("Uppfödarnamn", Owner::setBreederName, Owner::getBreederName);
+	}
+	
+	@Test
+	public void breederEmail() throws Exception {
+		assertAttribute("Uppfödarepost", Owner::setBreederEmail, Owner::getBreederEmail);
 	}
 	
 	@Test

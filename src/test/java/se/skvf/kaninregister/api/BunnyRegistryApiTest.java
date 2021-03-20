@@ -142,19 +142,36 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName()),
 				() -> assertThat(actual.getUserName()).isEqualTo(expected.getUserName()),
 				() -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail()),
+				() -> assertThat(actual.getAddress()).isEqualTo(expected.getAddress()),
+				() -> assertThat(actual.getPhone()).isEqualTo(expected.getPhone()),
 				() -> assertThat(actual.isPublicOwner()).isEqualTo(expected.getPublicOwner()),
 				() -> assertThat(actual.getBreederName()).isEqualTo(expected.getBreederName()),
 				() -> assertThat(actual.isPublicBreeder()).isEqualTo(expected.getPublicBreeder())
 				);
 	}
 	
-	protected static void assertOwner(BunnyOwnerDTO expected, Owner actual) {
+	protected static void assertOwner(Owner expected, BunnyOwnerDTO actual) {
 		assertAll(
-				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
 				() -> assertThat(actual.getFirstName()).isEqualTo(expected.getFirstName()),
 				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName()),
 				() -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail()),
-				() -> assertThat(actual.getBreederName()).isEqualTo(expected.getBreederName())
+				() -> assertThat(actual.getAddress()).isEqualTo(expected.getAddress()),
+				() -> assertThat(actual.getPhone()).isEqualTo(expected.getPhone())
 				);
+	}
+	
+	protected static void assertBreeder(Owner expected, BunnyBreederDTO actual) {
+		
+		if (expected.getBreederName() != null) {
+			assertThat(actual.getName()).isEqualTo(expected.getBreederName());
+		} else {
+			assertThat(actual.getName()).isEqualTo(expected.getFirstName() + " " + expected.getLastName());
+		}
+		
+		if (expected.getBreederEmail() != null) {
+			assertThat(actual.getEmail()).isEqualTo(expected.getBreederEmail());
+		} else {
+			assertThat(actual.getEmail()).isEqualTo(expected.getEmail());
+		}
 	}
 }

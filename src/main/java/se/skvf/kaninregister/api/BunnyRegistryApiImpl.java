@@ -142,20 +142,32 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setFirstName(owner.getFirstName());
 		dto.setLastName(owner.getLastName());
 		dto.setEmail(owner.getEmail());
+		dto.setAddress(owner.getAddress());
+		dto.setPhone(owner.getPhone());
 		dto.setUserName(owner.getUserName());
 		dto.setPublicOwner(owner.isPublicOwner());
 		dto.setBreederName(owner.getBreederName());
+		dto.setBreederEmail(owner.getBreederEmail());
 		dto.setPublicBreeder(owner.isPublicBreeder());
 		return dto;
 	}
 	
-	private static BunnyOwnerDTO toBunnyDTO(Owner owner) {
+	private static BunnyOwnerDTO toOwnerDTO(Owner owner) {
 		BunnyOwnerDTO dto = new BunnyOwnerDTO();
-		dto.setId(owner.getId());
 		dto.setFirstName(owner.getFirstName());
 		dto.setLastName(owner.getLastName());
 		dto.setEmail(owner.getEmail());
-		dto.setBreederName(owner.getBreederName());
+		dto.setAddress(owner.getAddress());
+		dto.setPhone(owner.getPhone());
+		return dto;
+	}
+	
+	private static BunnyBreederDTO toBreederDTO(Owner owner) {
+		BunnyBreederDTO dto = new BunnyBreederDTO();
+		dto.setName(ofNullable(owner.getBreederName())
+				.orElse(owner.getFirstName() + " " + owner.getLastName()));
+		dto.setEmail(ofNullable(owner.getBreederEmail())
+				.orElse(owner.getEmail()));
 		return dto;
 	}
 	
@@ -229,14 +241,14 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public BunnyOwnerDTO getBunnyBreeder(String id) {
+	public BunnyBreederDTO getBunnyBreeder(String id) {
 		return process(() -> {
 			
 			Owner breeder = validateOwner(validateBunny(id).getBreeder(), false);
 			if (breeder.isNotPublicBreeder()) {
 				throw new WebApplicationException(NO_CONTENT);
 			}
-			return toBunnyDTO(breeder);
+			return toBreederDTO(breeder);
 		});
 	}
 
@@ -274,7 +286,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			if (owner.isNotPublicOwner()) {
 				throw new WebApplicationException(NO_CONTENT);
 			}
-			return toBunnyDTO(owner);
+			return toOwnerDTO(owner);
 		});
 	}
 
@@ -421,10 +433,13 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	
 	private static void update(Owner owner, OwnerDTO dto) {
 		ofNullable(dto.getEmail()).ifPresent(owner::setEmail);
+		ofNullable(dto.getAddress()).ifPresent(owner::setAddress);
+		ofNullable(dto.getPhone()).ifPresent(owner::setPhone);
 		ofNullable(dto.getFirstName()).ifPresent(owner::setFirstName);
 		ofNullable(dto.getLastName()).ifPresent(owner::setLastName);
 		ofNullable(dto.getPublicOwner()).ifPresent(owner::setPublicOwner);
 		ofNullable(dto.getBreederName()).ifPresent(owner::setBreederName);
+		ofNullable(dto.getBreederEmail()).ifPresent(owner::setBreederEmail);
 		ofNullable(dto.getPublicBreeder()).ifPresent(owner::setPublicBreeder);
 	}
 

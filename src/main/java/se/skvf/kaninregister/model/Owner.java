@@ -26,7 +26,10 @@ public class Owner extends Entity<Owner> {
 			"Användarnamn",
 			"Lösenord",
 			"E-post",
-			"Signatur");
+			"Signatur",
+			"Adress",
+			"Telefon",
+			"Uppfödarepost");
 
 	private String firstName;
 	private String lastName;
@@ -37,6 +40,9 @@ public class Owner extends Entity<Owner> {
 	private String password;
 	private String email;
 	private String signature;
+	private String address;
+	private String phone;
+	private String breederEmail;
 	
 	@Override
 	public Owner setId(String id) {
@@ -49,6 +55,24 @@ public class Owner extends Entity<Owner> {
 	
 	public Owner setSignature(String signature) {
 		this.signature = signature;
+		return this;
+	}
+	
+	public String getAddress() {
+		return address;
+	}
+	
+	public Owner setAddress(String address) {
+		this.address = address;
+		return this;
+	}
+	
+	public String getPhone() {
+		return phone;
+	}
+	
+	public Owner setPhone(String phone) {
+		this.phone = phone;
 		return this;
 	}
 	
@@ -88,6 +112,15 @@ public class Owner extends Entity<Owner> {
 		return email;
 	}
 	
+	public Owner setBreederEmail(String breederEmail) {
+		this.breederEmail = breederEmail;
+		return this;
+	}
+	
+	public String getBreederEmail() {
+		return breederEmail;
+	}
+	
 	@Override
 	protected void toMap(Map<String, String> map) {
 		if (firstName == null) {
@@ -107,6 +140,9 @@ public class Owner extends Entity<Owner> {
 		values.add(password);
 		values.add(email);
 		values.add(signature);
+		values.add(address);
+		values.add(phone);
+		values.add(breederEmail);
 		
 		addToMap(map, COLUMNS, values);
 	}
@@ -127,7 +163,10 @@ public class Owner extends Entity<Owner> {
 				Owner::setUserName,
 				(o,v) -> o.password = v,
 				Owner::setEmail,
-				Owner::setSignature
+				Owner::setSignature,
+				Owner::setAddress,
+				Owner::setPhone,
+				Owner::setBreederEmail
 				);
 
 		return setFromMap(map, COLUMNS, setters);
@@ -215,6 +254,8 @@ public class Owner extends Entity<Owner> {
 		publicBreeder = false;
 		email = null;
 		signature = null;
+		address = null;
+		phone = null;
 		return this;
 	}
 

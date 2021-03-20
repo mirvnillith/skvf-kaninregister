@@ -19,14 +19,47 @@ public class GetBunnyBreederTest extends BunnyRegistryApiTest {
 	@Test
 	public void getBunnyBreeder() throws IOException {
 		
-		Bunny bunny = mockBunny();
-		Owner breeder = mockOwner();
-		breeder.setPublicBreeder(true);
-		bunny.setBreeder(breeder.getId());
+		Owner breeder = mockOwner()
+				.setEmail(randomUUID().toString())
+				.setBreederName(randomUUID().toString())
+				.setBreederEmail(randomUUID().toString())
+				.setPublicBreeder(true);
+		Bunny bunny = mockBunny()
+				.setBreeder(breeder.getId());
 		
-		BunnyOwnerDTO dto = api.getBunnyBreeder(bunny.getId());
+		BunnyBreederDTO dto = api.getBunnyBreeder(bunny.getId());
 		
-		assertOwner(dto, breeder);
+		assertBreeder(breeder, dto);
+	}
+	
+	@Test
+	public void getBunnyBreeder_firstLastName() throws IOException {
+		
+		Owner breeder = mockOwner()
+				.setEmail(randomUUID().toString())
+				.setBreederEmail(randomUUID().toString())
+				.setPublicBreeder(true);
+		Bunny bunny = mockBunny()
+				.setBreeder(breeder.getId());
+		
+		BunnyBreederDTO dto = api.getBunnyBreeder(bunny.getId());
+		
+		assertBreeder(breeder, dto);
+	}
+	
+	@Test
+	public void getBunnyBreeder_ownerEmail() throws IOException {
+		
+		Owner breeder = mockOwner()
+				.setEmail(randomUUID().toString())
+				.setBreederName(randomUUID().toString())
+				.setPublicBreeder(true);
+		Bunny bunny = mockBunny()
+				.setBreeder(breeder.getId());
+		
+		BunnyBreederDTO dto = api.getBunnyBreeder(bunny.getId());
+		
+		assertBreeder(breeder, dto);
 	}
 	
 	@Test
@@ -46,8 +79,8 @@ public class GetBunnyBreederTest extends BunnyRegistryApiTest {
 	@Test
 	public void getBunnyBreeder_notSet() throws IOException {
 		
-		Bunny bunny = mockBunny();
-		bunny.setBreeder(null);
+		Bunny bunny = mockBunny()
+				.setBreeder(null);
 		
 		assertError(NOT_FOUND, () -> api.getBunnyBreeder(bunny.getId()));
 	}
@@ -63,10 +96,10 @@ public class GetBunnyBreederTest extends BunnyRegistryApiTest {
 	@Test
 	public void getBunnyBreeder_notPublic() throws IOException {
 		
-		Bunny bunny = mockBunny();
-		Owner breeder = mockOwner();
-		breeder.setPublicBreeder(false);
-		bunny.setBreeder(breeder.getId());
+		Owner breeder = mockOwner()
+				.setPublicBreeder(false);
+		Bunny bunny = mockBunny()
+				.setBreeder(breeder.getId());
 		
 		assertError(NO_CONTENT, () -> api.getBunnyBreeder(bunny.getId()));
 	}

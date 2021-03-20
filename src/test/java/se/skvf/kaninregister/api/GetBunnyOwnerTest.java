@@ -20,13 +20,17 @@ public class GetBunnyOwnerTest extends BunnyRegistryApiTest {
 	public void getBunnyOwner() throws IOException {
 		
 		Bunny bunny = mockBunny();
-		Owner owner = mockOwner();
-		owner.setPublicOwner(true);
+		Owner owner = mockOwner()
+				.setEmail(randomUUID().toString())
+				.setAddress(randomUUID().toString())
+				.setPhone(randomUUID().toString())
+				.setBreederName(randomUUID().toString())
+				.setPublicOwner(true);
 		bunny.setOwner(owner.getId());
 		
 		BunnyOwnerDTO dto = api.getBunnyOwner(bunny.getId());
 		
-		assertOwner(dto, owner);
+		assertOwner(owner, dto);
 	}
 	
 	@Test
