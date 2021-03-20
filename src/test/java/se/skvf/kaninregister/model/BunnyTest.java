@@ -88,11 +88,14 @@ public class BunnyTest extends EntityTest<Bunny> {
 		
 		predicate = new Bunny.OrPredicate(predicate);
 		
-		assertThat(predicate.test(firstValue)).isTrue();
-		if (match) {
-			assertThat(predicate).accepts(secondValue);
-		} else {
-			assertThat(predicate).rejects(secondValue);
+		// repeatable
+		for (int i = 0; i < 3; i++) {
+			assertThat(predicate.test(firstValue)).isTrue();
+			if (match) {
+				assertThat(predicate).accepts(secondValue);
+			} else {
+				assertThat(predicate).rejects(secondValue);
+			}
 		}
 	}
 	

@@ -162,7 +162,11 @@ public class Bunny extends Entity {
 				firstValue = predicate.test(value);
 				return true;
 			} else {
-				return firstValue || predicate.test(value);
+				try {
+					return firstValue || predicate.test(value);
+				} finally {
+					firstValue = null;
+				}
 			}
 		}
 	}
