@@ -701,10 +701,23 @@ components:
       properties:
         id:
           type: string
+          readOnly: true
         name:
+          type: string
+        leftEar:
+          type: string
+        rightEar:
+          type: string
+        chip:
+          type: string
+        ring:
+          type: string
+        picture:
+          description: URL to picture
           type: string
         claimToken:
           type: string
+          readOnly: true
           
     BunnyTransferDTO:
       type: object
@@ -729,6 +742,21 @@ components:
               type: string
               readOnly: true
             breeder:
+              type: string
+            gender:
+              type: string
+              enum:
+                - Female
+                - Male
+            neutered:
+              type: boolean
+            birthDate:
+              type: string
+            race:
+              type: string
+            coat:
+              type: string
+            colourMarkings:
               type: string
               
     OfflineSignatureDTO:

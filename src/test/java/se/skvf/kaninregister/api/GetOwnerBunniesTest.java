@@ -24,7 +24,11 @@ public class GetOwnerBunniesTest extends BunnyRegistryApiTest {
 		Owner owner = mockOwner();
 		mockSession(owner.getId());
 		Bunny bunny = mockBunny()
-				.setOwner(owner.getId());
+				.setOwner(owner.getId())
+				.setChip(randomUUID().toString())
+				.setLeftEar(randomUUID().toString())
+				.setRightEar(randomUUID().toString())
+				.setRing(randomUUID().toString());
 		
 		when(registry.findBunnies(filterArgument.capture())).thenReturn(singleton(bunny)).thenReturn(emptyList());
 		
@@ -33,7 +37,6 @@ public class GetOwnerBunniesTest extends BunnyRegistryApiTest {
 		assertThat(bunnies.getBunnies())
 			.hasSize(1)
 			.allSatisfy(b -> assertBunny(bunny, b));
-
 	}
 	
 	@Test

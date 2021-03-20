@@ -30,6 +30,11 @@ public class BunnyTest extends EntityTest<Bunny> {
 	}
 	
 	@Test
+	public void previousOwner() throws Exception {
+		assertAttribute("Föregående Ägare", Bunny::setPreviousOwner, Bunny::getPreviousOwner);
+	}
+	
+	@Test
 	public void name() throws Exception {
 		assertAttribute("Namn", Bunny::setName, Bunny::getName);
 	}
@@ -37,6 +42,61 @@ public class BunnyTest extends EntityTest<Bunny> {
 	@Test
 	public void breeder() throws Exception {
 		assertAttribute("Uppfödare", Bunny::setBreeder, Bunny::getBreeder);
+	}
+	
+	@Test
+	public void birthDate() throws Exception {
+		assertAttribute("Födelsedag", Bunny::setBirthDate, Bunny::getBirthDate);
+	}
+	
+	@Test
+	public void race() throws Exception {
+		assertAttribute("Ras", Bunny::setRace, Bunny::getRace);
+	}
+	
+	@Test
+	public void coat() throws Exception {
+		assertAttribute("Hårlag", Bunny::setCoat, Bunny::getCoat);
+	}
+	
+	@Test
+	public void colourMarkings() throws Exception {
+		assertAttribute("Färgteckning", Bunny::setColourMarkings, Bunny::getColourMarkings);
+	}
+	
+	@Test
+	public void picture() throws Exception {
+		assertAttribute("Bild", Bunny::setPicture, Bunny::getPicture);
+	}
+	
+	@Test
+	public void leftEar() throws Exception {
+		assertAttribute("Vänster Öra", Bunny::setLeftEar, Bunny::getLeftEar);
+	}
+	
+	@Test
+	public void rightEar() throws Exception {
+		assertAttribute("Höger Öra", Bunny::setRightEar, Bunny::getRightEar);
+	}
+	
+	@Test
+	public void chip() throws Exception {
+		assertAttribute("Chipnummer", Bunny::setChip, Bunny::getChip);
+	}
+	
+	@Test
+	public void ring() throws Exception {
+		assertAttribute("Ringnummer", Bunny::setRing, Bunny::getRing);
+	}
+	
+	@Test
+	public void neutered() throws Exception {
+		assertBooleanAttribute("Kastrerad", Bunny::setNeutered, Bunny::isNeutered);
+	}
+	
+	@Test
+	public void gender() throws Exception {
+		assertEnumAttribute("Kön", Bunny::setGender, Bunny::getGender, Bunny.Gender.FEMALE, Bunny.Gender.MALE);
 	}
 	
 	@Test
@@ -83,31 +143,32 @@ public class BunnyTest extends EntityTest<Bunny> {
 	}
 	
 	@ParameterizedTest
-	@MethodSource("orScenarios")
-	public void orPredicate(Predicate<String> predicate, String firstValue, String secondValue, boolean match) {
+	@MethodSource("multipleScenarios")
+	public void multiple(Predicate<String> predicate, String value, boolean match) {
 		
-		predicate = new Bunny.OrPredicate(predicate);
+		predicate = Bunny.multiple(predicate);
 		
-		// repeatable
-		for (int i = 0; i < 3; i++) {
-			assertThat(predicate.test(firstValue)).isTrue();
-			if (match) {
-				assertThat(predicate).accepts(secondValue);
-			} else {
-				assertThat(predicate).rejects(secondValue);
-			}
+		if (match) {
+			assertThat(predicate).accepts(value);
+		} else {
+			assertThat(predicate).rejects(value);
 		}
 	}
 	
-	public static Stream<Arguments> orScenarios() {
+	public static Stream<Arguments> multipleScenarios() {
 		
 		String value = randomUUID().toString();
 		
 		return Stream.of(
-				Arguments.of((Predicate<String>)value::equals, value, value, true),
-				Arguments.of((Predicate<String>)value::equals, value, null, true),
-				Arguments.of((Predicate<String>)value::equals, null, value, true),
-				Arguments.of((Predicate<String>)value::equals, null, null, false)
+				Arguments.of((Predicate<String>)value::equals, value, true),
+				Arguments.of((Predicate<String>)value::equals, "", false),
+				Arguments.of((Predicate<String>)value::equals, null, false),
+				Arguments.of((Predicate<String>)value::equals, value+value, false),
+				Arguments.of((Predicate<String>)value::equals, value+",value", true),
+				Arguments.of((Predicate<String>)value::equals, value+","+value, true),
+				Arguments.of((Predicate<String>)value::equals, value+" , "+value, true),
+				Arguments.of((Predicate<String>)value::equals, value+" , value", true),
+				Arguments.of((Predicate<String>)value::equals, "value , "+value, true)
 				);
 	}
 	

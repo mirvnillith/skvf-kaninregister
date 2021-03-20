@@ -51,7 +51,9 @@ import org.springframework.beans.factory.annotation.Value;
 import se.skvf.kaninregister.addo.AddoSigningService;
 import se.skvf.kaninregister.addo.Signature;
 import se.skvf.kaninregister.addo.Signing;
+import se.skvf.kaninregister.api.BunnyDTO.GenderEnum;
 import se.skvf.kaninregister.model.Bunny;
+import se.skvf.kaninregister.model.Bunny.Gender;
 import se.skvf.kaninregister.model.Owner;
 import se.skvf.kaninregister.model.Registry;
 
@@ -116,7 +118,18 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		return new Bunny().setId(dto.getId())
 				.setName(dto.getName())
 				.setOwner(dto.getOwner())
-				.setBreeder(dto.getBreeder());
+				.setBreeder(dto.getBreeder())
+				.setBirthDate(dto.getBirthDate())
+				.setChip(dto.getChip())
+				.setCoat(dto.getCoat())
+				.setColourMarkings(dto.getColourMarkings())
+				.setGender(toGender(dto.getGender()))
+				.setLeftEar(dto.getLeftEar())
+				.setNeutered(ofNullable(dto.getNeutered()).orElse(false))
+				.setPicture(dto.getPicture())
+				.setRace(dto.getRace())
+				.setRightEar(dto.getRightEar())
+				.setRing(dto.getRing());
 	}
 	
 	private static BunnyDTO toDTO(Bunny bunny) {
@@ -126,6 +139,17 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setOwner(bunny.getOwner());
 		dto.setPreviousOwner(bunny.getPreviousOwner());
 		dto.setBreeder(bunny.getBreeder());
+		dto.setBirthDate(bunny.getBirthDate());
+		dto.setChip(bunny.getChip());
+		dto.setCoat(bunny.getCoat());
+		dto.setColourMarkings(bunny.getColourMarkings());
+		dto.setGender(toGender(bunny.getGender()));
+		dto.setLeftEar(bunny.getLeftEar());
+		dto.setNeutered(bunny.isNeutered());
+		dto.setPicture(bunny.getPicture());
+		dto.setRace(bunny.getRace());
+		dto.setRightEar(bunny.getRightEar());
+		dto.setRing(bunny.getRing());
 		return dto;
 	}
 	
@@ -133,6 +157,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		BunnyListDTO dto = new BunnyListDTO();
 		dto.setId(bunny.getId());
 		dto.setName(bunny.getName());
+		dto.setChip(bunny.getChip());
+		dto.setLeftEar(bunny.getLeftEar());
+		dto.setRightEar(bunny.getRightEar());
+		dto.setRing(bunny.getRing());
 		return dto;
 	}
 	
@@ -429,8 +457,44 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private static void update(Bunny bunny, BunnyDTO dto) {
 		ofNullable(dto.getBreeder()).ifPresent(bunny::setBreeder);
 		ofNullable(dto.getName()).ifPresent(bunny::setName);
+		ofNullable(dto.getBirthDate()).ifPresent(bunny::setBirthDate);
+		ofNullable(dto.getChip()).ifPresent(bunny::setChip);
+		ofNullable(dto.getCoat()).ifPresent(bunny::setCoat);
+		ofNullable(dto.getColourMarkings()).ifPresent(bunny::setColourMarkings);
+		ofNullable(dto.getGender()).ifPresent(g -> bunny.setGender(toGender(g)));
+		ofNullable(dto.getLeftEar()).ifPresent(bunny::setLeftEar);
+		ofNullable(dto.getNeutered()).ifPresent(bunny::setNeutered);
+		ofNullable(dto.getPicture()).ifPresent(bunny::setPicture);
+		ofNullable(dto.getPreviousOwner()).ifPresent(bunny::setPreviousOwner);
+		ofNullable(dto.getRace()).ifPresent(bunny::setRace);
+		ofNullable(dto.getRightEar()).ifPresent(bunny::setRightEar);
+		ofNullable(dto.getRing()).ifPresent(bunny::setRing);
 	}
 	
+	private static Gender toGender(GenderEnum g) {
+		if (g != null) {
+			switch (g) {
+				case FEMALE:
+					return Bunny.Gender.FEMALE;
+				case MALE:
+					return Bunny.Gender.MALE;
+			}
+		}
+		return null;
+	}
+	
+	private static GenderEnum toGender(Gender g) {
+		if (g != null) {
+			switch (g) {
+				case FEMALE:
+					return GenderEnum.FEMALE;
+				case MALE:
+					return GenderEnum.MALE;
+			}
+		}
+		return null;
+	}
+
 	private static void update(Owner owner, OwnerDTO dto) {
 		ofNullable(dto.getEmail()).ifPresent(owner::setEmail);
 		ofNullable(dto.getAddress()).ifPresent(owner::setAddress);

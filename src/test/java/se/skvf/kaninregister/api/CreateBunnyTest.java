@@ -7,6 +7,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static se.skvf.kaninregister.api.BunnyDTO.GenderEnum.FEMALE;
 
 import java.io.IOException;
 
@@ -22,6 +23,18 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 				.getId();
 		mockSession(ownerId);
 		BunnyDTO dto = new BunnyDTO();
+		dto.setName(randomUUID().toString());
+		dto.setBreeder(randomUUID().toString());
+		dto.setChip(randomUUID().toString());
+		dto.setCoat(randomUUID().toString());
+		dto.setColourMarkings(randomUUID().toString());
+		dto.setGender(FEMALE);
+		dto.setLeftEar(randomUUID().toString());
+		dto.setNeutered(true);
+		dto.setPicture(randomUUID().toString());
+		dto.setRace(randomUUID().toString());
+		dto.setRightEar(randomUUID().toString());
+		dto.setRing(randomUUID().toString());
 		
 		String bunnyId = randomUUID().toString();
 		when(registry.add(bunnyArgument.capture())).thenReturn(bunnyId);

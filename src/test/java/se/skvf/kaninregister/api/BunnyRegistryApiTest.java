@@ -1,6 +1,7 @@
 package se.skvf.kaninregister.api;
 
 import static java.util.Collections.singleton;
+import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -124,14 +125,28 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
 				() -> assertThat(actual.getOwner()).isEqualTo(expected.getOwner()),
 				() -> assertThat(actual.getPreviousOwner()).isEqualTo(expected.getPreviousOwner()),
-				() -> assertThat(actual.getBreeder()).isEqualTo(expected.getBreeder())
+				() -> assertThat(actual.getBreeder()).isEqualTo(expected.getBreeder()),
+				() -> assertThat(actual.isNeutered()).isEqualTo(ofNullable(expected.getNeutered()).orElse(false)),
+				() -> assertThat(actual.getBirthDate()).isEqualTo(expected.getBirthDate()),
+				() -> assertThat(actual.getRace()).isEqualTo(expected.getRace()),
+				() -> assertThat(actual.getCoat()).isEqualTo(expected.getCoat()),
+				() -> assertThat(actual.getColourMarkings()).isEqualTo(expected.getColourMarkings()),
+				() -> assertThat(actual.getPicture()).isEqualTo(expected.getPicture()),
+				() -> assertThat(actual.getLeftEar()).isEqualTo(expected.getLeftEar()),
+				() -> assertThat(actual.getRightEar()).isEqualTo(expected.getRightEar()),
+				() -> assertThat(actual.getChip()).isEqualTo(expected.getChip()),
+				() -> assertThat(actual.getRing()).isEqualTo(expected.getRing())
 				);
 	}
 	
 	protected static void assertBunny(Bunny expected, BunnyListDTO actual) {
 		assertAll(
 				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
-				() -> assertThat(actual.getName()).isEqualTo(expected.getName())
+				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
+				() -> assertThat(actual.getLeftEar()).isEqualTo(expected.getLeftEar()),
+				() -> assertThat(actual.getRightEar()).isEqualTo(expected.getRightEar()),
+				() -> assertThat(actual.getChip()).isEqualTo(expected.getChip()),
+				() -> assertThat(actual.getRing()).isEqualTo(expected.getRing())
 				);
 	}
 

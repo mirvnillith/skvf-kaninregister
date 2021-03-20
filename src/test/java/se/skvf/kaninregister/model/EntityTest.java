@@ -50,6 +50,30 @@ public abstract class EntityTest<E extends Entity<?>> {
 		assertThat(entity.getId()).isSameAs(id);
 	}
 	
+	@SuppressWarnings("unchecked")
+	protected <T extends Enum<?>> void assertEnumAttribute(String name, BiFunction<E, T, E> setter, Function<E, T> getter, T... values) throws Exception {
+		
+		E entity = create();
+		String id = randomUUID().toString();
+		assertThat(entity.setId(id)).isSameAs(entity);
+		assertThat(entity.getId()).isSameAs(id);
+		
+		for (T value : values) {
+		
+			assertThat(setter.apply(entity, value)).isSameAs(entity);
+			assertThat(getter.apply(entity)).isSameAs(value);
+		
+			Map<String, String> map = entity.toMap();
+			assertThat(map)
+				.containsEntry(name, value.toString())
+				.containsEntry(ID, id);
+		
+			entity = from.apply(map);
+			assertThat(getter.apply(entity)).isSameAs(value);
+			assertThat(entity.getId()).isSameAs(id);
+		}
+	}
+	
 	protected void assertBooleanAttribute(String name, BiFunction<E, Boolean, E> setter, Function<E, Boolean> getter) throws Exception {
 		
 		E entity = create();
