@@ -62,7 +62,6 @@ import se.skvf.kaninregister.model.Owner;
 import se.skvf.kaninregister.model.Registry;
 
 @Provider
-@Path("api")
 public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 
 	private static final Log LOG = LogFactory.getLog(BunnyRegistryApiImpl.class);
