@@ -1,17 +1,24 @@
 package se.skvf.kaninregister.api;
 
+import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.skvf.kaninregister.api.BunnyDTO.GenderEnum.FEMALE;
+import static se.skvf.kaninregister.model.Bunny.IdentifierLocation.RING;
 
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
+
+import se.skvf.kaninregister.model.Bunny;
 
 public class CreateBunnyTest extends BunnyRegistryApiTest {
 
@@ -66,6 +73,25 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 		assertThat(dto.getOwner()).isEqualTo(ownerId);
 		
 		assertBunny(dto, bunnyArgument.getValue().setId(bunnyId));
+	}
+	
+	@Test
+	public void createBunny_duplicateIdentifier() throws IOException {
+		
+		String ownerId = mockOwner()
+				.setSignature("-")
+				.getId();
+		mockSession(ownerId);
+		BunnyDTO dto = new BunnyDTO();
+		dto.setOwner(ownerId);
+		dto.setRing(randomUUID().toString());
+		
+		when(registry.findBunnies(filterArgument.capture())).thenReturn(singleton(new Bunny()));
+		
+		assertError(CONFLICT, () -> api.createBunny(ownerId, dto));
+		
+		assertThat(filterArgument.getValue().get(RING.getColumn())).accepts(dto.getRing());
+		verify(registry, never()).add(bunnyArgument.capture());
 	}
 	
 	@Test

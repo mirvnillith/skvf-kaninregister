@@ -1,12 +1,15 @@
 package se.skvf.kaninregister.api;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -150,6 +153,48 @@ public class UpdateBunnyTest extends BunnyRegistryApiTest {
 		assertThat(bunnyArgument.getValue().getBreeder()).isEmpty();
 	}
 	
+	@Test
+	public void updateBunny_duplicateIdentifierOtherBunny() throws IOException {
+		
+		Owner owner = mockOwner()
+				.setSignature("-");
+		mockSession(owner.getId());
+		
+		Bunny bunny = mockBunny()
+				.setOwner(owner.getId());
+
+		BunnyDTO dto = new BunnyDTO();
+		dto.setChip(randomUUID().toString());
+		
+		when(registry.findBunnies(filterArgument.capture())).thenReturn(singleton(new Bunny()));
+		
+		assertError(CONFLICT, () -> api.updateBunny(owner.getId(), bunny.getId(), dto));
+		
+		assertThat(filterArgument.getValue().get(Bunny.IdentifierLocation.CHIP.getColumn())).accepts(dto.getChip());
+		verify(registry, never()).add(bunnyArgument.capture());
+	}
+	
+	@Test
+	public void updateBunny_duplicateIdentifierSameBunny() throws IOException {
+		
+		Owner owner = mockOwner()
+				.setSignature("-");
+		mockSession(owner.getId());
+		
+		Bunny bunny = mockBunny()
+				.setOwner(owner.getId());
+		
+		BunnyDTO dto = new BunnyDTO();
+		dto.setChip(randomUUID().toString());
+		
+		when(registry.findBunnies(filterArgument.capture())).thenReturn(singleton(bunny));
+		
+		dto = api.updateBunny(owner.getId(), bunny.getId(), dto);
+		
+		assertThat(filterArgument.getValue().get(Bunny.IdentifierLocation.CHIP.getColumn())).accepts(dto.getChip());
+		verify(registry).update(bunnyArgument.capture());
+	}
+
 	@Test
 	public void updateBunny_unknownBunny() throws IOException {
 		

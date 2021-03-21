@@ -305,6 +305,8 @@ paths:
           description: Session required, of approved owner
         '404':
           description: Owner not found
+        '409':
+          description: Duplicate identifier
     get:
       tags: [BunnyRegistry]
       operationId: getOwnerBunnies
@@ -392,6 +394,8 @@ paths:
           description: Session required, of owner
         '404':
           description: Owner or bunny not found
+        '409':
+          description: Duplicate identifier
     delete:
       tags: [BunnyRegistry]
       operationId: deleteBunny

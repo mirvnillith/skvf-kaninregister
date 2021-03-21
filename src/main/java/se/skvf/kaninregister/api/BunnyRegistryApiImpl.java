@@ -21,6 +21,9 @@ import static se.skvf.kaninregister.model.Bunny.byExactIdentifier;
 import static se.skvf.kaninregister.model.Bunny.byOwner;
 import static se.skvf.kaninregister.model.Bunny.byPreviousOwner;
 import static se.skvf.kaninregister.model.Bunny.byWildcardIdentifier;
+import static se.skvf.kaninregister.model.Bunny.splitIdentifiers;
+import static se.skvf.kaninregister.model.Bunny.IdentifierLocation.CHIP;
+import static se.skvf.kaninregister.model.Bunny.IdentifierLocation.RING;
 import static se.skvf.kaninregister.model.Owner.byUserName;
 import static se.skvf.kaninregister.model.Owner.newOwner;
 
@@ -54,6 +57,7 @@ import se.skvf.kaninregister.addo.Signing;
 import se.skvf.kaninregister.api.BunnyDTO.GenderEnum;
 import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Bunny.Gender;
+import se.skvf.kaninregister.model.Bunny.IdentifierLocation;
 import se.skvf.kaninregister.model.Owner;
 import se.skvf.kaninregister.model.Registry;
 
@@ -108,13 +112,20 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		} catch (WebApplicationException e) {
 			LOG.info("Application error", e);
 			throw e;
+		} catch (IllegalStateException e) {
+			LOG.info("Application error", e);
+			throw new WebApplicationException(e, BAD_REQUEST);	
 		} catch (Exception e) {
 			LOG.error("Unexpected error", e);
 			throw new WebApplicationException(e, INTERNAL_SERVER_ERROR);
 		}
 	}
 	
-	private static Bunny toBunny(BunnyDTO dto) {
+	private Bunny toBunny(BunnyDTO dto) throws IOException {
+		
+		checkUniqueIdentifier(CHIP, dto.getChip());
+		checkUniqueIdentifier(RING, dto.getRing());
+		
 		return new Bunny().setId(dto.getId())
 				.setName(dto.getName())
 				.setOwner(dto.getOwner())
@@ -454,7 +465,11 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		});
 	}
 
-	private static void update(Bunny bunny, BunnyDTO dto) {
+	private void update(Bunny bunny, BunnyDTO dto) throws IOException {
+		
+		checkUniqueIdentifier(bunny, CHIP, dto.getChip());
+		checkUniqueIdentifier(bunny, RING, dto.getRing());
+		
 		ofNullable(dto.getBreeder()).ifPresent(bunny::setBreeder);
 		ofNullable(dto.getName()).ifPresent(bunny::setName);
 		ofNullable(dto.getBirthDate()).ifPresent(bunny::setBirthDate);
@@ -469,6 +484,31 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		ofNullable(dto.getRace()).ifPresent(bunny::setRace);
 		ofNullable(dto.getRightEar()).ifPresent(bunny::setRightEar);
 		ofNullable(dto.getRing()).ifPresent(bunny::setRing);
+	}
+
+	private void checkUniqueIdentifier(Bunny bunny, IdentifierLocation location, String newIdentifier) throws IOException {
+		
+		if (isNotEmpty(newIdentifier) && !newIdentifier.equals(bunny.getIdentifier(location))) {
+			for (String identifier : splitIdentifiers(newIdentifier)) {
+				Collection<Bunny> bunnies = registry.findBunnies(byExactIdentifier(location, identifier));
+				if (bunnies.size() > 0 && 
+					bunnies.stream().noneMatch(b -> bunny.getId().equals(b.getId()))) {
+					throw new WebApplicationException(CONFLICT);
+				}
+			}
+		}
+	}
+	
+	private void checkUniqueIdentifier(IdentifierLocation location, String newIdentifier) throws IOException {
+		
+		if (isNotEmpty(newIdentifier)) {
+			for (String identifier : splitIdentifiers(newIdentifier)) {
+				Collection<Bunny> bunnies = registry.findBunnies(byExactIdentifier(location, identifier));
+				if (bunnies.size() > 0) {
+					throw new WebApplicationException(CONFLICT);
+				}
+			}
+		}
 	}
 	
 	private static Gender toGender(GenderEnum g) {

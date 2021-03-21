@@ -3,6 +3,7 @@ package se.skvf.kaninregister.model;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isAllEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static se.skvf.kaninregister.model.Bunny.Gender.ofValue;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -34,7 +36,7 @@ public class Bunny extends Entity<Bunny> {
 			this.column = column;
 		}
 		
-		String getColumn() {
+		public String getColumn() {
 			return column;
 		}
 	}
@@ -331,23 +333,16 @@ public class Bunny extends Entity<Bunny> {
 		return byIdentifier(location, wildcard(identifier));
 	}
 
-	private static Map<String, Predicate<String>> byIdentifier(IdentifierLocation location,
-			Predicate<String> predicate) throws IOException {
-		switch (location) {
-		case LEFT_EAR:
-		case RIGHT_EAR:
-		case RING:
-			return Entity.by(location.getColumn(), predicate);
-		case CHIP: {
-			return Entity.by(location.getColumn(), multiple(predicate));
-		}
-		default:
-			throw new IOException("Unknown location: " + location);
-		}
+	private static Map<String, Predicate<String>> byIdentifier(IdentifierLocation location, Predicate<String> predicate) throws IOException {
+		return Entity.by(location.getColumn(), multiple(predicate));
 	}
 	
 	static Predicate<String> multiple(Predicate<String> predicate) {
-		return v -> v != null && Stream.of(v.split(",")).map(String::trim).anyMatch(predicate);
+		return v -> v != null && splitIdentifiers(v).stream().anyMatch(predicate);
+	}
+
+	public static Set<String> splitIdentifiers(String identifiers) {
+		return Stream.of(identifiers.split(",")).map(String::trim).collect(toSet());
 	}
 
 	static Predicate<String> wildcard(String identifier) {
@@ -377,5 +372,19 @@ public class Bunny extends Entity<Bunny> {
 			}
 			return new String(valueChars).equalsIgnoreCase(identifier);
 		};
+	}
+
+	public String getIdentifier(IdentifierLocation location) {
+		switch(location) {
+			case LEFT_EAR:
+				return leftEar;
+			case RIGHT_EAR:
+				return rightEar;
+			case CHIP:
+				return chip;
+			case RING:
+				return ring;
+		}
+		return null;
 	}
 }
