@@ -160,6 +160,37 @@ paths:
         '404':
           description: Owner not found
           
+  /owners/{id}/activate:
+    post:
+      tags: [BunnyRegistry]
+      operationId: activateOwner
+      summary: Activates an existing owner.
+      requestBody:
+        description: Owner to activate
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/CreateOwnerDTO'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Owner activated
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/OwnerDTO'
+        '400':
+          description: Invalid user name or password
+        '401':
+          description: Session NOT allowed
+        '409':
+          description: User name already in use
+          
   /owners/{id}/deactivate:
     post:
       tags: [BunnyRegistry]

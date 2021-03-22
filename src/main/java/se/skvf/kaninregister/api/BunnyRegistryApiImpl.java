@@ -589,6 +589,37 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			return toDTO(owner);
 		});
 	}
+	
+	@Override
+	public OwnerDTO activateOwner(String id, CreateOwnerDTO creationDTO) {
+		return process(() -> {
+			
+			if (getSession() != null) {
+				throw new WebApplicationException(UNAUTHORIZED);								
+			}
+			
+			Owner owner = validateOwner(id, false);
+			if (isNotEmpty(owner.getUserName())) {
+				throw new WebApplicationException(BAD_REQUEST);
+			}
+			
+			if (isBlank(creationDTO.getUserName())) {
+				throw new WebApplicationException(BAD_REQUEST);
+			} else if (registry.findOwners(byUserName(creationDTO.getUserName())).size() > 0) {
+				throw new WebApplicationException(CONFLICT);
+			}
+			
+			if (isBlank(creationDTO.getPassword())) {
+				throw new WebApplicationException(BAD_REQUEST);
+			}
+			
+			registry.update(owner
+					.setUserName(creationDTO.getUserName())
+					.setPassword(creationDTO.getPassword()));
+			
+			return toDTO(owner);
+		});
+	}
 
 	@Override
 	public BunnyDTO reclaimBunny(String id) {

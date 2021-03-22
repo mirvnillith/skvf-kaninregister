@@ -64,7 +64,8 @@ public class GoogleSpreadsheet {
 	}
 
 	private void protect(Sheet sheet) throws IOException {
-		if (sheet.getProtectedRanges().isEmpty()) {
+		if (sheet.getProtectedRanges() == null ||
+				sheet.getProtectedRanges().isEmpty()) {
 			getApi().spreadsheets().batchUpdate(id, new BatchUpdateSpreadsheetRequest().setRequests(asList(new Request()
 					.setAddProtectedRange(new AddProtectedRangeRequest()
 							.setProtectedRange(new ProtectedRange()
