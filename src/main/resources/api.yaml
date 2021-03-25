@@ -534,7 +534,7 @@ paths:
           description: Bunny not found
           
   /bunnies/{id}/reclaim:
-    get:
+    put:
       tags: [BunnyRegistry]
       operationId: reclaimBunny
       summary: Reverts bunny to previous owner
