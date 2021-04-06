@@ -32,10 +32,13 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
@@ -49,6 +52,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
 
 import se.skvf.kaninregister.addo.AddoSigningService;
 import se.skvf.kaninregister.addo.Signature;
@@ -242,21 +246,29 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public BunnyList findBunnies(BunnyIdentifierLocation location, String identifier) {
+	public BunnyList findBunnies(List<BunnyIdentifierLocation> locations, List<String> identifiers) {
 		return process(() -> {
 
-			if (location == null || identifier == null) {
+			if (CollectionUtils.isEmpty(locations) || 
+					CollectionUtils.isEmpty(identifiers) ||
+					locations.size() != identifiers.size()) {
 				throw new WebApplicationException(BAD_REQUEST);
 			}
 			
-			long wildcardCount = identifier.chars()
-					.filter(c -> c == WILDCARD)
-					.count();
-			if (wildcardCount > 2) {
-				throw new WebApplicationException(BAD_REQUEST);				
-			}
+			identifiers.forEach(identifier -> {
+				long wildcardCount = identifier.chars()
+						.filter(c -> c == WILDCARD)
+						.count();
+				if (wildcardCount > 2) {
+					throw new WebApplicationException(BAD_REQUEST);
+				}
+			});
 			
-			Collection<Bunny> bunnies = registry.findBunnies(byWildcardIdentifier(location(location), identifier));
+			Map<String, Predicate<String>> filter = new HashMap<>();
+			for (int i=0;i<locations.size();i++) {
+				filter.putAll(byWildcardIdentifier(location(locations.get(i)), identifiers.get(i)));
+			}
+			Collection<Bunny> bunnies = registry.findBunnies(filter);
 			
 			if (bunnies.size() > 10) {
 				throw new WebApplicationException(NO_CONTENT);
@@ -831,14 +843,21 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			}
 			Owner owner = owners.iterator().next();
 			
-			BunnyIdentifierDTO bunnyIdentifier = recoveryDTO.getBunnyIdentifier();
-			if (bunnyIdentifier == null || 
-					bunnyIdentifier.getLocation() == null ||
-					bunnyIdentifier.getIdentifier() == null) {
+			List<BunnyIdentifierDTO> bunnyIdentifierList = recoveryDTO.getBunnyIdentifier();
+			if (CollectionUtils.isEmpty(bunnyIdentifierList)) {
 				throw new WebApplicationException(BAD_REQUEST);				
 			}
 			
-			Collection<Bunny> bunnies = registry.findBunnies(byExactIdentifier(location(bunnyIdentifier.getLocation()), bunnyIdentifier.getIdentifier()));
+			Map<String, Predicate<String>> filter = new HashMap<>();
+			for (BunnyIdentifierDTO bunnyIdentifier : bunnyIdentifierList) {
+				if (bunnyIdentifier.getLocation() == null ||
+						bunnyIdentifier.getIdentifier() == null) {
+					throw new WebApplicationException(BAD_REQUEST);				
+				}
+				filter.putAll(byExactIdentifier(location(bunnyIdentifier.getLocation()), bunnyIdentifier.getIdentifier()));
+			}
+			
+			Collection<Bunny> bunnies = registry.findBunnies(filter);
 			if (bunnies.size() != 1) {
 				throw new WebApplicationException(NOT_FOUND);
 			}
@@ -859,7 +878,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		});
 	}
 
-	private Bunny.IdentifierLocation location(BunnyIdentifierLocation location) {
+	private static Bunny.IdentifierLocation location(BunnyIdentifierLocation location) {
 		switch (location) {
 			case LEFT_EAR:
 				return Bunny.IdentifierLocation.LEFT_EAR;

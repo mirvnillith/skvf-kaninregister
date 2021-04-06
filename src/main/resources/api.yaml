@@ -492,13 +492,17 @@ paths:
           required: true
           description: "Identifier location"
           schema:
-            $ref: '#/components/schemas/BunnyIdentifierLocation'
+            type: array
+            items: 
+              $ref: '#/components/schemas/BunnyIdentifierLocation'
         - name: identifier
           in: query
           required: true
           description: "Identifier template, with ? as wildcard"
           schema:
-            type: string
+            type: array
+            items:
+              type: string
       responses:
         '200':
           description: Bunnies found
@@ -699,7 +703,9 @@ components:
          - newPassword
        properties:
          bunnyIdentifier:
-           $ref: '#/components/schemas/BunnyIdentifierDTO'
+           type: array
+           items: 
+             $ref: '#/components/schemas/BunnyIdentifierDTO'
          newPassword:
            type: string
            description: New password to set

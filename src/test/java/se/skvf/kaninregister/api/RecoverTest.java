@@ -1,5 +1,7 @@
 package se.skvf.kaninregister.api;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -37,7 +39,7 @@ public class RecoverTest extends BunnyRegistryApiTest {
 		when(registry.findBunnies(filterArgument.capture())).thenReturn(new HashSet<>(singleton(bunny)));
 		
 		RecoveryDTO dto = new RecoveryDTO();
-		dto.setBunnyIdentifier(bunnyIdentifier(randomUUID().toString()));
+		dto.setBunnyIdentifier(asList(bunnyIdentifier(randomUUID().toString())));
 		dto.setNewPassword(randomUUID().toString());
 		
 		api.recoverOwner(owner.getUserName(), dto);
@@ -52,7 +54,7 @@ public class RecoverTest extends BunnyRegistryApiTest {
 		assertThat(ownerFilter.values().iterator().next()).accepts(owner.getUserName());
 		
 		Map<String, Predicate<String>> bunnyFilter = filterArgument.getValue();
-		assertThat(bunnyFilter.values().iterator().next()).accepts(dto.getBunnyIdentifier().getIdentifier());
+		assertThat(bunnyFilter.values().iterator().next()).accepts(dto.getBunnyIdentifier().get(0).getIdentifier());
 	}
 	
 	private static BunnyIdentifierDTO bunnyIdentifier(String identifier) {
@@ -71,7 +73,7 @@ public class RecoverTest extends BunnyRegistryApiTest {
 		
 		RecoveryDTO dto = new RecoveryDTO();
 		dto.setNewPassword(randomUUID().toString());
-		dto.setBunnyIdentifier(bunnyIdentifier(randomUUID().toString()));
+		dto.setBunnyIdentifier(asList(bunnyIdentifier(randomUUID().toString())));
 		
 		assertError(NOT_FOUND, () -> api.recoverOwner(owner.getUserName(), dto));
 		
@@ -90,7 +92,7 @@ public class RecoverTest extends BunnyRegistryApiTest {
 		
 		RecoveryDTO dto = new RecoveryDTO();
 		dto.setNewPassword(randomUUID().toString());
-		dto.setBunnyIdentifier(bunnyIdentifier(randomUUID().toString()));
+		dto.setBunnyIdentifier(asList(bunnyIdentifier(randomUUID().toString())));
 		
 		assertError(NOT_FOUND, () -> api.recoverOwner(owner.getUserName(), dto));
 		
@@ -109,7 +111,7 @@ public class RecoverTest extends BunnyRegistryApiTest {
 		when(registry.findBunnies(filterArgument.capture())).thenReturn(new HashSet<>(singleton(bunny)));
 
 		RecoveryDTO dto = new RecoveryDTO();
-		dto.setBunnyIdentifier(bunnyIdentifier(randomUUID().toString()));
+		dto.setBunnyIdentifier(asList(bunnyIdentifier(randomUUID().toString())));
 		assertError(BAD_REQUEST, () -> api.recoverOwner(owner.getUserName(), dto));
 		dto.setNewPassword("");
 		assertError(BAD_REQUEST, () -> api.recoverOwner(owner.getUserName(), dto));
@@ -119,6 +121,27 @@ public class RecoverTest extends BunnyRegistryApiTest {
 		assertError(BAD_REQUEST, () -> api.recoverOwner(owner.getUserName(), dto));
 		dto.setNewPassword(" \t\n");
 		assertError(BAD_REQUEST, () -> api.recoverOwner(owner.getId(), dto));
+		
+		verify(registry, never()).update(owner);
+	}
+	
+	@Test
+	public void recover_invalidIdentifiers() throws IOException {
+		
+		Owner owner = mockOwner()
+				.setUserName(randomUUID().toString());
+		when(registry.findOwners(filterArgument.capture())).thenReturn(singleton(owner));
+		
+		RecoveryDTO dto = new RecoveryDTO();
+		dto.setBunnyIdentifier(null);
+		assertError(BAD_REQUEST, () -> api.recoverOwner(owner.getUserName(), dto));
+		dto.setBunnyIdentifier(emptyList());
+		assertError(BAD_REQUEST, () -> api.recoverOwner(owner.getUserName(), dto));
+		dto.setBunnyIdentifier(asList(bunnyIdentifier(null)));
+		assertError(BAD_REQUEST, () -> api.recoverOwner(owner.getUserName(), dto));
+		dto.setBunnyIdentifier(asList(bunnyIdentifier(randomUUID().toString())));
+		dto.getBunnyIdentifier().get(0).setLocation(null);
+		assertError(BAD_REQUEST, () -> api.recoverOwner(owner.getUserName(), dto));
 		
 		verify(registry, never()).update(owner);
 	}
