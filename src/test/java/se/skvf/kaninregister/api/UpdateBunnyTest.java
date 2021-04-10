@@ -14,6 +14,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.skvf.kaninregister.api.BunnyDTO.GenderEnum.FEMALE;
+import static se.skvf.kaninregister.api.BunnyDTO.GenderEnum.UNKNOWN;
 
 import java.io.IOException;
 
@@ -54,6 +55,28 @@ public class UpdateBunnyTest extends BunnyRegistryApiTest {
 		dto = api.updateBunny(owner.getId(), bunny.getId(), dto);
 		
 		assertBunny(dto, bunny);
+	}
+	
+	@Test
+	public void updateBunny_unknownGender() throws IOException {
+		
+		Owner owner = mockOwner()
+				.setSignature(randomUUID().toString());
+		mockSession(owner.getId());
+		reset(registry);
+		when(registry.findOwners(anyCollection())).thenReturn(asList(owner));
+		
+		Bunny bunny = mockBunny()
+				.setOwner(owner.getId())
+				.setGender(Bunny.Gender.MALE);
+		
+		BunnyDTO dto = new BunnyDTO();
+		dto.setGender(UNKNOWN);
+		
+		dto = api.updateBunny(owner.getId(), bunny.getId(), dto);
+		
+		assertThat(dto.getGender()).isEqualTo(UNKNOWN);
+		assertThat(bunny.getGender()).isNull();
 	}
 	
 	@Test

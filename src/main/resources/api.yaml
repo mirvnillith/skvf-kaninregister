@@ -785,6 +785,7 @@ components:
             gender:
               type: string
               enum:
+                - Unknown
                 - Female
                 - Male
             neutered:

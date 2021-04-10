@@ -12,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.skvf.kaninregister.api.BunnyDTO.GenderEnum.FEMALE;
+import static se.skvf.kaninregister.api.BunnyDTO.GenderEnum.UNKNOWN;
 import static se.skvf.kaninregister.model.Bunny.IdentifierLocation.RING;
 
 import java.io.IOException;
@@ -53,6 +54,25 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 		assertThat(dto.getOwner()).isEqualTo(ownerId);
 		
 		assertBunny(dto, bunnyArgument.getValue().setId(bunnyId));
+	}
+	
+	@Test
+	public void createBunny_unknownGender() throws IOException {
+		
+		String ownerId = mockOwner()
+				.setSignature("-")
+				.getId();
+		mockSession(ownerId);
+		BunnyDTO dto = new BunnyDTO();
+		dto.setGender(UNKNOWN);
+		
+		String bunnyId = randomUUID().toString();
+		when(registry.add(bunnyArgument.capture())).thenReturn(bunnyId);
+		
+		dto = api.createBunny(ownerId, dto);
+		
+		assertThat(dto.getGender()).isEqualTo(UNKNOWN);
+		assertThat(bunnyArgument.getValue().getGender()).isNull();
 	}
 	
 	@Test

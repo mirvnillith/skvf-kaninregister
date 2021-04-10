@@ -104,7 +104,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			bunnyDTO.setOwner(ownerId);
 			bunnyDTO.setId(registry.add(toBunny(bunnyDTO)));
 			return bunnyDTO;
-			
 		});
 	}
 
@@ -529,6 +528,8 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 					return Bunny.Gender.FEMALE;
 				case MALE:
 					return Bunny.Gender.MALE;
+				case UNKNOWN:
+					return null;
 			}
 		}
 		return null;
@@ -543,7 +544,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 					return GenderEnum.MALE;
 			}
 		}
-		return null;
+		return GenderEnum.UNKNOWN;
 	}
 
 	private static void update(Owner owner, OwnerDTO dto) {
