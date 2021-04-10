@@ -32,7 +32,7 @@ class RegistryRuntimeTest {
 
 		List<Long> durations = new ArrayList<>(batch);
 		for (int i=0; i<batch;i++) {
-			Owner owner = new Owner().setFirstName(randomUUID().toString()).setLastName(randomUUID().toString());
+			Owner owner = new Owner().setName(randomUUID().toString());
 			long before = System.currentTimeMillis();
 			ids.add(registry.add(owner));
 			durations.add(System.currentTimeMillis()-before);
@@ -74,18 +74,18 @@ class RegistryRuntimeTest {
 
 	void test(Registry registry) throws IOException {
 		
-		Owner jonas = new Owner().setFirstName("Jonas").setLastName("Olsson");
-		Owner maria = new Owner().setFirstName("Maria").setLastName("Wahlström");
+		Owner jonas = new Owner().setName("Jonas Olsson");
+		Owner maria = new Owner().setName("Maria Wahlström");
 		registry.add(jonas);
 		registry.add(maria);
 		registry.findOwners(asList(maria.getId(), jonas.getId())).forEach(System.out::println);
 		
-		jonas.setFirstName("Carl");
+		jonas.setName("Carl Jonas Olsson");
 		registry.update(jonas);
 		registry.findOwners(asList(jonas.getId())).forEach(System.out::println);
 		
 		Map<String, Predicate<String>> ström = new HashMap<>();
-		ström.put("Efternamn", n -> n.endsWith("ström"));
+		ström.put("Namn", n -> n.endsWith("ström"));
 		System.out.println("%ström");
 		registry.findOwners(ström).forEach(System.out::println);
 		

@@ -18,8 +18,7 @@ public class Owner extends Entity<Owner> {
 	private static final PasswordEncryptor ENCRYPTOR = new StrongPasswordEncryptor();
 	
 	static final List<String> COLUMNS = asList(
-			"Förnamn", 
-			"Efternamn", 
+			"Namn", 
 			"Offentlig Ägare",
 			"Uppfödarnamn",
 			"Offentlig Uppfödare", 
@@ -31,8 +30,7 @@ public class Owner extends Entity<Owner> {
 			"Telefon",
 			"Uppfödarepost");
 
-	private String firstName;
-	private String lastName;
+	private String name;
 	private boolean publicOwner;
 	private String breederName;
 	private boolean publicBreeder;
@@ -85,21 +83,12 @@ public class Owner extends Entity<Owner> {
 		return this;
 	}
 	
-	public String getFirstName() {
-		return firstName;
+	public String getName() {
+		return name;
 	}
 	
-	public Owner setFirstName(String firstName) {
-		this.firstName = firstName;
-		return this;
-	}
-	
-	public String getLastName() {
-		return lastName;
-	}
-	
-	public Owner setLastName(String lastName) {
-		this.lastName = lastName;
+	public Owner setName(String name) {
+		this.name = name;
 		return this;
 	}
 	
@@ -123,16 +112,12 @@ public class Owner extends Entity<Owner> {
 	
 	@Override
 	protected void toMap(Map<String, String> map) {
-		if (firstName == null) {
-			throw new IllegalStateException("Owner must have a first name");
-		}
-		if (lastName == null) {
-			throw new IllegalStateException("Owner must have a last name");
+		if (name == null) {
+			throw new IllegalStateException("Owner must have a name");
 		}
 		
 		List<String> values = new ArrayList<String>(COLUMNS.size());
-		values.add(firstName);
-		values.add(lastName);
+		values.add(name);
 		values.add(toString(publicOwner));
 		values.add(breederName);
 		values.add(toString(publicBreeder));
@@ -155,8 +140,7 @@ public class Owner extends Entity<Owner> {
 		super.fromMap(map);
 		
 		List<BiConsumer<Owner, String>> setters = asList(
-				Owner::setFirstName,
-				Owner::setLastName,
+				Owner::setName,
 				(o,v) -> o.setPublicOwner(booleanFromString(v)),
 				Owner::setBreederName,
 				(o,v) -> o.setPublicBreeder(booleanFromString(v)),
@@ -174,7 +158,7 @@ public class Owner extends Entity<Owner> {
 
 	@Override
 	public String toString() {
-		return super.toString() + ": " + firstName + " " + lastName;
+		return super.toString() + ": " + name;
 	}
 
 	public String getBreederName() {
@@ -247,8 +231,7 @@ public class Owner extends Entity<Owner> {
 	}
 
 	public Owner unapprove() {
-		firstName = "Okänd";
-		lastName = "Ägare";
+		name = "Okänd";
 		publicOwner = false;
 		breederName = null;
 		publicBreeder = false;
@@ -261,7 +244,6 @@ public class Owner extends Entity<Owner> {
 
 	public static Owner newOwner() {
 		return new Owner()
-				.setFirstName("Ny")
-				.setLastName("Ägare");
+				.setName("Ny");
 	}
 }

@@ -16,18 +16,12 @@ public class OwnerTest extends EntityTest<Owner> {
 	@Override
 	protected Owner create() {
 		return new Owner()
-				.setFirstName(randomUUID().toString())
-				.setLastName(randomUUID().toString());
+				.setName(randomUUID().toString());
 	}
 	
 	@Test
-	public void firstName() throws Exception {
-		assertAttribute("Förnamn", Owner::setFirstName, Owner::getFirstName);
-	}
-	
-	@Test
-	public void lastName() throws Exception {
-		assertAttribute("Efternamn", Owner::setLastName, Owner::getLastName);
+	public void name() throws Exception {
+		assertAttribute("Namn", Owner::setName, Owner::getName);
 	}
 	
 	@Test
@@ -123,9 +117,8 @@ public class OwnerTest extends EntityTest<Owner> {
 	public void testToString() {
 		Owner owner = new Owner()
 				.setId(randomUUID().toString())
-				.setFirstName(randomUUID().toString())
-				.setLastName(randomUUID().toString());
-		assertToString(owner, ": "+owner.getFirstName()+" "+owner.getLastName());
+				.setName(randomUUID().toString());
+		assertToString(owner, ": "+owner.getName());
 	}
 	
 	@Test

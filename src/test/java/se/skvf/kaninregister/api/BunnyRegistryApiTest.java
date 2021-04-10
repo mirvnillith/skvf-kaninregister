@@ -92,8 +92,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 	protected Owner mockOwner() throws IOException {
 		Owner owner = new Owner()
 				.setId(randomUUID().toString())
-				.setFirstName(randomUUID().toString())
-				.setLastName(randomUUID().toString())
+				.setName(randomUUID().toString())
 				.setEmail(randomUUID().toString())
 				.setPublicOwner(true);
 		when(registry.findOwners(singleton(owner.getId()))).thenReturn(singleton(owner));
@@ -154,8 +153,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 	protected static void assertOwner(OwnerDTO expected, Owner actual) {
 		assertAll(
 				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
-				() -> assertThat(actual.getFirstName()).isEqualTo(expected.getFirstName()),
-				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName()),
+				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
 				() -> assertThat(actual.getUserName()).isEqualTo(expected.getUserName()),
 				() -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail()),
 				() -> assertThat(actual.getAddress()).isEqualTo(expected.getAddress()),
@@ -168,8 +166,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 	
 	protected static void assertOwner(Owner expected, BunnyOwnerDTO actual) {
 		assertAll(
-				() -> assertThat(actual.getFirstName()).isEqualTo(expected.getFirstName()),
-				() -> assertThat(actual.getLastName()).isEqualTo(expected.getLastName()),
+				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
 				() -> assertThat(actual.getEmail()).isEqualTo(expected.getEmail()),
 				() -> assertThat(actual.getAddress()).isEqualTo(expected.getAddress()),
 				() -> assertThat(actual.getPhone()).isEqualTo(expected.getPhone())
@@ -181,7 +178,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 		if (expected.getBreederName() != null) {
 			assertThat(actual.getName()).isEqualTo(expected.getBreederName());
 		} else {
-			assertThat(actual.getName()).isEqualTo(expected.getFirstName() + " " + expected.getLastName());
+			assertThat(actual.getName()).isEqualTo(expected.getName());
 		}
 		
 		if (expected.getBreederEmail() != null) {

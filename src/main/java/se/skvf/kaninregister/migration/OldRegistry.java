@@ -35,7 +35,23 @@ import se.skvf.kaninregister.model.Registry;
 @Component
 public class OldRegistry {
 
-	private static final String PERSONNUMMER = "Personnummer";
+	static final String PUBLIC = "godkänner uppgiftsutlämning till privatperson";
+	static final String EMAIL = "Mailadress";
+	static final String PHONE = "telefon";
+	static final String POSTAL_ADDRESS = "postadress";
+	static final String STREET_ADDRESS = "adress";
+	static final String OWNER_NAME = "ägare";
+	static final String FEATURES = "kännetecken";
+	static final String COLOUR_MARKINGS = "teckning och färg";
+	static final String COAT = "hårlag";
+	static final String RACE = "ras";
+	static final String GENDER = "kön";
+	static final String BUNNY_NAME = "kaninens namn";
+	static final String BIRTHDATE = "födelsedatum";
+	static final String RING = "ringnr + uppfödarnummer";
+	static final String CHIP = "mikrochipnr";
+	static final String EARS = "öronnummer, vä först";
+	static final String PERSONNUMMER = "Personnummer";
 
 	private static final Log LOG = LogFactory.getLog(OldRegistry.class);
 	
@@ -106,7 +122,24 @@ public class OldRegistry {
 	private boolean collectBreeders(Map<String, Owner> ownerMap, Multimap<String, Bunny> bunnyMap) throws IOException {
 		
 		LOG.info(breeders.getName() + " ...");
-		Map<String, String> columns = mapColumns(PERSONNUMMER, "Förnamn", "Efternamn", "Namn", "Kön");
+		Map<String, String> columns = mapColumns(breeders, 
+				PERSONNUMMER, 
+				EARS,
+				CHIP,
+				RING,
+				BIRTHDATE,
+				BUNNY_NAME,
+				GENDER,
+				RACE,
+				COAT,
+				COLOUR_MARKINGS,
+				FEATURES,
+				OWNER_NAME,
+				STREET_ADDRESS,
+				POSTAL_ADDRESS,
+				PHONE,
+				EMAIL,
+				PUBLIC);
 		return migrateOwners(loadAll(breeders, columns), columns, ownerMap, bunnyMap);
 	}
 
@@ -121,7 +154,24 @@ public class OldRegistry {
 	private boolean collectOwners(Map<String, Owner> ownerMap, Multimap<String, Bunny> bunnyMap) throws IOException {
 		
 		LOG.info(owners.getName() + " ...");
-		Map<String, String> columns = mapColumns(PERSONNUMMER, "Förnamn", "Efternamn", "Namn", "Kön");
+		Map<String, String> columns = mapColumns(owners,
+				PERSONNUMMER, 
+				EARS,
+				CHIP,
+				RING,
+				BIRTHDATE,
+				BUNNY_NAME,
+				GENDER,
+				RACE,
+				COAT,
+				COLOUR_MARKINGS,
+				FEATURES,
+				OWNER_NAME,
+				STREET_ADDRESS,
+				POSTAL_ADDRESS,
+				PHONE,
+				EMAIL,
+				PUBLIC);
 		return migrateOwners(loadAll(owners, columns), columns, ownerMap, bunnyMap);
 	}
 
@@ -149,10 +199,7 @@ public class OldRegistry {
 		if (map.containsKey(pnr)) {
 			Owner existing = map.get(pnr);
 			boolean valid = true;
-			if (!merge(pnr, existing, "firstName", existing.getFirstName(), owner.getFirstName(), Owner::setFirstName)) {
-				valid = false;
-			}
-			if (!merge(pnr, existing, "lastName", existing.getLastName(), owner.getLastName(), Owner::setLastName)) {
+			if (!merge(pnr, existing, "name", existing.getName(), owner.getName(), Owner::setName)) {
 				valid = false;
 			}
 			return valid;
@@ -177,28 +224,28 @@ public class OldRegistry {
 
 	private static Bunny bunny(Function<String, String> values) {
 		 Bunny bunny = new Bunny()
-				.setName(values.apply("kaninens namn"))
-				.setChip(values.apply("mikrochipnr"))
-				.setRing(values.apply("ringnr + uppfödarnummer"))
-				.setBirthDate(values.apply("födelsedatum"))
-				.setRace(values.apply("ras"))
-				.setCoat(values.apply("hårlag"))
-				.setColourMarkings(values.apply("teckning och färg"))
-				.setFeatures(values.apply("kännetecken"));
+				.setName(values.apply(BUNNY_NAME))
+				.setChip(values.apply(CHIP))
+				.setRing(values.apply(RING))
+				.setBirthDate(values.apply(BIRTHDATE))
+				.setRace(values.apply(RACE))
+				.setCoat(values.apply(COAT))
+				.setColourMarkings(values.apply(COLOUR_MARKINGS))
+				.setFeatures(values.apply(FEATURES));
 		 
-		 String[] ears = values.apply("öronnummer, vä först").split(",");
+		 String[] ears = values.apply(EARS).split(",");
 		 switch (ears.length) {
 			case 1:
-				bunny.setLeftEar(ears[0].trim());
+				bunny.setLeftEar(ears[0].replace("vö","").trim());
 				break;
 			case 2:
-				bunny.setLeftEar(ears[0].trim());
-				bunny.setRightEar(ears[1].trim());
+				bunny.setLeftEar(ears[0].replace("vö","").trim());
+				bunny.setRightEar(ears[1].replace("hö","").trim());
 				break;
 		 }
 		
 		 
-		 switch (values.apply("kön")) {
+		 switch (values.apply(GENDER)) {
 		 	case "hane":
 		 		bunny.setGender(Bunny.Gender.MALE);
 		 		break;
@@ -221,36 +268,17 @@ public class OldRegistry {
 	private static Owner owner(Function<String, String> values) {
 		
 		Owner owner = new Owner()
-				.setPhone(values.apply("telefon"))
-				.setEmail(values.apply("Mailadress"));
+				.setName(values.apply(OWNER_NAME))
+				.setPhone(values.apply(PHONE))
+				.setEmail(values.apply(EMAIL));
 		
-		String[] names = values.apply("ägare").split(" ");
-		switch (names.length) {
-			case 0:
-				owner.setFirstName("Utan");
-				owner.setLastName("Namn");
-				break;
-			case 1:
-				owner.setFirstName(names[0]);
-				owner.setLastName("-");
-				break;
-			case 2:
-				owner.setFirstName(names[0]);
-				owner.setLastName(names[1]);
-				break;
-			default:
-				owner.setFirstName(names[0]);
-				owner.setLastName(values.apply("ägare").substring(names[0].length()+1));
-				break;
-		}
-		
-		String address = values.apply("adress");
-		if (isNotBlank(values.apply("postadress"))) {
-			address += ", " + values.apply("postadress");
+		String address = values.apply(STREET_ADDRESS);
+		if (isNotBlank(values.apply(POSTAL_ADDRESS))) {
+			address += ", " + values.apply(POSTAL_ADDRESS);
 		}
 		owner.setAddress(address);
 		
-		if (values.apply("godkänner uppgiftsutlämning till privatperson").equalsIgnoreCase("ja")) {
+		if (values.apply(PUBLIC).equalsIgnoreCase("ja")) {
 			owner.setPublicOwner(true)
 				.setPublicBreeder(true);
 		}
@@ -258,10 +286,10 @@ public class OldRegistry {
 		return owner;
 	}
 
-	private Map<String, String> mapColumns(String... headers) throws IOException {
+	private Map<String, String> mapColumns(GoogleSheet sheet, String... headers) throws IOException {
 		Map<String, String> columns = new HashMap<>();
 		for (String header : headers) {
-			columns.put(header, owners.getColumn(header));
+			columns.put(header, sheet.getColumn(header));
 		}
 		return columns;
 	}

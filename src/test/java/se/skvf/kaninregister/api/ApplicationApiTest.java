@@ -118,7 +118,7 @@ public class ApplicationApiTest {
 		// Delete breeder
 		login(breeder, breederPassword);
 		api.unapproveOwner(breeder.getId());
-		assertThat(api.getOwner(breeder.getId()).getFirstName()).isEqualTo("Okänd");
+		assertThat(api.getOwner(breeder.getId()).getName()).isEqualTo("Okänd");
 		api.deleteOwner(breeder.getId());
 		
 		// Delete bunny ...

@@ -182,8 +182,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private static OwnerDTO toDTO(Owner owner) {
 		OwnerDTO dto = new OwnerDTO();
 		dto.setId(owner.getId());
-		dto.setFirstName(owner.getFirstName());
-		dto.setLastName(owner.getLastName());
+		dto.setName(owner.getName());
 		dto.setEmail(owner.getEmail());
 		dto.setAddress(owner.getAddress());
 		dto.setPhone(owner.getPhone());
@@ -197,8 +196,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	
 	private static BunnyOwnerDTO toOwnerDTO(Owner owner) {
 		BunnyOwnerDTO dto = new BunnyOwnerDTO();
-		dto.setFirstName(owner.getFirstName());
-		dto.setLastName(owner.getLastName());
+		dto.setName(owner.getName());
 		dto.setEmail(owner.getEmail());
 		dto.setAddress(owner.getAddress());
 		dto.setPhone(owner.getPhone());
@@ -208,7 +206,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private static BunnyBreederDTO toBreederDTO(Owner owner) {
 		BunnyBreederDTO dto = new BunnyBreederDTO();
 		dto.setName(ofNullable(owner.getBreederName())
-				.orElse(owner.getFirstName() + " " + owner.getLastName()));
+				.orElse(owner.getName()));
 		dto.setEmail(ofNullable(owner.getBreederEmail())
 				.orElse(owner.getEmail()));
 		return dto;
@@ -552,8 +550,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		ofNullable(dto.getEmail()).ifPresent(owner::setEmail);
 		ofNullable(dto.getAddress()).ifPresent(owner::setAddress);
 		ofNullable(dto.getPhone()).ifPresent(owner::setPhone);
-		ofNullable(dto.getFirstName()).ifPresent(owner::setFirstName);
-		ofNullable(dto.getLastName()).ifPresent(owner::setLastName);
+		ofNullable(dto.getName()).ifPresent(owner::setName);
 		ofNullable(dto.getPublicOwner()).ifPresent(owner::setPublicOwner);
 		ofNullable(dto.getBreederName()).ifPresent(owner::setBreederName);
 		ofNullable(dto.getBreederEmail()).ifPresent(owner::setBreederEmail);

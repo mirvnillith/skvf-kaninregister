@@ -629,9 +629,7 @@ components:
     BunnyOwnerDTO:
       type: object
       properties:
-        firstName:
-          type: string
-        lastName:
+        name:
           type: string
         email:
           type: string
