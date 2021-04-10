@@ -3,6 +3,7 @@ package se.skvf.kaninregister.migration;
 import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
@@ -282,6 +283,64 @@ public class OldRegistryTest extends BunnyTest {
 				Arguments.of("hane", Bunny.Gender.MALE, false),
 				Arguments.of("hankastrat", Bunny.Gender.MALE, true)
 				);
+	}
+	
+	@Test
+	public void nameConflict() throws IOException {
+		
+		assertConflict(OWNER_NAME);
+	}
+	
+	@Test
+	public void streetAddressConflict() throws IOException {
+		
+		assertConflict(STREET_ADDRESS);
+	}
+	
+	@Test
+	public void postalAddressConflict() throws IOException {
+		
+		assertConflict(POSTAL_ADDRESS);
+	}
+	
+	@Test
+	public void phoneConflict() throws IOException {
+		
+		assertConflict(PHONE);
+	}
+	
+	@Test
+	public void emailConflict() throws IOException {
+		
+		assertConflict(EMAIL);
+	}
+	
+	@Test
+	public void publicConflict() throws IOException {
+		
+		Map<String, String> owner1 = defaultRow();
+		owner1.put(columns.get(PUBLIC), "Ja");
+		Map<String, String> owner2 = defaultRow();
+		owner2.put(columns.get(PERSONNUMMER), owner1.get(columns.get(PERSONNUMMER)));
+		owner2.put(columns.get(PUBLIC), "Nej");
+		
+		when(ownerSheet.findRows(anyMap())).thenReturn(singleton(owner1));
+		when(breederSheet.findRows(anyMap())).thenReturn(singleton(owner2));
+		
+		assertThrows(IllegalStateException.class, () -> old.setup());
+	}
+
+	private void assertConflict(String attribute) throws IOException {
+		Map<String, String> owner1 = defaultRow();
+		owner1.put(columns.get(attribute), randomUUID().toString());
+		Map<String, String> owner2 = defaultRow();
+		owner2.put(columns.get(PERSONNUMMER), owner1.get(columns.get(PERSONNUMMER)));
+		owner2.put(columns.get(attribute), randomUUID().toString());
+		
+		when(ownerSheet.findRows(anyMap())).thenReturn(singleton(owner1));
+		when(breederSheet.findRows(anyMap())).thenReturn(singleton(owner2));
+		
+		assertThrows(IllegalStateException.class, () -> old.setup());
 	}
 	
 	private void assertBunny(String attribute, Function<Bunny, String> getter) throws IOException {

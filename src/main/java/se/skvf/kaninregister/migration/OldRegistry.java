@@ -202,6 +202,18 @@ public class OldRegistry {
 			if (!merge(pnr, existing, "name", existing.getName(), owner.getName(), Owner::setName)) {
 				valid = false;
 			}
+			if (!merge(pnr, existing, "address", existing.getAddress(), owner.getAddress(), Owner::setAddress)) {
+				valid = false;
+			}
+			if (!merge(pnr, existing, "phone", existing.getPhone(), owner.getPhone(), Owner::setPhone)) {
+				valid = false;
+			}
+			if (!merge(pnr, existing, "email", existing.getEmail(), owner.getEmail(), Owner::setEmail)) {
+				valid = false;
+			}
+			if (!merge(pnr, existing, "public", ""+existing.isPublicOwner(), ""+owner.isPublicOwner(), null)) {
+				valid = false;
+			}
 			return valid;
 		} else {
 			map.put(pnr, owner);
