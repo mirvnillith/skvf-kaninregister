@@ -27,6 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.skvf.kaninregister.addo.AddoSigningService;
 import se.skvf.kaninregister.data.Database;
 import se.skvf.kaninregister.drive.GoogleDrive;
+import se.skvf.kaninregister.migration.OldRegistry;
 import se.skvf.kaninregister.model.Registry;
 
 @ExtendWith(SpringExtension.class)
@@ -42,6 +43,8 @@ public class ApplicationApiTest {
 		AddoSigningService addoSigningService;
 		@MockBean
 		Database database;
+		@MockBean
+		OldRegistry oldRegistry;
 		
 		@Bean
 		@Primary
