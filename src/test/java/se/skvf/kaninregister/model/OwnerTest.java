@@ -122,12 +122,7 @@ public class OwnerTest extends EntityTest<Owner> {
 	}
 	
 	@Test
-	public void mandatoryFirstName() {
-		assertMandatoryAttribute("Förnamn");
-	}
-	
-	@Test
-	public void mandatoryLastName() {
-		assertMandatoryAttribute("Efternamn");
+	public void mandatoryName() {
+		assertMandatoryAttribute("Namn");
 	}
 }
