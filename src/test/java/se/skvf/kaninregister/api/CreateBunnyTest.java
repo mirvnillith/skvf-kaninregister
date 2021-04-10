@@ -35,6 +35,7 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 		dto.setChip(randomUUID().toString());
 		dto.setCoat(randomUUID().toString());
 		dto.setColourMarkings(randomUUID().toString());
+		dto.setFeatures(randomUUID().toString());
 		dto.setGender(FEMALE);
 		dto.setLeftEar(randomUUID().toString());
 		dto.setNeutered(true);

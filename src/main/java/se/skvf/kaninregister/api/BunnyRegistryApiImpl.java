@@ -136,6 +136,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				.setChip(dto.getChip())
 				.setCoat(dto.getCoat())
 				.setColourMarkings(dto.getColourMarkings())
+				.setFeatures(dto.getFeatures())
 				.setGender(toGender(dto.getGender()))
 				.setLeftEar(dto.getLeftEar())
 				.setNeutered(ofNullable(dto.getNeutered()).orElse(false))
@@ -156,6 +157,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setChip(bunny.getChip());
 		dto.setCoat(bunny.getCoat());
 		dto.setColourMarkings(bunny.getColourMarkings());
+		dto.setFeatures(bunny.getFeatures());
 		dto.setGender(toGender(bunny.getGender()));
 		dto.setLeftEar(bunny.getLeftEar());
 		dto.setNeutered(bunny.isNeutered());
@@ -486,6 +488,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		ofNullable(dto.getChip()).ifPresent(bunny::setChip);
 		ofNullable(dto.getCoat()).ifPresent(bunny::setCoat);
 		ofNullable(dto.getColourMarkings()).ifPresent(bunny::setColourMarkings);
+		ofNullable(dto.getFeatures()).ifPresent(bunny::setFeatures);
 		ofNullable(dto.getGender()).ifPresent(g -> bunny.setGender(toGender(g)));
 		ofNullable(dto.getLeftEar()).ifPresent(bunny::setLeftEar);
 		ofNullable(dto.getNeutered()).ifPresent(bunny::setNeutered);

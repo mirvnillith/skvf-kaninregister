@@ -799,6 +799,8 @@ components:
               type: string
             colourMarkings:
               type: string
+            features:
+              type: string
               
     OfflineSignatureDTO:
       type: object

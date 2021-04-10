@@ -78,6 +78,7 @@ public class Bunny extends Entity<Bunny> {
 			"Ras",
 			"Hårlag",
 			"Färgteckning",
+			"Kännetecken",
 			"Bild",
 			LEFT_EAR.getColumn(),
 			RIGHT_EAR.getColumn(),
@@ -96,6 +97,7 @@ public class Bunny extends Entity<Bunny> {
 	private String race;
 	private String coat;
 	private String colourMarkings;
+	private String features;
 	private String picture;
 	private String leftEar;
 	private String rightEar;
@@ -161,6 +163,15 @@ public class Bunny extends Entity<Bunny> {
 		return this;
 	}
 
+	public String getFeatures() {
+		return features;
+	}
+	
+	public Bunny setFeatures(String features) {
+		this.features = features;
+		return this;
+	}
+	
 	public String getPicture() {
 		return picture;
 	}
@@ -265,6 +276,7 @@ public class Bunny extends Entity<Bunny> {
 		values.add(race);
 		values.add(coat);
 		values.add(colourMarkings);
+		values.add(features);
 		values.add(picture);
 		values.add(leftEar);
 		values.add(rightEar);
@@ -297,6 +309,7 @@ public class Bunny extends Entity<Bunny> {
 				Bunny::setRace,
 				Bunny::setCoat,
 				Bunny::setColourMarkings,
+				Bunny::setFeatures,
 				Bunny::setPicture,
 				Bunny::setLeftEar,
 				Bunny::setRightEar,

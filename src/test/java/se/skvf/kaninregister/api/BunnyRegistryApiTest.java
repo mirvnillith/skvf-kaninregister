@@ -131,6 +131,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				() -> assertThat(actual.getRace()).isEqualTo(expected.getRace()),
 				() -> assertThat(actual.getCoat()).isEqualTo(expected.getCoat()),
 				() -> assertThat(actual.getColourMarkings()).isEqualTo(expected.getColourMarkings()),
+				() -> assertThat(actual.getFeatures()).isEqualTo(expected.getFeatures()),
 				() -> assertThat(actual.getPicture()).isEqualTo(expected.getPicture()),
 				() -> assertThat(actual.getLeftEar()).isEqualTo(expected.getLeftEar()),
 				() -> assertThat(actual.getRightEar()).isEqualTo(expected.getRightEar()),

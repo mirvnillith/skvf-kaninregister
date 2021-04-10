@@ -68,6 +68,11 @@ public class BunnyTest extends EntityTest<Bunny> {
 	}
 	
 	@Test
+	public void features() throws Exception {
+		assertAttribute("Kännetecken", Bunny::setFeatures, Bunny::getFeatures);
+	}
+	
+	@Test
 	public void picture() throws Exception {
 		assertAttribute("Bild", Bunny::setPicture, Bunny::getPicture);
 	}
