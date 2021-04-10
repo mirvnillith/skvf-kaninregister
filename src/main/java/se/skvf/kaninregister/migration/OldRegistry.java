@@ -243,7 +243,6 @@ public class OldRegistry {
 				bunny.setRightEar(ears[1].replace("hö","").trim());
 				break;
 		 }
-		
 		 
 		 switch (values.apply(GENDER)) {
 		 	case "hane":
@@ -278,7 +277,7 @@ public class OldRegistry {
 		}
 		owner.setAddress(address);
 		
-		if (values.apply(PUBLIC).equalsIgnoreCase("ja")) {
+		if ("ja".equalsIgnoreCase(values.apply(PUBLIC))) {
 			owner.setPublicOwner(true)
 				.setPublicBreeder(true);
 		}
