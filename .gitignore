@@ -4,3 +4,9 @@
 /.classpath
 /application.yaml
 /VismaAddoAPI.pdf
+/kaninregister.iml
+/node/
+/credentials.json
+/node_modules/
+/src/main/resources/static/built/
+/.idea/
