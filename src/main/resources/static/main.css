@@ -2,11 +2,9 @@
     width: 100%;
     max-width: 200px;
 }
-
 .container {
     max-width: 940px;
 }
-
 .container-md {
     max-width: 940px;
 }
@@ -17,4 +15,7 @@ h1 {
     font-family: "Raleway", "Open Sans", "Helvetica Neue", "Helvetica", "sans-serif";
     font-weight: bold;
     text-transform: uppercase;
+}
+a {
+    cursor: pointer;
 }
