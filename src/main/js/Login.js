@@ -1,6 +1,10 @@
 import React from 'react';
 
 const Login = (props) => {
+    const submitHandler = (e) => {
+        e.preventDefault();
+    }
+
     const registerHandler = (e) => {
         e.preventDefault();
         props.setView("register");
@@ -22,6 +26,9 @@ const Login = (props) => {
                         <label htmlFor="password" className="col-md-6 col-form-label">Lösenord</label>
                         <div className="col-md-6">
                             <input type="password" className="form-control" id="password" />
+                        </div>
+                        <div className="invalid-feedback">
+                            Ogiltigt lösenord!
                         </div>
                     </div>
                     <div className="row mb-2">
