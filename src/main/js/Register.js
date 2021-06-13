@@ -6,6 +6,7 @@ const Register = (props) => {
     const [pwd2, setPwd2] = useState("");
     const [isValidPwd, setIsValidPwd] = useState(true);
     const [isValidated, setIsValidated] = useState(false);
+    const setError = (msg) => props.setNotification({type: "danger", msg: msg});
 
     const submitHandler = async (e) => {
         e.preventDefault();
@@ -25,15 +26,15 @@ const Register = (props) => {
             }
             else if (response.status === 400) {
                 console.error(responseMsg);
-                props.setErrorMsg("Felaktigt användarnamn eller användare!")
+                setError("Felaktigt användarnamn eller användare!")
             }
             else if (response.status === 409) {
                 console.error(responseMsg);
-                props.setErrorMsg("Användarnamnet finns redan!")
+                setError("Användarnamnet finns redan!")
             }
             else {
                 console.error(responseMsg);
-                props.setErrorMsg("Ops, något gick fel!")
+                setError("Ops, något gick fel!")
             }
         }
     }

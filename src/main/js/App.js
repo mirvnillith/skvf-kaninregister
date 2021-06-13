@@ -1,48 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import Login from './Login'
+import Header from './Header'
+import Notification from './Notification'
 import Register from './Register'
-
-const Header = () => {
-    return (
-        <div className="row">
-           <div className="col-sm-4 gx-4">
-            <img className="logo" src="assets/logo.jpg"/>
-           </div>
-           <div className="col-sm-8 align-self-center">
-              <p className=""> Menu placeholder </p>
-           </div>
-       </div>
-    );
-}
 
 const Content = (props) => {
     if (props.view === "login") {
         return <Login setView={props.setView}/>
     }
     if (props.view === "register") {
-        return <Register setView={props.setView} setErrorMsg={props.setErrorMsg}/>
+        return <Register setView={props.setView} setNotification={props.setNotification}/>
     }
 }
 
-const Error = (props) => {
-   if (props.errorMsg) {
-       return (
-            <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                {props.errorMsg}
-                <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-       );
-   }
-   else {
-       return (null)
-   }
-}
-
-
 const App = () => {
     const [view, setView] = useState("login");
-    const [errorMsg, setErrorMsg] = useState("");
+    const [notifications, setNotificationState] = useState([]);
+    const setNotification = (notification) => {
+        const newNotificationState = [...notifications, notification];
+        console.error(newNotificationState);
+        setNotificationState(newNotificationState);
+    }
+    useEffect(() => {
+        console.error(notifications)
+    }, [notifications])
 
     return (
         <div className="container-md px-0">
@@ -52,9 +34,11 @@ const App = () => {
                     <h1 className="text-center green"> Kaninregister </h1>
                </div>
             </div>
-            <Error errorMsg={errorMsg}/>
+            { notifications.map(({type, msg}, index) => {
+                return (<Notification type={type} msg={msg} key={index}/>)
+            })}
             <div className="container">
-                <Content view={view} setView={setView} setErrorMsg={setErrorMsg}/>
+                <Content view={view} setView={setView} setNotification={setNotification}/>
             </div>
         </div>
     );
