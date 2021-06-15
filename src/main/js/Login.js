@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { loginUser } from './utils/api';
 
 const Login = (props) => {
-    const submitHandler = (e) => {
+    const [user, setUser] = useState("");
+    const [pwd, setPwd] = useState("");
+    const [isValidated, setIsValidated] = useState(false);
+
+    const setError = (msg) => props.setNotification({type: "danger", msg: msg});
+    const submitHandler = async (e) => {
         e.preventDefault();
+        setIsValidated(true);
+        if (user && pwd) {
+            await loginUser(user, pwd, props.setSession, setError)
+        }
     }
 
     const registerHandler = (e) => {
@@ -15,17 +25,27 @@ const Login = (props) => {
                 <h2>Logga in</h2>
             </div>
             <div className="col-md-12">
-                <form>
+                <form onSubmit={submitHandler}>
                     <div className="row mb-2">
                         <label htmlFor="userName" className="col-md-6 col-form-label">Användarnamn</label>
                         <div className="col-md-6">
-                            <input type="text" className="form-control" id="userName" />
+                            <input
+                                type="text"
+                                className={isValidated && user === "" ? "form-control is-invalid" : "form-control"}
+                                id="username"
+                                onChange={e => setUser(e.target.value)}
+                            />
                         </div>
                     </div>
                     <div className="row mb-2">
                         <label htmlFor="password" className="col-md-6 col-form-label">Lösenord</label>
                         <div className="col-md-6">
-                            <input type="password" className="form-control" id="password" />
+                            <input
+                                type="password"
+                                className={isValidated && pwd === "" ? "form-control is-invalid" : "form-control"}
+                                id="password"
+                                onChange={e => setPwd(e.target.value)}
+                            />
                         </div>
                         <div className="invalid-feedback">
                             Ogiltigt lösenord!

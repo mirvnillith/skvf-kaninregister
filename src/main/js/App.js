@@ -1,30 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import Login from './Login'
-import Header from './Header'
-import Notification from './Notification'
 import Register from './Register'
+import Header from './Header'
+import Notification from './common/Notification'
+
+const DefaultContent = (props) => {
+    const [view, setView] = useState("login");
+    if (view === "login") {
+        return <Login setView={setView} setSession={props.setSession} setNotification={props.setNotification}/>
+    }
+    if (view === "register") {
+        return <Register setView={setView} setNotification={props.setNotification} setSession={props.setSession}/>
+    }
+}
+
+const SessionContent = (props) => {
+    return (
+        <div className="row">
+            <div className="col-md-12 align-self-center p-4">
+                <h2 className="text-center dark"> Mina Kaniner </h2>
+           </div>
+       </div>
+    );
+}
 
 const Content = (props) => {
-    if (props.view === "login") {
-        return <Login setView={props.setView}/>
+    if (props.session.noSession) {
+        return <DefaultContent setNotification={props.setNotification} setSession={props.setSession}/>
     }
-    if (props.view === "register") {
-        return <Register setView={props.setView} setNotification={props.setNotification}/>
+    else {
+        return <SessionContent session={props.session} />
     }
 }
 
 const App = () => {
-    const [view, setView] = useState("login");
+    const [session, setSession] = useState({noSession: true});
     const [notifications, setNotificationState] = useState([]);
     const setNotification = (notification) => {
         const newNotificationState = [...notifications, notification];
-        console.error(newNotificationState);
         setNotificationState(newNotificationState);
     }
-    useEffect(() => {
-        console.error(notifications)
-    }, [notifications])
 
     return (
         <div className="container-md px-0">
@@ -38,7 +54,7 @@ const App = () => {
                 return (<Notification type={type} msg={msg} key={index}/>)
             })}
             <div className="container">
-                <Content view={view} setView={setView} setNotification={setNotification}/>
+                <Content setNotification={setNotification} session={session} setSession={setSession}/>
             </div>
         </div>
     );
