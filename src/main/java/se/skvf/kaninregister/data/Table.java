@@ -37,6 +37,7 @@ public class Table {
 		this.attributeColumns.put(ID, sheet.getColumn(ID));
 		for (String column : columns) {
 			this.attributeColumns.put(column, sheet.getColumn(column));
+			System.out.println(column+" is "+attributeColumns.get(column));
 		}
 		columnAttributes = attributeColumns.entrySet().stream().collect(toMap(Map.Entry::getValue, Map.Entry::getKey));
 		LOG.info(sheet);
@@ -73,6 +74,7 @@ public class Table {
 		} else {
 			data.remove(attributeColumns.get(ID));
 		}
+		System.out.println("data="+data);
 		return data;
 	}
 

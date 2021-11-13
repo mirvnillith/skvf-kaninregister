@@ -101,6 +101,5 @@ public abstract class Entity<T extends Entity<?>> {
 		for (int i=0; i<columns.size(); i++) {
 			map.put(columns.get(i), values.get(i));
 		}
-		System.out.println(map);
 	}
 }
