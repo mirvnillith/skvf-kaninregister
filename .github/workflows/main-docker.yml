@@ -27,10 +27,12 @@ jobs:
         uses: github/codeql-action/analyze@v1
       - name: Get version
         run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-      - name: Login to Docker Hub
+      - name: Docker Hub Login
         run: docker login -u mirvnillith -p ${{ secrets.DOCKER_TOKEN }}
-      - name: Publish Docker image
+      - name: Docker Hub Push
         run: docker push mirvnillith/skvf-kaninregister:$VERSION
+      - name: GCP Tag
+        run: docker tag mirvnillith/skvf-kaninregister:$VERSION gcr.io/skvf/kaninregister:$VERSION
       - name: GCP Login
         uses: google-github-actions/setup-gcloud@master
         with:
@@ -40,4 +42,4 @@ jobs:
       - name: GCP Configure
         run: gcloud auth configure-docker --quiet
       - name: GCP Push
-        run: docker push mirvnillith/skvf-kaninregister:$VERSION    
+        run: docker push gcr.io/skvf/kaninregister:$VERSION    
