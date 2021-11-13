@@ -36,7 +36,7 @@ jobs:
       - name: GCP Login
         uses: google-github-actions/setup-gcloud@master
         with:
-          project_id: skvf
+          project_id: SKVF
           service_account_email: ${{ secrets.GCP_EMAIL }}
           service_account_key: ${{ secrets.GCP_CREDENTIALS }}
       - name: GCP Configure
