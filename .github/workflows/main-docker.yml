@@ -31,3 +31,13 @@ jobs:
         run: docker login -u mirvnillith -p ${{ secrets.DOCKER_TOKEN }}
       - name: Publish Docker image
         run: docker push mirvnillith/skvf-kaninregister:$VERSION
+      - name: GCP Login
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          project_id: skvf
+          service_account_email: ${{ secrets.GCP_EMAIL }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+      - name: GCP Configure
+        run: gcloud auth configure-docker --quiet
+      - name: GCP Push
+        run: docker push mirvnillith/skvf-kaninregister:$VERSION    
