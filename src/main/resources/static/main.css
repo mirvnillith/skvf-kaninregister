@@ -1,0 +1,29 @@
+* {
+    font-family: "Raleway", "Open Sans", "Helvetica Neue", "Helvetica", "sans-serif";
+}
+.logo {
+    width: 100%;
+    max-width: 200px;
+}
+.container {
+    max-width: 940px;
+}
+.container-md {
+    max-width: 940px;
+}
+.green {
+    color: rgba(126,173,101,1);
+}
+.dark {
+    color: rgb(67, 74, 84);
+}
+h1 {
+    font-weight: bold;
+    text-transform: uppercase;
+}
+h2 {
+    text-transform: uppercase;
+}
+a {
+    cursor: pointer;
+}
