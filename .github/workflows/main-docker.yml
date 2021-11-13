@@ -32,7 +32,7 @@ jobs:
       - name: Docker Hub Push
         run: docker push mirvnillith/skvf-kaninregister:$VERSION
       - name: GCP Tag
-        run: docker tag mirvnillith/skvf-kaninregister:$VERSION gcr.io/${{ secrets.GCP_PROJECTID }}/kaninregister:$VERSION
+        run: docker tag mirvnillith/skvf-kaninregister:$VERSION eu.gcr.io/${{ secrets.GCP_PROJECTID }}/kaninregister:$VERSION
       - name: GCP Login
         uses: google-github-actions/setup-gcloud@master
         with:
@@ -42,4 +42,4 @@ jobs:
       - name: GCP Configure
         run: gcloud auth configure-docker --quiet
       - name: GCP Push
-        run: docker push gcr.io/${{ secrets.GCP_PROJECTID }}/kaninregister:$VERSION    
+        run: docker push eu.gcr.io/${{ secrets.GCP_PROJECTID }}/kaninregister:$VERSION    
