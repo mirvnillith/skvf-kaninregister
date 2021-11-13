@@ -9,7 +9,7 @@ jobs:
           
   docker:
     name: Publish Docker
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
@@ -32,7 +32,7 @@ jobs:
       - name: Publish Docker image
         run: docker push mirvnillith/skvf-kaninregister:$VERSION
       - name: GCP Login
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@master
         with:
           project_id: skvf
           service_account_email: ${{ secrets.GCP_EMAIL }}
