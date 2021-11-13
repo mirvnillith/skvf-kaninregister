@@ -8,10 +8,11 @@ on:
 jobs:
           
   docker:
-    name: Publish Docker Hub
+    name: Publish Docker
     runs-on: ubuntu-18.04
 
     steps:
+      - name: Checkout
       - uses: actions/checkout@v2
       - name: JDK 11
         uses: actions/setup-java@v1
