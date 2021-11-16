@@ -75,8 +75,25 @@ const loginUser = async (user, pwd, successHandler, errorHandler) => {
     }
 }
 
+const logoutUser = async (successHandler, errorHandler) => {
+    const response = await fetch("/api/logout", {
+        method: 'POST',
+        headers: new Headers({'content-type': 'application/json'}),
+        body: JSON.stringify({})
+    });
+    if (response.status === 200){
+        successHandler();
+    } else if (response.status === 204){   //TODO: Why do I get 204 after logout instead of 200???
+        successHandler();
+    }
+    else {
+        errorHandler("Ops, något gick fel!")
+    }
+}
+
 export {
     createOwner,
     updateOwner,
-    loginUser
+    loginUser,
+    logoutUser
 }

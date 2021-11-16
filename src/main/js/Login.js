@@ -7,11 +7,16 @@ const Login = (props) => {
     const [isValidated, setIsValidated] = useState(false);
 
     const setError = (msg) => props.setNotification({type: "danger", msg: msg});
+
+    const onSuccessfulLogin = (user) => {
+        props.setSession({...user, noSession: false});
+    }
+
     const submitHandler = async (e) => {
         e.preventDefault();
         setIsValidated(true);
         if (user && pwd) {
-            await loginUser(user, pwd, props.setSession, setError)
+            await loginUser(user, pwd, onSuccessfulLogin, setError)
         }
     }
 

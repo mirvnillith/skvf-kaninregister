@@ -34,8 +34,12 @@ const Content = (props) => {
     }
 }
 
+const sessionCookieExists = () => {
+    return document.cookie.match(RegExp('(?:^|;\\s*)BunnyRegistryApi=([^;]*)'));
+}
+
 const App = () => {
-    const [session, setSession] = useState({noSession: true});
+    const [session, setSession] = useState({noSession: !sessionCookieExists()});
     const [notifications, setNotificationState] = useState([]);
     const setNotification = (notification) => {
         const newNotificationState = [...notifications, notification];
@@ -44,7 +48,7 @@ const App = () => {
 
     return (
         <div className="container-md px-0">
-            <Header />
+            <Header setNotification={setNotification} session={session} setSession={setSession}/>
             <div className="row">
                 <div className="col-md-12 align-self-center p-4">
                     <h1 className="text-center green"> Kaninregister </h1>
