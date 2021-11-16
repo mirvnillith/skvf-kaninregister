@@ -42,6 +42,16 @@ ID för delad Google Drive mapp så kalkylbladet blir synligt även för dig.
 
 Skapa en mapp i din Google Drive och dela den med Service Account ovan via dess mailadress. Katalogens ID finns sist i URLn när du står i den.
 
+## Utveckla frontend
+När man ska utveckla frontend-delarna av applikation måste man börja med att installera node och npm, kör följande två mvn kommandon:
+
+    mvn frontend:install-node-and-npm
+    mvn frontend:npm
+
+Applikationen kan sedan startas utanför docker som en vanlig spring-boot applikation, men följ instruktionerna för lokal uppstart nedan.
+
+    mvn clean spring-boot:run
+
 ## Lokal uppstart
 
 Kaningregistret går även att köra utanför Docker, men kräver då en `application.yaml` i arbetskatalogen. Kopiera från `src/main/docker` och ersätt miljövariablerna med värden.
