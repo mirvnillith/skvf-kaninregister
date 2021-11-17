@@ -221,7 +221,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals(getClass().getSimpleName())) {
+				if (cookie.getName().equals(BunnyRegistryApi.class.getSimpleName())) {
 					return cookie;
 				}
 			}
@@ -230,8 +230,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 	
 	private void setSession(String sessionId) {
-		Cookie cookie = new Cookie(getClass().getSimpleName(), sessionId);
-		cookie.setSecure(true);
+		Cookie cookie = new Cookie(BunnyRegistryApi.class.getSimpleName(), sessionId);
+		//cookie.setSecure(true);
+		cookie.setHttpOnly(false);
+		cookie.setPath("/");
 		cookie.setMaxAge(-1);
 		response.addCookie(cookie);
 	}
@@ -283,9 +285,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 
 	@Override
 	public BunnyDTO getBunny(String id) {
-		return process(() -> {
-			return toDTO(validateBunny(id));
-		});
+		return process(() -> toDTO(validateBunny(id)));
 	}
 
 	@Override
@@ -385,7 +385,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		}
 	}
 
-	private BunnyList toBunnyList(Collection<Bunny> bunnies) throws IOException {
+	private BunnyList toBunnyList(Collection<Bunny> bunnies) {
 		BunnyList list = new BunnyList();
 		list.setBunnies(bunnies.stream().map(BunnyRegistryApiImpl::toListDTO).collect(Collectors.toList()));
 		return list;
@@ -394,7 +394,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	@Override
 	public OwnerDTO login(LoginDTO loginDTO) {
 		return process(() -> {
-			
+
 			if (getSession() != null) {
 				throw new WebApplicationException(CONFLICT);
 			}
@@ -425,8 +425,8 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 
 	private void removeCookie() {
 		ofNullable(getSessionCookie()).ifPresent(c -> {
-			c.setSecure(true);
 			c.setMaxAge(0);
+			c.setPath("/"); //TODO: Why is path not set on the cookie already?
 			response.addCookie(c);
 		});
 	}

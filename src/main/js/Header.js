@@ -1,13 +1,17 @@
 import React from 'react';
+import Logout from './Logout';
 
-const Header = () => {
+const Header = (props) => {
     return (
         <div className="row">
            <div className="col-sm-4 gx-4">
             <img className="logo" src="assets/logo.jpg"/>
            </div>
-           <div className="col-sm-8 align-self-center">
+           <div className="col-sm-4 align-self-center">
               <p className=""> Menu placeholder </p>
+           </div>
+           <div className="col-sm-4 align-self-right">
+               <Logout setNotification={props.setNotification} session={props.session} setSession={props.setSession}/>
            </div>
        </div>
     );

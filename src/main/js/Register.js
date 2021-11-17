@@ -6,11 +6,12 @@ import { createOwner, updateOwner, loginUser } from './utils/api';
 const Register = (props) => {
     const setError = (msg) => props.setNotification({type: "danger", msg: msg});
     const createRegistrationSuccessHandler = (userName, pwd) => {
-        const success = (user) => {
-            props.setSession(user)
+        const onSuccessfulLogin = (user) => {
+            props.setSession({...user, noSession: false});
         }
+
         return async (_) => {
-            await loginUser(userName, pwd, success, setError)
+            await loginUser(userName, pwd, onSuccessfulLogin, setError)
         }
     }
     const loginHandler = () => props.setView("login");
