@@ -8,11 +8,11 @@ on:
 jobs:
           
   docker:
-    name: Publish Docker Hub
-    runs-on: ubuntu-18.04
+    name: Publish Docker
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: JDK 11
         uses: actions/setup-java@v1
         with:
@@ -27,7 +27,19 @@ jobs:
         uses: github/codeql-action/analyze@v1
       - name: Get version
         run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-      - name: Login to Docker Hub
+      - name: Docker Hub Login
         run: docker login -u mirvnillith -p ${{ secrets.DOCKER_TOKEN }}
-      - name: Publish Docker image
+      - name: Docker Hub Push
         run: docker push mirvnillith/skvf-kaninregister:$VERSION
+      - name: GCP Tag
+        run: docker tag mirvnillith/skvf-kaninregister:$VERSION eu.gcr.io/${{ secrets.GCP_PROJECTID }}/kaninregister:$VERSION
+      - name: GCP Login
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECTID }}
+          service_account_email: ${{ secrets.GCP_EMAIL }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS }}
+      - name: GCP Configure
+        run: gcloud auth configure-docker --quiet
+      - name: GCP Push
+        run: docker push eu.gcr.io/${{ secrets.GCP_PROJECTID }}/kaninregister:$VERSION    

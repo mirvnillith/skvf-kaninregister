@@ -81,9 +81,7 @@ const logoutUser = async (successHandler, errorHandler) => {
         headers: new Headers({'content-type': 'application/json'}),
         body: JSON.stringify({})
     });
-    if (response.status === 200){
-        successHandler();
-    } else if (response.status === 204){   //TODO: Why do I get 204 after logout instead of 200???
+    if (response.status === 204){
         successHandler();
     }
     else {

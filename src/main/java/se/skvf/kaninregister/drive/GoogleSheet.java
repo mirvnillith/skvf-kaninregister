@@ -293,6 +293,12 @@ public class GoogleSheet {
 			cells[columnIndex(c) - offset] = new CellData()
 					.setUserEnteredValue(new ExtendedValue().setStringValue(defaultString(v)));
 		});
+		// Unmapped cells
+		for (int i = 0; i < cells.length; i++) {
+			if (cells[i] == null) {
+				cells[i] = new CellData();
+			}
+		}
 		
 		AppendCellsRequest append = new AppendCellsRequest()
 				.setSheetId(id)
