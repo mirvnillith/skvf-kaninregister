@@ -9,6 +9,21 @@ tags:
     description: Registry of bunnies and owners/breeders
     
 paths:
+  /session:
+    get:
+      tags: [ BunnyRegistry ]
+      operationId: session
+      summary: Retrieves owner session
+      responses:
+        '200':
+          description: Owner in session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnerDTO'
+        '401':
+          description: Session required
+
   /login:
     post:
       tags: [BunnyRegistry]

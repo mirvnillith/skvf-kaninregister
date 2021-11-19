@@ -1,10 +1,12 @@
 package se.skvf.kaninregister.api;
 
 import static java.lang.System.currentTimeMillis;
+import static java.util.Optional.ofNullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -12,6 +14,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SessionManager {
+
+	public synchronized String getOwnerIdForSession(String session) {
+		return ofNullable(sessions.get(session))
+				.map(Session::getOwnerId)
+				.orElse(null);
+	}
 
 	class Session {
 		private final String ownerId;
@@ -23,7 +31,11 @@ public class SessionManager {
 			lastUsed = currentTimeMillis();
 			attributes = new HashMap<>();
 		}
-		
+
+		String getOwnerId() {
+			return this.ownerId;
+		}
+
 		boolean is(String ownerId) {
 			if (ownerId == null || this.ownerId.equals(ownerId)) {
 				lastUsed = currentTimeMillis();

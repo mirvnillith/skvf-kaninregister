@@ -4,6 +4,7 @@ import Login from './Login'
 import Register from './Register'
 import Header from './Header'
 import Notification from './common/Notification'
+import { existingSession } from './utils/api';
 
 const DefaultContent = (props) => {
     const [view, setView] = useState("login");
@@ -34,12 +35,8 @@ const Content = (props) => {
     }
 }
 
-const sessionCookieExists = () => {
-    return document.cookie.match(RegExp('(?:^|;\\s*)BunnyRegistryApi=([^;]*)'));
-}
-
 const App = () => {
-    const [session, setSession] = useState({noSession: !sessionCookieExists()});
+    const [session, setSession] = useState(existingSession());
     const [notifications, setNotificationState] = useState([]);
     const setNotification = (notification) => {
         const newNotificationState = [...notifications, notification];

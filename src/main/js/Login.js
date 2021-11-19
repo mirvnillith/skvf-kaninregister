@@ -9,7 +9,7 @@ const Login = (props) => {
     const setError = (msg) => props.setNotification({type: "danger", msg: msg});
 
     const onSuccessfulLogin = (user) => {
-        props.setSession({...user, noSession: false});
+        props.setSession({user, noSession: false});
     }
 
     const submitHandler = async (e) => {

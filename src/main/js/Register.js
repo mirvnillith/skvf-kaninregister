@@ -7,7 +7,7 @@ const Register = (props) => {
     const setError = (msg) => props.setNotification({type: "danger", msg: msg});
     const createRegistrationSuccessHandler = (userName, pwd) => {
         const onSuccessfulLogin = (user) => {
-            props.setSession({...user, noSession: false});
+            props.setSession({user, noSession: false});
         }
 
         return async (_) => {

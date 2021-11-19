@@ -234,7 +234,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private void setSession(String sessionId) {
 		Cookie cookie = new Cookie(BunnyRegistryApi.class.getSimpleName(), sessionId);
 		//cookie.setSecure(true);
-		cookie.setHttpOnly(false);
+		cookie.setHttpOnly(true);
 		cookie.setPath("/");
 		cookie.setMaxAge(-1);
 		response.addCookie(cookie);
@@ -392,7 +392,24 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		list.setBunnies(bunnies.stream().map(BunnyRegistryApiImpl::toListDTO).collect(Collectors.toList()));
 		return list;
 	}
-	
+
+	@Override
+	public OwnerDTO session() {
+		return process(() -> {
+			String session = getSession();
+			if (session == null) {
+				throw new WebApplicationException(UNAUTHORIZED);
+			}
+
+			String ownerId = sessions.getOwnerIdForSession(session);
+			if (isBlank(ownerId)) {
+				throw new WebApplicationException(UNAUTHORIZED);
+			}
+
+			return toDTO(validateOwner(ownerId, false));
+		});
+	};
+
 	@Override
 	public OwnerDTO login(LoginDTO loginDTO) {
 		return process(() -> {

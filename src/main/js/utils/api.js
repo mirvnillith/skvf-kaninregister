@@ -89,7 +89,22 @@ const logoutUser = async (successHandler, errorHandler) => {
     }
 }
 
+const existingSession = () => {
+    const response = fetch("/api/session", {
+        method: 'GET',
+        headers: new Headers({'content-type': 'application/json'})
+    });
+    if (response.status === 200){
+        const user = response.json();
+        return {user, noSession: false};
+    }
+    else {
+       return {noSession: true}
+    }
+}
+
 export {
+    existingSession,
     createOwner,
     updateOwner,
     loginUser,
