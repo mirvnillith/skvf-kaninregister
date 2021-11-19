@@ -3,10 +3,13 @@ package se.skvf.kaninregister.api;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.TEMPORARY_REDIRECT;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.skvf.kaninregister.api.BunnyRegistryApiImpl.SESSION_SIGNING;
@@ -14,6 +17,8 @@ import static se.skvf.kaninregister.api.BunnyRegistryApiImpl.SESSION_SIGNING;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
@@ -68,6 +73,7 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		
 		api.approveOwner(owner.getId());
 		
+		verify(response, atLeastOnce()).setStatus(OK.getStatusCode());
 		verify(registry).update(ownerArgument.capture());
 		
 		Owner updatedOwner = ownerArgument.getValue();
@@ -82,9 +88,10 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		Signing signing = new Signing(randomUUID().toString(), randomUUID().toString(), randomUUID().toString());
 		when(signingService.startSigning(url)).thenReturn(signing);
 		
-		assertError(TEMPORARY_REDIRECT, () -> api.approveOwner(owner.getId()));
+		api.approveOwner(owner.getId());
 		
 		verify(response).setHeader("Location", signing.getTransactionUrl());
+		verify(response).setStatus(TEMPORARY_REDIRECT.getStatusCode());
 		verify(sessions).setAttribute(session, SESSION_SIGNING, signing);
 		when(sessions.getAttribute(session, SESSION_SIGNING)).thenReturn(signing);
 		return signing;
@@ -133,8 +140,9 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		when(sessions.getAttribute(session, SESSION_SIGNING)).thenReturn(signing);
 		when(signingService.checkSigning(signing.getToken())).thenReturn(Optional.empty());
 		
-		assertError(TEMPORARY_REDIRECT, () -> api.approveOwner(owner.getId()));
+		api.approveOwner(owner.getId());
 		
+		verify(response, times(2)).setStatus(TEMPORARY_REDIRECT.getStatusCode());
 		verify(registry, never()).update(ownerArgument.capture());
 	}
 	

@@ -10,6 +10,7 @@ import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.TEMPORARY_REDIRECT;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
@@ -46,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
@@ -728,17 +730,19 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 						}
 					} else {
 						redirect(signing.getTransactionUrl());
+						return Void.class;
 					}
 				}
 			}
 			
+			response.setStatus(OK.getStatusCode());
 			return Void.class;
 		});
 	}
 
 	private void redirect(String url) {
 		response.setHeader("Location", url);
-		throw new WebApplicationException(TEMPORARY_REDIRECT);
+		response.setStatus(TEMPORARY_REDIRECT.getStatusCode());
 	}
 	
 	private static String timestamp() {
