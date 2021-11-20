@@ -38,7 +38,7 @@ paths:
       operationId: logout
       summary: Ends an authenticated owner session
       responses:
-        '200':
+        '204':
           description: Owner logged out
           
   /signOffline/{token}:

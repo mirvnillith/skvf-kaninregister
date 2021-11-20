@@ -20,7 +20,7 @@ const createOwner = async (user, pwd, successHandler, errorHandler) => {
         errorHandler("Användarnamnet finns redan!")
     }
     else {
-        errorHandler("Ops, något gick fel!")
+        errorHandler("Något gick fel vid registrering!")
     }
 }
 
@@ -47,10 +47,10 @@ const updateOwner = async (id, owner, successHandler, errorHandler) => {
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
-        errorHandler("Du måste logga in!")
+        errorHandler("Du måste vara inloggad!")
     }
     else {
-        errorHandler("Ops, något gick fel!")
+        errorHandler("Något gick fel vid uppdatering!")
     }
 }
 
@@ -68,10 +68,10 @@ const loginUser = async (user, pwd, successHandler, errorHandler) => {
         errorHandler("Felaktigt användarnamn eller lösenord!")
     }
     else if (response.status === 409) {
-        errorHandler("Användarnamnet finns redan!")
+        errorHandler("Du är redan inloggad!")
     }
     else {
-        errorHandler("Ops, något gick fel!")
+        errorHandler("Något gick fel vid inloggning!")
     }
 }
 
@@ -85,7 +85,7 @@ const logoutUser = async (successHandler, errorHandler) => {
         successHandler();
     }
     else {
-        errorHandler("Ops, något gick fel!")
+        errorHandler("Något gick fel vid utloggning!")
     }
 }
 
