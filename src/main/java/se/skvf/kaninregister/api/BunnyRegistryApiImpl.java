@@ -735,7 +735,8 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				}
 			}
 			
-			response.setStatus(OK.getStatusCode());
+			// Override the Jersey default 204 for void methods
+			response.sendError(OK.getStatusCode(), "");
 			return Void.class;
 		});
 	}
