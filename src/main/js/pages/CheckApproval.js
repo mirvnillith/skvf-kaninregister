@@ -3,14 +3,16 @@ import Spinner from 'react-bootstrap/Spinner'
 import {approve} from '../utils/api';
 import ApprovalFailed from "../pages/ApprovalFailed";
 import Approved from "../pages/Approved";
+import { useSession } from "../utils/SessionContext";
 
 const checkApprove = (props) => {
+    const session = useSession();
     const [loading, setLoading] = useState(true);
     const [approved, setApproved] = useState(true);
 
     const setError = (msg) => {
         setLoading(false);
-        props.setNotification({type: "danger", msg: msg});
+        props.setNotification([{type: "danger", msg: msg}]);
     }
 
     const approvedOwnerHandler = () => {
@@ -29,9 +31,8 @@ const checkApprove = (props) => {
         window.location.replace(location);
     }
 
-    //TODO: This fails on F5 in the browser since the id for the user is gone after a refresh though the user still has a session on the backend and a cookie for the session
     useEffect(() => {
-        approve(props.session.user.id, approvedOwnerHandler, approvalFailedHandler, approvalOngoingHandler, setError);
+        approve(session.user.id, approvedOwnerHandler, approvalFailedHandler, approvalOngoingHandler, setError);
     }, []);
 
     return (<div>
@@ -39,8 +40,8 @@ const checkApprove = (props) => {
                 <Spinner animation="border" role="status">
                     <span className="visually-hidden">laddar innehåll...</span>
                 </Spinner> : approved ?
-                    <Approved setNotification={props.setNotification} session={props.session} setSession={props.setSession}/> :
-                    <ApprovalFailed setNotification={props.setNotification} session={props.session} setSession={props.setSession}/>}
+                    <Approved setNotification={props.setNotification} /> :
+                    <ApprovalFailed setNotification={props.setNotification} />}
         </div>
     );
 }

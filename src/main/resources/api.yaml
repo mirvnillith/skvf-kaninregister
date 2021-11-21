@@ -21,7 +21,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OwnerDTO'
-        '401':
+        '204':
           description: Session required
 
   /login:
@@ -74,7 +74,7 @@ paths:
             schema:
               $ref: '#/components/schemas/OfflineSignatureDTO'
       responses:
-        '200':
+        '204':
           description: Signature stored
           
   /owners:
@@ -218,7 +218,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        '204':
           description: Owner deactivated
         '401':
           description: Session required, of activated owner
@@ -260,7 +260,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        '204':
           description: Owner unapproved
         '401':
           description: Session required, of approved owner
@@ -270,8 +270,8 @@ paths:
   /owners/{id}/password:
     put:
       tags: [BunnyRegistry]
-      operationId: setPassword
-      summary: Sets owner password.
+      operationId: changePassword
+      summary: Changes owner password.
       parameters:
         - name: id
           in: path
@@ -285,8 +285,8 @@ paths:
             schema: 
               $ref: '#/components/schemas/PasswordDTO'
       responses:
-        '200':
-          description: Password set
+        '204':
+          description: Password changed
         '400':
           description: Invalid new password
         '401':
@@ -312,7 +312,7 @@ paths:
             schema: 
               $ref: '#/components/schemas/RecoveryDTO'
       responses:
-        '200':
+        '204':
           description: Owner recovered
         '400':
           description: Invalid password
@@ -398,8 +398,6 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/BunnyDTO'
-        '400':
-          description: If Incoming BunnyDTO has an ID, it must match the path.
         '401':
           description: Session required, of approved owner
         '404':
@@ -488,8 +486,6 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/BunnyTransferDTO'
-        '400':
-          description: If Incoming BunnyDTO has an ID, it must match the path.
         '401':
           description: Session required, of approved owner
         '404':
@@ -500,7 +496,7 @@ paths:
       tags: [BunnyRegistry]
       operationId: findBunnies
       summary: Finds bunnies
-      description: At least of criteria is required for a result
+      description: At least one pair of criteria is required for a result
       parameters:
         - name: identifierLocation
           in: query
@@ -571,8 +567,6 @@ paths:
             application/json:
               schema: 
                 $ref: '#/components/schemas/BunnyDTO'
-        '204':
-          description: Bunny has no public owner
         '400':
           description: No previous owner
         '401':
@@ -712,10 +706,10 @@ components:
     RecoveryDTO:
        type: object
        required:
-         - bunnyIdentifier
+         - bunnyIdentifiers
          - newPassword
        properties:
-         bunnyIdentifier:
+         bunnyIdentifiers:
            type: array
            items: 
              $ref: '#/components/schemas/BunnyIdentifierDTO'

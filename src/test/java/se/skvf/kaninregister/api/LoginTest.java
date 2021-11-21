@@ -75,14 +75,6 @@ public class LoginTest extends BunnyRegistryApiTest {
 	}
 	
 	@Test
-	public void login_inSession() throws IOException {
-		
-		mockSession(randomUUID().toString());
-		
-		assertError(CONFLICT, () -> api.login(new LoginDTO()));
-	}
-	
-	@Test
 	public void login_none() throws IOException {
 		
 		assertError(UNAUTHORIZED, () -> api.login(new LoginDTO()));

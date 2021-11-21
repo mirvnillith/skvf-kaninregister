@@ -224,7 +224,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
 				if (cookie.getName().equals(BunnyRegistryApi.class.getSimpleName())) {
-					//TODO: Why is cookie.isHttpOnly() false here???
 					return cookie;
 				}
 			}
@@ -399,12 +398,12 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		return process(() -> {
 			String session = getSession();
 			if (session == null) {
-				throw new WebApplicationException(UNAUTHORIZED);
+				return null;
 			}
 
 			String ownerId = sessions.getOwnerIdForSession(session);
 			if (isBlank(ownerId)) {
-				throw new WebApplicationException(UNAUTHORIZED);
+				return null;
 			}
 
 			return toDTO(validateOwner(ownerId, false));
@@ -415,10 +414,11 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	public OwnerDTO login(LoginDTO loginDTO) {
 		return process(() -> {
 
-			if (getSession() != null) {
-				sessions.endSession(getSession());
-				//throw new WebApplicationException(CONFLICT);
+			String session = getSession();
+			if (session != null) {
+				sessions.endSession(session);
 			}
+
 			if (loginDTO.getUserName() == null) {
 				throw new WebApplicationException(UNAUTHORIZED);
 			}
@@ -447,13 +447,13 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private void removeCookie() {
 		ofNullable(getSessionCookie()).ifPresent(c -> {
 			c.setMaxAge(0);
-			c.setPath("/"); //TODO: Why is path not set on the cookie already?
+			c.setPath("/");
 			response.addCookie(c);
 		});
 	}
 
 	@Override
-	public void setPassword(String ownerId, PasswordDTO passwordDTO) {
+	public void changePassword(String ownerId, PasswordDTO passwordDTO) {
 		process(() -> {
 			
 			if (isAllBlank(passwordDTO.getNewPassword())) {
@@ -600,9 +600,9 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	@Override
 	public OwnerDTO createOwner(CreateOwnerDTO creationDTO) {
 		return process(() -> {
-			
+
 			if (getSession() != null) {
-				throw new WebApplicationException(UNAUTHORIZED);								
+				throw new WebApplicationException(UNAUTHORIZED);
 			}
 			
 			if (isBlank(creationDTO.getUserName())) {
@@ -868,7 +868,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			}
 			Owner owner = owners.iterator().next();
 			
-			List<BunnyIdentifierDTO> bunnyIdentifierList = recoveryDTO.getBunnyIdentifier();
+			List<BunnyIdentifierDTO> bunnyIdentifierList = recoveryDTO.getBunnyIdentifiers();
 			if (CollectionUtils.isEmpty(bunnyIdentifierList)) {
 				throw new WebApplicationException(BAD_REQUEST);				
 			}

@@ -7,58 +7,63 @@ import Header from './components/Header'
 import Notification from './components/Notification'
 import CheckApproval from "./pages/CheckApproval";
 import {existingSession} from './utils/api';
+import { useSession, useSessionUpdater, SessionProvider} from "./utils/SessionContext";
 
 const NoSessionContent = (props) => {
     const [view, setView] = useState("login");
     if (view === "login") {
-        return <Login setView={setView} setSession={props.setSession} setNotification={props.setNotification}/>
+        return <Login setView={setView} setNotification={props.setNotification} />
     }
     if (view === "register") {
-        return <Register setView={setView} setNotification={props.setNotification} setSession={props.setSession}/>
+        return <Register setView={setView} setNotification={props.setNotification} />
     }
 }
 
 const SessionContent = (props) => {
-    return <CheckApproval setNotification={props.setNotification} session={props.session} setSession={props.setSession}/>
+    return <CheckApproval setNotification={props.setNotification} />
 }
 
 const Content = (props) => {
-    if (props.session.noSession) {
-        return <NoSessionContent setNotification={props.setNotification} setSession={props.setSession}/>
-    }
-    else {
-        return <SessionContent setNotification={props.setNotification} session={props.session} setSession={props.setSession}/>
-    }
-}
+    const [loading, setLoading] = useState(true);
+    const session = useSession();
+    const sessionUpdater = useSessionUpdater();
 
-const App = () => {
-    //TODO: useContext instead of useState for the session so we don't need to send it down into all components
-    const [session, setSession] = useState(undefined);
+    // On initial rendering, or a refresh of the browser, we retrieve any initial session content
     useEffect(() => {
-        existingSession(setSession);
+        existingSession((sessionContent) => {
+            sessionUpdater(sessionContent);
+            setLoading(false);
+        });
     }, []);
 
-    const [notifications, setNotificationState] = useState([]);
-    const setNotification = (notification) => {
-        const newNotificationState = [...notifications, notification];
-        setNotificationState(newNotificationState);
-    }
-
-    console.log(session);
-
-    return (session === undefined ?
+    return (loading ?
             <Spinner animation="border" role="status">
                 <span className="visually-hidden">laddar innehåll...</span>
             </Spinner> :
+            session ?
+                <SessionContent setNotification={props.setNotification} />:
+                <NoSessionContent setNotification={props.setNotification} />
+    );
+}
+
+const App = () => {
+    const [notifications, setNotificationState] = useState([]);
+    const setNotification = (notification) => {
+        setNotificationState(notification);
+    }
+
+    return (
+        <SessionProvider>
             <div className="container-md px-0">
-                <Header setNotification={setNotification} session={session} setSession={setSession}/>
+                <Header setNotification={setNotification} />
                 { notifications.map(({type, msg}, index) => {
                     return (<Notification type={type} msg={msg} key={index}/>)
                 })}
                 <div className="container">
-                    <Content setNotification={setNotification} session={session} setSession={setSession}/>
+                    <Content setNotification={setNotification} />
                 </div>
             </div>
+        </SessionProvider>
     );
 }
 
