@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test;
 
 import se.skvf.kaninregister.model.Owner;
 
-public class SetPasswordTest extends BunnyRegistryApiTest {
+public class ChangePasswordTest extends BunnyRegistryApiTest {
 
 	@Test
-	public void setPassword() throws IOException {
+	public void changePassword() throws IOException {
 		
 		String oldPassword = randomUUID().toString();
 		Owner owner = mockOwner();
@@ -29,7 +29,7 @@ public class SetPasswordTest extends BunnyRegistryApiTest {
 		PasswordDTO dto = new PasswordDTO();
 		dto.setCurrentPassword(oldPassword);
 		dto.setNewPassword(newPassword);
-		api.setPassword(owner.getId(), dto);
+		api.changePassword(owner.getId(), dto);
 		
 		verify(registry).update(ownerArgument.capture());
 		
@@ -39,43 +39,43 @@ public class SetPasswordTest extends BunnyRegistryApiTest {
 	}
 	
 	@Test
-	public void setPassword_incorrectCurrentPassword() throws IOException {
+	public void changePassword_incorrectCurrentPassword() throws IOException {
 		
 		Owner owner = mockOwner();
 		
 		PasswordDTO dto = new PasswordDTO();
 		dto.setCurrentPassword(randomUUID().toString());
 		dto.setNewPassword(randomUUID().toString());
-		assertError(UNAUTHORIZED, () -> api.setPassword(owner.getId(), dto));
+		assertError(UNAUTHORIZED, () -> api.changePassword(owner.getId(), dto));
 		dto.setCurrentPassword(null);
-		assertError(UNAUTHORIZED, () -> api.setPassword(owner.getId(), dto));
+		assertError(UNAUTHORIZED, () -> api.changePassword(owner.getId(), dto));
 		
 		verify(registry, never()).update(owner);
 	}
 	
 	@Test
-	public void setPassword_invalidNewPassword() throws IOException {
+	public void changePassword_invalidNewPassword() throws IOException {
 		
 		PasswordDTO dto = new PasswordDTO();
-		assertError(BAD_REQUEST, () -> api.setPassword(randomUUID().toString(), dto));
+		assertError(BAD_REQUEST, () -> api.changePassword(randomUUID().toString(), dto));
 		dto.setNewPassword("");
-		assertError(BAD_REQUEST, () -> api.setPassword(randomUUID().toString(), dto));
+		assertError(BAD_REQUEST, () -> api.changePassword(randomUUID().toString(), dto));
 		dto.setNewPassword(" ");
-		assertError(BAD_REQUEST, () -> api.setPassword(randomUUID().toString(), dto));
+		assertError(BAD_REQUEST, () -> api.changePassword(randomUUID().toString(), dto));
 		dto.setNewPassword(" \t");
-		assertError(BAD_REQUEST, () -> api.setPassword(randomUUID().toString(), dto));
+		assertError(BAD_REQUEST, () -> api.changePassword(randomUUID().toString(), dto));
 		dto.setNewPassword(" \t\n");
-		assertError(BAD_REQUEST, () -> api.setPassword(randomUUID().toString(), dto));
+		assertError(BAD_REQUEST, () -> api.changePassword(randomUUID().toString(), dto));
 		
 		verifyNoMoreInteractions(registry);
 	}
 	
 	@Test
-	public void setPassword_unknownOwner() throws IOException {
+	public void changePassword_unknownOwner() throws IOException {
 		
 		PasswordDTO dto = new PasswordDTO();
 		dto.setNewPassword(randomUUID().toString());
-		assertError(NOT_FOUND, () -> api.setPassword(randomUUID().toString(), dto));
-		assertError(NOT_FOUND, () -> api.setPassword(null, dto));
+		assertError(NOT_FOUND, () -> api.changePassword(randomUUID().toString(), dto));
+		assertError(NOT_FOUND, () -> api.changePassword(null, dto));
 	}
 }

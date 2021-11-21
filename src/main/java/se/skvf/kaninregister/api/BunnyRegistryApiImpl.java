@@ -434,7 +434,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public void setPassword(String ownerId, PasswordDTO passwordDTO) {
+	public void changePassword(String ownerId, PasswordDTO passwordDTO) {
 		process(() -> {
 			
 			if (isAllBlank(passwordDTO.getNewPassword())) {
@@ -849,7 +849,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			}
 			Owner owner = owners.iterator().next();
 			
-			List<BunnyIdentifierDTO> bunnyIdentifierList = recoveryDTO.getBunnyIdentifier();
+			List<BunnyIdentifierDTO> bunnyIdentifierList = recoveryDTO.getBunnyIdentifiers();
 			if (CollectionUtils.isEmpty(bunnyIdentifierList)) {
 				throw new WebApplicationException(BAD_REQUEST);				
 			}
