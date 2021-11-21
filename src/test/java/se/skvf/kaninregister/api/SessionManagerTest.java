@@ -31,7 +31,7 @@ public class SessionManagerTest {
 		assertThat(manager.isSession(ownerId, null)).isFalse();
 		assertThat(manager.isSession(null, ownerId)).isFalse();
 		assertThat(manager.isSession(null, null)).isFalse();
-		
+
 		manager.endSession(sessionId);
 		
 		assertThat(manager.isSession(sessionId, ownerId)).isFalse();
@@ -41,8 +41,22 @@ public class SessionManagerTest {
 		assertThat(manager.isSession(ownerId, null)).isFalse();
 		assertThat(manager.isSession(null, ownerId)).isFalse();
 		assertThat(manager.isSession(null, null)).isFalse();
-		
+
 		manager.endSession(null);
+	}
+
+	@Test
+	public void session_ownerIdForSession() {
+
+		String ownerId = randomUUID().toString();
+		String sessionId = manager.startSession(ownerId);
+
+		assertThat(manager.getOwnerIdForSession(sessionId)).isEqualTo(ownerId);
+		assertThat(manager.getOwnerIdForSession(null)).isNull();;
+
+		manager.endSession(sessionId);
+
+		assertThat(manager.getOwnerIdForSession(sessionId)).isNull();
 	}
 	
 	@Test
