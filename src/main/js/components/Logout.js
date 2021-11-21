@@ -1,5 +1,5 @@
 import React from 'react';
-import { logoutUser } from './utils/api';
+import { logoutUser } from '../utils/api';
 
 const Logout = (props) => {
     const setError = (msg) => props.setNotification({type: "danger", msg: msg});

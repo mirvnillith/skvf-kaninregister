@@ -2,6 +2,8 @@ package se.skvf.kaninregister.api;
 
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.apache.cxf.jaxrs.client.WebClient.client;
 import static org.apache.cxf.jaxrs.client.WebClient.getConfig;
 import static org.apache.cxf.message.Message.MAINTAIN_SESSION;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,7 +12,11 @@ import static se.skvf.kaninregister.data.Table.ALL;
 
 import java.io.IOException;
 
+import javax.ws.rs.core.Response.Status;
+
+import org.apache.cxf.jaxrs.client.ClientProxyImpl;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -143,6 +149,7 @@ public class ApplicationApiTest {
 		login(owner, newOwner.getPassword());
 		
 		api.approveOwner(owner.getId());
+		assertThat(client(api).getResponse().getStatus()).isEqualTo(OK.getStatusCode());
 		
 		return newOwner.getPassword();
 	}

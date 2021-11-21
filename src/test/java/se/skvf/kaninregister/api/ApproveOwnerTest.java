@@ -73,7 +73,7 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		
 		api.approveOwner(owner.getId());
 		
-		verify(response, atLeastOnce()).setStatus(OK.getStatusCode());
+		verify(response, atLeastOnce()).sendError(OK.getStatusCode(), "");
 		verify(registry).update(ownerArgument.capture());
 		
 		Owner updatedOwner = ownerArgument.getValue();

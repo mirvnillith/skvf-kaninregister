@@ -20,7 +20,7 @@ const createOwner = async (user, pwd, successHandler, errorHandler) => {
         errorHandler("Användarnamnet finns redan!")
     }
     else {
-        errorHandler("Ops, något gick fel!")
+        errorHandler("Något gick fel vid registrering!")
     }
 }
 
@@ -47,10 +47,10 @@ const updateOwner = async (id, owner, successHandler, errorHandler) => {
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
-        errorHandler("Du måste logga in!")
+        errorHandler("Du måste vara inloggad!")
     }
     else {
-        errorHandler("Ops, något gick fel!")
+        errorHandler("Något gick fel vid uppdatering!")
     }
 }
 
@@ -68,10 +68,10 @@ const loginUser = async (user, pwd, successHandler, errorHandler) => {
         errorHandler("Felaktigt användarnamn eller lösenord!")
     }
     else if (response.status === 409) {
-        errorHandler("Användarnamnet finns redan!")
+        errorHandler("Du är redan inloggad!")
     }
     else {
-        errorHandler("Ops, något gick fel!")
+        errorHandler("Något gick fel vid inloggning!")
     }
 }
 
@@ -85,28 +85,57 @@ const logoutUser = async (successHandler, errorHandler) => {
         successHandler();
     }
     else {
-        errorHandler("Ops, något gick fel!")
+        errorHandler("Något gick fel vid utloggning!")
     }
 }
 
-const existingSession = () => {
-    const response = fetch("/api/session", {
+const approve = async (id, approvedOwnerHandler, approvalFailedHandler, approvalOngoingHandler, errorHandler) => {
+    const response = await fetch(`/api/owners/${id}/approve`, {
+        method: 'POST',
+        headers: new Headers({'content-type': 'application/json'}),
+        body: JSON.stringify({})
+    });
+
+    if (response.status === 200){
+        approvedOwnerHandler();
+    }
+    else if (response.status === 204){
+        approvalFailedHandler();
+    }
+    else if (response.status === 307) {
+        const location = response.headers.get('Location')
+        approvalOngoingHandler(location)
+    }
+    else if (response.status === 401) {
+        errorHandler("Något gick fel när signering skulle verifieras, prova att logga ut och logga in igen.")
+    }
+    else if (response.status === 404) {
+        errorHandler("Ägaren kunde inte hittas")
+    }
+    else {
+        errorHandler("Något gick fel när signeringen skulle verifieras")
+    }
+}
+
+const existingSession = async (setSession) => {
+    const response = await fetch("/api/session", {
         method: 'GET',
         headers: new Headers({'content-type': 'application/json'})
     });
     if (response.status === 200){
-        const user = response.json();
-        return {user, noSession: false};
+        const user = await response.json();
+        setSession({user, noSession: false});
     }
     else {
-       return {noSession: true}
+        setSession({noSession: true});
     }
 }
 
 export {
     existingSession,
+    loginUser,
     createOwner,
     updateOwner,
-    loginUser,
+    approve,
     logoutUser
 }

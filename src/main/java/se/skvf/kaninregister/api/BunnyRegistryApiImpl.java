@@ -224,6 +224,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
 				if (cookie.getName().equals(BunnyRegistryApi.class.getSimpleName())) {
+					//TODO: Why is cookie.isHttpOnly() false here???
 					return cookie;
 				}
 			}
@@ -233,7 +234,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	
 	private void setSession(String sessionId) {
 		Cookie cookie = new Cookie(BunnyRegistryApi.class.getSimpleName(), sessionId);
-		//cookie.setSecure(true);
+		//cookie.setSecure(true);  //TODO: Uncomment before "production" release
 		cookie.setHttpOnly(true);
 		cookie.setPath("/");
 		cookie.setMaxAge(-1);
@@ -415,7 +416,8 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		return process(() -> {
 
 			if (getSession() != null) {
-				throw new WebApplicationException(CONFLICT);
+				sessions.endSession(getSession());
+				//throw new WebApplicationException(CONFLICT);
 			}
 			if (loginDTO.getUserName() == null) {
 				throw new WebApplicationException(UNAUTHORIZED);
@@ -752,7 +754,8 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				}
 			}
 			
-			response.setStatus(OK.getStatusCode());
+			// Override the Jersey default 204 for void methods
+			response.sendError(OK.getStatusCode(), "");
 			return Void.class;
 		});
 	}
