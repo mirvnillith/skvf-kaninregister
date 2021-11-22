@@ -3,6 +3,15 @@ import React, { useContext, useState } from 'react';
 const SessionContext = React.createContext();
 const UpdateSessionContext = React.createContext();
 
+const maybeOngoingSession = () => {
+    const d = new Date();
+    d.setTime(d.getTime() + (1000));
+    const expires = "expires=" + d.toUTCString();
+
+    document.cookie = "BunnyRegistryApi=hello;path=/;" + expires;
+    return document.cookie.indexOf("BunnyRegistryApi=") === -1;
+}
+
 const useSession = () => {
     return useContext(SessionContext);
 }
@@ -24,6 +33,7 @@ const SessionProvider = ( {children} ) => {
 }
 
 export {
+    maybeOngoingSession,
     useSession,
     useSessionUpdater,
     SessionProvider

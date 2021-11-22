@@ -7,7 +7,12 @@ import Header from './components/Header'
 import Notification from './components/Notification'
 import CheckApproval from "./pages/CheckApproval";
 import {existingSession} from './utils/api';
-import { useSession, useSessionUpdater, SessionProvider} from "./utils/SessionContext";
+import {
+    maybeOngoingSession,
+    useSession,
+    useSessionUpdater,
+    SessionProvider
+} from "./utils/SessionContext";
 
 const NoSessionContent = (props) => {
     const [view, setView] = useState("login");
@@ -30,10 +35,16 @@ const Content = (props) => {
 
     // On initial rendering, or a refresh of the browser, we retrieve any initial session content
     useEffect(() => {
-        existingSession((sessionContent) => {
-            sessionUpdater(sessionContent);
+        if (maybeOngoingSession()) {
+            existingSession((sessionContent) => {
+                sessionUpdater(sessionContent);
+                setLoading(false);
+            });
+        }
+        else {
+            sessionUpdater(undefined);
             setLoading(false);
-        });
+        }
     }, []);
 
     return (loading ?
