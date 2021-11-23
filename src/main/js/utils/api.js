@@ -57,7 +57,7 @@ const updateOwner = async (id, owner, successHandler, errorHandler) => {
 const activateOwner = async (id, user, pwd, successHandler, errorHandler) => {
 
     const response = await fetch(`/api/owners/${id}/activate`, {
-        method: 'PUT',
+        method: 'POST',
         headers: new Headers({'content-type': 'application/json'}),
         body: JSON.stringify({userName: user, password: pwd})
     });

@@ -4,6 +4,7 @@ import Login from './Login'
 import Register from './Register'
 import Header from './Header'
 import Notification from './common/Notification'
+import Activation from './activation/Activation'
 
 const DefaultContent = (props) => {
     const [view, setView] = useState("login");
@@ -26,7 +27,10 @@ const SessionContent = (props) => {
 }
 
 const Content = (props) => {
-    if (props.session.noSession) {
+    if (props.activation) {
+        return <Activation setNotification={props.setNotification} setSession={props.setSession} token={props.activation}/>
+	}
+    else if (props.session.noSession) {
         return <DefaultContent setNotification={props.setNotification} setSession={props.setSession}/>
     }
     else {
@@ -46,6 +50,9 @@ const App = () => {
         setNotificationState(newNotificationState);
     }
 
+	var activation = /activation=(.*)/.exec(document.location.search);
+	if (activation != null) activation = activation[1];
+	
     return (
         <div className="container-md px-0">
             <Header setNotification={setNotification} session={session} setSession={setSession}/>
@@ -58,7 +65,7 @@ const App = () => {
                 return (<Notification type={type} msg={msg} key={index}/>)
             })}
             <div className="container">
-                <Content setNotification={setNotification} session={session} setSession={setSession}/>
+                <Content setNotification={setNotification} session={session} setSession={setSession} activation={activation}/>
             </div>
         </div>
     );
