@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { loginUser } from './utils/api';
-import {A, navigate} from 'hookrouter';
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = (props) => {
+    const navigate = useNavigate();
     const [user, setUser] = useState("");
     const [pwd, setPwd] = useState("");
     const [isValidated, setIsValidated] = useState(false);
@@ -59,7 +60,7 @@ const Login = (props) => {
                             <p className="mb-0">
                                 Saknar du ett konto?
                                 &nbsp;
-                                <A className="link-primary" href='/register'>Registrera dig här!</A>
+                                <Link className="link-primary" to="/register">Registrera dig här!</Link>
                             </p>
                         </div>
                         <div className="col-sm-4">

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import RegisterForm from './common/RegisterForm';
 import { createOwner, updateOwner, loginUser } from './utils/api';
-import { navigate } from 'hookrouter';
+import { useNavigate } from "react-router-dom";
 
 
 const Register = (props) => {
+    const navigate = useNavigate();
     const setError = (msg) => props.setNotification({type: "danger", msg: msg});
     const createRegistrationSuccessHandler = (userName, pwd) => {
         const onSuccessfulLogin = (user) => {

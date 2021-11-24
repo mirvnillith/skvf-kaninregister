@@ -1,8 +1,9 @@
 import React from 'react';
 import { logoutUser } from './utils/api';
-import { navigate } from 'hookrouter';
+import { useNavigate } from "react-router-dom";
 
 const Logout = (props) => {
+    const navigate = useNavigate();
     const setError = (msg) => props.setNotification({type: "danger", msg: msg});
 
     const onSuccessfulLogout = () => {

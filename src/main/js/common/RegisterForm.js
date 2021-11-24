@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {A} from 'hookrouter';
+import { Link } from "react-router-dom";
 
 const RegisterForm = (props) => {
     const [user, setUser] = useState("");
@@ -78,7 +78,7 @@ const RegisterForm = (props) => {
                             <p className="mb-0">
                                 Har du redan ett konto?
                                 &nbsp;
-                                <A className="link-primary" href='/login'>Logga in här!</A>
+                                <Link className="link-primary" to="/login">Logga in här!</Link>
                             </p>
                         </div>
                         <div className="col-sm-4">
