@@ -1,11 +1,13 @@
 import React from 'react';
 import { logoutUser } from './utils/api';
+import { navigate } from 'hookrouter';
 
 const Logout = (props) => {
     const setError = (msg) => props.setNotification({type: "danger", msg: msg});
 
     const onSuccessfulLogout = () => {
         props.setSession({noSession : true});
+		navigate("/login");
     }
 
     const logoutHandler = (e) => {

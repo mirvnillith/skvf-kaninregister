@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { loginUser } from './utils/api';
+import {A, navigate} from 'hookrouter';
 
 const Login = (props) => {
     const [user, setUser] = useState("");
@@ -10,20 +11,17 @@ const Login = (props) => {
 
     const onSuccessfulLogin = (user) => {
         props.setSession({...user, noSession: false});
+		navigate("/bunnies");
     }
 
     const submitHandler = async (e) => {
         e.preventDefault();
         setIsValidated(true);
         if (user && pwd) {
-            await loginUser(user, pwd, onSuccessfulLogin, setError)
+            await loginUser(user, pwd, onSuccessfulLogin, setError);
         }
     }
 
-    const registerHandler = (e) => {
-        e.preventDefault();
-        props.setView("register");
-    }
     return (
         <div className="row py-2">
             <div className="col-md-12">
@@ -61,7 +59,7 @@ const Login = (props) => {
                             <p className="mb-0">
                                 Saknar du ett konto?
                                 &nbsp;
-                                <a className="link-primary" onClick={registerHandler}>Registrera dig här!</a>
+                                <A className="link-primary" href='/register'>Registrera dig här!</A>
                             </p>
                         </div>
                         <div className="col-sm-4">

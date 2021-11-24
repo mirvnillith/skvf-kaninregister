@@ -5,7 +5,7 @@ const Header = (props) => {
     return (
         <div className="row">
            <div className="col-sm-4 gx-4">
-            <img className="logo" src="assets/logo.jpg"/>
+            <img className="logo" src="/assets/logo.jpg"/>
            </div>
            <div className="col-sm-4 align-self-center">
               <p className=""> Menu placeholder </p>

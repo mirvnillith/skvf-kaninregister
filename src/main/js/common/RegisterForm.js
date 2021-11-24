@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {A} from 'hookrouter';
 
 const RegisterForm = (props) => {
     const [user, setUser] = useState("");
@@ -77,7 +78,7 @@ const RegisterForm = (props) => {
                             <p className="mb-0">
                                 Har du redan ett konto?
                                 &nbsp;
-                                <a className="link-primary" onClick={loginHandler}>Logga in här!</a>
+                                <A className="link-primary" href='/login'>Logga in här!</A>
                             </p>
                         </div>
                         <div className="col-sm-4">
