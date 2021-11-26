@@ -9,12 +9,11 @@ import {
     BrowserRouter,
     Routes,
     Route,
-    Outlet,
-    useNavigate
+    Outlet
 } from "react-router-dom";
 
-const NoSession = () => {
-    return (<Login setSession={appProps.setSession} setNotification={appProps.setNotification} />);
+const NoSession = (props) => {
+    return (<Login setSession={props.setSession} setNotification={props.setNotification} />);
 }
 	
 const Bunnies = () => {
@@ -31,26 +30,23 @@ const sessionCookieExists = () => {
     return document.cookie.match(RegExp('(?:^|;\\s*)BunnyRegistryApi=([^;]*)'));
 }
 
-const appProps = {};
-
 const App = () => {
     const [session, setSession] = useState({noSession: !sessionCookieExists()});
-	appProps.session = session;
-	appProps.setSession = setSession;
     const [notifications, setNotificationState] = useState([]);
-    appProps.setNotification = (notification) => {
+    const setNotification = (notification) => {
         const newNotificationState = [...notifications, notification];
         setNotificationState(newNotificationState);
     }
 
 	return (
         <Routes>
-            <Route path="/" element={<Layout notifications={notifications} />}>
-                <Route index element={<Login setSession={appProps.setSession} setNotification={appProps.setNotification} />} />
-                <Route path="/login" element={<Login setSession={appProps.setSession} setNotification={appProps.setNotification} />} />
-                <Route path="/register" element={<Register setSession={appProps.setSession} setNotification={appProps.setNotification} />} />
-                <Route path="/bunnies" element={appProps.session.noSession ? <NoSession /> : <Bunnies session={appProps.session}/>} />
-                <Route path="/activation/:ownerId" element={<Activation setSession={appProps.setSession} setNotification={appProps.setNotification} />} />
+            <Route path="/" element={<Layout session={session} setSession={setSession} notifications={notifications} />}>
+                <Route index element={<Login setSession={setSession} setNotification={setNotification} />} />
+                <Route path="/login" element={<Login setSession={setSession} setNotification={setNotification} />} />
+                <Route path="/register" element={<Register setSession={setSession} setNotification={setNotification} />} />
+                <Route path="/bunnies" element={session.noSession ? <NoSession setSession={setSession} setNotification={setNotification} /> : <Bunnies session={session}/>} />
+                <Route path="/activation/:ownerId" element={<Activation setSession={setSession} setNotification={setNotification} />} />
+                <Route path="/*" element={session.noSession ? <NoSession setSession={setSession} setNotification={setNotification} /> : <Bunnies session={session}/>} />
             </Route>
         </Routes>
     );
@@ -60,7 +56,7 @@ const Layout = (props) => {
 
     return (
         <div className="container-md px-0">
-            <Header setNotification={appProps.setNotification} session={appProps.session} setSession={appProps.setSession}/>
+            <Header setNotification={props.setNotification} session={props.session} setSession={props.setSession} />
             <div className="row">
                 <div className="col-md-12 align-self-center p-4">
                     <h1 className="text-center green"> Kaninregister </h1>
