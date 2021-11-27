@@ -1,29 +1,33 @@
 import React, { useState } from 'react';
 import { loginUser } from './utils/api';
+import { useNavigate, Link } from "react-router-dom";
+import { useSessionUpdater } from "./utils/SessionContext";
 
 const Login = (props) => {
+    const navigate = useNavigate();
+    const sessionUpdater = useSessionUpdater();
+
     const [user, setUser] = useState("");
     const [pwd, setPwd] = useState("");
     const [isValidated, setIsValidated] = useState(false);
 
-    const setError = (msg) => props.setNotification({type: "danger", msg: msg});
+    const setError = (msg) => props.setNotification([{type: "danger", msg: msg}]);
+    const clearPreviousErrors = () => props.setNotification([]);
 
     const onSuccessfulLogin = (user) => {
-        props.setSession({...user, noSession: false});
+        sessionUpdater({user});
+		navigate("/bunnies");
     }
 
     const submitHandler = async (e) => {
         e.preventDefault();
         setIsValidated(true);
         if (user && pwd) {
-            await loginUser(user, pwd, onSuccessfulLogin, setError)
+            clearPreviousErrors();
+            await loginUser(user, pwd, onSuccessfulLogin, setError);
         }
     }
 
-    const registerHandler = (e) => {
-        e.preventDefault();
-        props.setView("register");
-    }
     return (
         <div className="row py-2">
             <div className="col-md-12">
@@ -61,7 +65,7 @@ const Login = (props) => {
                             <p className="mb-0">
                                 Saknar du ett konto?
                                 &nbsp;
-                                <a className="link-primary" onClick={registerHandler}>Registrera dig här!</a>
+                                <Link className="link-primary" to="/register">Registrera dig här!</Link>
                             </p>
                         </div>
                         <div className="col-sm-4">

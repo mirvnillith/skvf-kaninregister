@@ -36,18 +36,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
@@ -214,16 +215,24 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 	
 	private String getSession() {
-		return ofNullable(getSessionCookie())
+		return ofNullable(getPrivateCookie())
 				.map(Cookie::getValue)
 				.orElse(null);
 	}
 	
-	private Cookie getSessionCookie() {
+	private Cookie getPrivateCookie() {
+		return getCookie(BunnyRegistryApiImpl.class);
+	}
+	
+	private Cookie getPublicCookie() {
+		return getCookie(BunnyRegistryApi.class);
+	}
+	
+	private Cookie getCookie(Class<?> name) {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals(BunnyRegistryApi.class.getSimpleName())) {
+				if (cookie.getName().equals(name.getSimpleName())) {
 					return cookie;
 				}
 			}
@@ -231,13 +240,19 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		return null;
 	}
 	
-	private void setSession(String sessionId) {
-		Cookie cookie = new Cookie(BunnyRegistryApi.class.getSimpleName(), sessionId);
-		//cookie.setSecure(true);
-		cookie.setHttpOnly(false);
-		cookie.setPath("/");
-		cookie.setMaxAge(-1);
-		response.addCookie(cookie);
+	private void setCookies(String sessionId) {
+		Cookie privateCookie = new Cookie(BunnyRegistryApiImpl.class.getSimpleName(), sessionId);
+		//privateCookie.setSecure(true);
+		privateCookie.setHttpOnly(true);
+		privateCookie.setPath("/");
+		privateCookie.setMaxAge(-1);
+		response.addCookie(privateCookie);
+		Cookie publicCookie = new Cookie(BunnyRegistryApi.class.getSimpleName(), BunnyRegistryApi.class.getSimpleName());
+		//publicCookie.setSecure(true);
+		publicCookie.setHttpOnly(false);
+		publicCookie.setPath(privateCookie.getPath());
+		publicCookie.setMaxAge(privateCookie.getMaxAge());
+		response.addCookie(publicCookie);
 	}
 	
 	private String validateSession(String ownerId) {
@@ -392,14 +407,33 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		list.setBunnies(bunnies.stream().map(BunnyRegistryApiImpl::toListDTO).collect(Collectors.toList()));
 		return list;
 	}
-	
+
+	@Override
+	public OwnerDTO session() {
+		return process(() -> {
+			String session = getSession();
+			if (session == null) {
+				return null;
+			}
+
+			String ownerId = sessions.getOwnerIdForSession(session);
+			if (isBlank(ownerId)) {
+				return null;
+			}
+
+			return toDTO(validateOwner(ownerId, false));
+		});
+	};
+
 	@Override
 	public OwnerDTO login(LoginDTO loginDTO) {
 		return process(() -> {
 
-			if (getSession() != null) {
-				throw new WebApplicationException(CONFLICT);
+			String session = getSession();
+			if (session != null) {
+				sessions.endSession(session);
 			}
+
 			if (loginDTO.getUserName() == null) {
 				throw new WebApplicationException(UNAUTHORIZED);
 			}
@@ -414,7 +448,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				throw new WebApplicationException(UNAUTHORIZED);
 			}
 			
-			setSession(sessions.startSession(owner.getId()));
+			setCookies(sessions.startSession(owner.getId()));
 			return toDTO(owner);
 		});
 	}
@@ -422,15 +456,17 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	@Override
 	public void logout() {
 		sessions.endSession(getSession());
-		removeCookie();
+		removeCookies();
 	}
 
-	private void removeCookie() {
-		ofNullable(getSessionCookie()).ifPresent(c -> {
-			c.setMaxAge(0);
-			c.setPath("/"); //TODO: Why is path not set on the cookie already?
-			response.addCookie(c);
-		});
+	private void removeCookies() {
+		Stream.of(getPublicCookie(), getPrivateCookie())
+			.filter(Objects::nonNull)
+			.forEach(c -> {
+				c.setMaxAge(0);
+				c.setPath("/");
+				response.addCookie(c);
+			});
 	}
 
 	@Override
@@ -695,7 +731,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			}
 			
 			registry.remove(owner);
-			removeCookie();
+			removeCookies();
 			
 			return Void.class;
 		});
@@ -773,7 +809,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			if (owner.isActivated()) {
 				registry.update(owner.deactivate());
 			}
-			removeCookie();
+			removeCookies();
 			
 			return Void.class;
 		});

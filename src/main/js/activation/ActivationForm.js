@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from "react-router-dom";
 
-const RegisterForm = (props) => {
+const ActivationForm = (props) => {
     const [user, setUser] = useState("");
     const [pwd, setPwd] = useState("");
     const [pwd2, setPwd2] = useState("");
+    const [autoLogin, setAutoLogin] = useState(true);
     const [isValidPwd, setIsValidPwd] = useState(true);
     const [isValidated, setIsValidated] = useState(false);
 
@@ -15,7 +15,7 @@ const RegisterForm = (props) => {
            setIsValidPwd(false);
         }
         if (user && pwd && pwd2 && isValidPwd) {
-            await props.submitForm(user, pwd);
+            await props.submitForm(user, pwd, autoLogin);
         }
     }
 
@@ -23,7 +23,7 @@ const RegisterForm = (props) => {
         <div className="row py-2">
             <form onSubmit={submitHandler} >
                 <div className="col-md-12">
-                    <h2 >Registrera dig</h2>
+                    <h2 >Aktivera konto</h2>
                 </div>
                 <div className="col-md-12">
                     <div className="row mb-2">
@@ -69,15 +69,25 @@ const RegisterForm = (props) => {
                         </div>
                     </div>
                     <div className="row mb-2">
+                        <label htmlFor="autoLogin" className="col-md-6 col-form-label">Logga in automatiskt efter aktivering</label>
+                        <div className="col-md-6">
+                            <input
+                                type="checkbox"
+								defaultChecked={autoLogin}
+                                id="autoLogin"
+                                onChange={e => setAutoLogin(e.target.checked)}
+                            />
+                            <div className="invalid-feedback">
+                                Du måste upprepa ditt lösenord!
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row mb-2">
                         <div className="col-sm-8 align-self-end">
-                            <p className="mb-0">
-                                Har du redan ett konto?
-                                &nbsp;
-                                <Link className="link-primary" to="/login">Logga in här!</Link>
-                            </p>
+                            <p className="mb-0">&nbsp;</p>
                         </div>
                         <div className="col-sm-4">
-                            <button type="submit" className="btn btn-primary float-end" >Registrera dig</button>
+                            <button type="submit" className="btn btn-primary float-end" >Aktivera</button>
                         </div>
                     </div>
                 </div>
@@ -86,4 +96,4 @@ const RegisterForm = (props) => {
     );
 }
 
-export default RegisterForm;
+export default ActivationForm;

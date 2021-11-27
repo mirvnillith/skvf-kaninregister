@@ -18,7 +18,7 @@ public class LogoutTest extends BunnyRegistryApiTest {
 		api.logout();
 		
 		verify(sessions).endSession(sessionId);
-		assertCookie(sessionId, false);
+		assertCookies(sessionId, false);
 	}
 
 	@Test

@@ -30,7 +30,7 @@ public class DeleteOwnerTest extends BunnyRegistryApiTest {
 		api.deleteOwner(owner.getId());
 		
 		verify(registry).remove(owner);
-		assertCookie(sessionId, false);
+		assertCookies(sessionId, false);
 	}
 	
 	@Test
@@ -56,7 +56,7 @@ public class DeleteOwnerTest extends BunnyRegistryApiTest {
 		assertThat(bunny.getBreeder()).isNull();
 		
 		verify(registry).remove(owner);
-		assertCookie(sessionId, false);
+		assertCookies(sessionId, false);
 	}
 	
 	@Test

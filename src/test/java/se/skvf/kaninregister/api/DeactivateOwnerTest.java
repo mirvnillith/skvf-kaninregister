@@ -28,7 +28,7 @@ public class DeactivateOwnerTest extends BunnyRegistryApiTest {
 		assertThat(owner.isActivated()).isTrue();
 		
 		api.deactivateOwner(owner.getId());
-		assertCookie(sessionId, false);
+		assertCookies(sessionId, false);
 		
 		verify(registry).update(ownerArgument.capture());
 		
@@ -51,7 +51,7 @@ public class DeactivateOwnerTest extends BunnyRegistryApiTest {
 		assertThat(owner.isActivated()).isFalse();
 		
 		api.deactivateOwner(owner.getId());
-		assertCookie(sessionId, false);
+		assertCookies(sessionId, false);
 		
 		verify(registry, never()).update(owner);
 		assertThat(owner.isActivated()).isFalse();

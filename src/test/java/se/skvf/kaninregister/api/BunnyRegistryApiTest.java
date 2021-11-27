@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -76,9 +77,13 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 	
 	protected String mockSession(String ownerId) {
 		String sessionId = randomUUID().toString();
-		Cookie cookie = new Cookie(BunnyRegistryApi.class.getSimpleName(), sessionId);
+		Cookie privateCookie = new Cookie(BunnyRegistryApiImpl.class.getSimpleName(), sessionId);
+		privateCookie.setHttpOnly(true);
+		privateCookie.setMaxAge(-1);
+		Cookie publicCookie = new Cookie(BunnyRegistryApi.class.getSimpleName(), BunnyRegistryApi.class.getSimpleName());
+		publicCookie.setMaxAge(privateCookie.getMaxAge());
 		reset(request);
-		when(request.getCookies()).thenReturn(new Cookie[] { cookie });
+		when(request.getCookies()).thenReturn(new Cookie[] { privateCookie, publicCookie });
 		when(sessions.isSession(sessionId, ownerId)).thenReturn(true);
 		return sessionId;
 	}
@@ -89,16 +94,20 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 			.isEqualTo(expected.getStatusCode());
 	}
 
-	protected Owner mockOwner() throws IOException {
+	protected Owner mockOwner(String ownerId) throws IOException {
 		Owner owner = new Owner()
-				.setId(randomUUID().toString())
+				.setId(ownerId)
 				.setName(randomUUID().toString())
 				.setEmail(randomUUID().toString())
 				.setPublicOwner(true);
 		when(registry.findOwners(singleton(owner.getId()))).thenReturn(singleton(owner));
 		return owner;
 	}
-	
+
+	protected Owner mockOwner() throws IOException {
+		return mockOwner(randomUUID().toString());
+	}
+
 	protected Bunny mockBunny() throws IOException {
 		Bunny bunny = new Bunny()
 				.setId(randomUUID().toString())
@@ -109,13 +118,24 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 		return bunny;
 	}
 
-	protected void assertCookie(String sessionId, boolean add) {
-		verify(response).addCookie(cookie.capture());
-		assertThat(cookie.getValue())
-			.satisfies(c -> assertEquals(sessionId, c.getValue()))
-			//.satisfies(c -> assertTrue(c.getSecure())) TODO restore secure
-			.satisfies(c -> assertEquals(add ? -1 : 0, c.getMaxAge()))
-			.satisfies(c -> assertEquals(BunnyRegistryApi.class.getSimpleName(), c.getName()));
+	protected void assertCookies(String sessionId, boolean add) {
+		verify(response, times(2)).addCookie(cookie.capture());
+		assertThat(cookie.getAllValues())
+			.hasSize(2)
+			.anySatisfy(privateCookie -> {
+				assertThat(privateCookie.getName()).isEqualTo(BunnyRegistryApiImpl.class.getSimpleName());
+				assertThat(privateCookie.getValue()).isEqualTo(sessionId);
+				assertThat(privateCookie.isHttpOnly()).isTrue();
+				// assertThat(privateCookie.getSecure()).isTrue(); TODO restore secure
+				assertThat(privateCookie.getMaxAge()).isEqualTo(add ? -1 : 0);
+			})
+			.anySatisfy(publicCookie -> {
+				assertThat(publicCookie.getName()).isEqualTo(BunnyRegistryApi.class.getSimpleName());
+				assertThat(publicCookie.getValue()).isEqualTo(publicCookie.getName());
+				assertThat(publicCookie.isHttpOnly()).isFalse();
+				// assertThat(privateCookie.getSecure()).isTrue(); TODO restore secure
+				assertThat(publicCookie.getMaxAge()).isEqualTo(add ? -1 : 0);
+			});
 	}
 
 	protected static void assertBunny(BunnyDTO expected, Bunny actual) {
