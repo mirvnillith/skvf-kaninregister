@@ -1,7 +1,7 @@
 import React from 'react';
+import { useNavigate, useParams } from "react-router-dom";
 import ActivationForm from './ActivationForm';
 import { activateOwner, loginUser } from '../utils/api';
-import { useNavigate, useParams } from "react-router-dom";
 import { useSessionUpdater } from "../utils/SessionContext";
 
 const Activation = (props) => {

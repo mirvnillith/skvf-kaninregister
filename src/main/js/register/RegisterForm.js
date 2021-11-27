@@ -5,6 +5,7 @@ const RegisterForm = (props) => {
     const [user, setUser] = useState("");
     const [pwd, setPwd] = useState("");
     const [pwd2, setPwd2] = useState("");
+    const [autoLogin, setAutoLogin] = useState(true);
     const [isValidPwd, setIsValidPwd] = useState(true);
     const [isValidated, setIsValidated] = useState(false);
 
@@ -15,7 +16,7 @@ const RegisterForm = (props) => {
            setIsValidPwd(false);
         }
         if (user && pwd && pwd2 && isValidPwd) {
-            await props.submitForm(user, pwd);
+            await props.submitForm(user, pwd, autoLogin);
         }
     }
 
@@ -66,6 +67,17 @@ const RegisterForm = (props) => {
                             <div className="invalid-feedback">
                                 Du måste upprepa ditt lösenord!
                             </div>
+                        </div>
+                    </div>
+                    <div className="row mb-2">
+                        <label htmlFor="autoLogin" className="col-md-6 col-form-label">Logga in automatiskt efter registrering</label>
+                        <div className="col-md-6">
+                            <input
+                                type="checkbox"
+								defaultChecked={autoLogin}
+                                id="autoLogin"
+                                onChange={e => setAutoLogin(e.target.checked)}
+                            />
                         </div>
                     </div>
                     <div className="row mb-2">

@@ -1,30 +1,17 @@
 import React, { useState } from 'react';
-import { loginUser } from './utils/api';
-import { useNavigate, Link } from "react-router-dom";
-import { useSessionUpdater } from "./utils/SessionContext";
+import { Link } from "react-router-dom";
 
-const Login = (props) => {
-    const navigate = useNavigate();
-    const sessionUpdater = useSessionUpdater();
+const LoginForm = (props) => {
 
     const [user, setUser] = useState("");
     const [pwd, setPwd] = useState("");
     const [isValidated, setIsValidated] = useState(false);
 
-    const setError = (msg) => props.setNotification([{type: "danger", msg: msg}]);
-    const clearPreviousErrors = () => props.setNotification([]);
-
-    const onSuccessfulLogin = (user) => {
-        sessionUpdater({user});
-		navigate("/bunnies");
-    }
-
     const submitHandler = async (e) => {
         e.preventDefault();
         setIsValidated(true);
         if (user && pwd) {
-            clearPreviousErrors();
-            await loginUser(user, pwd, onSuccessfulLogin, setError);
+            await props.submitForm(user, pwd);
         }
     }
 
@@ -78,4 +65,4 @@ const Login = (props) => {
     );
 }
 
-export default Login;
+export default LoginForm;

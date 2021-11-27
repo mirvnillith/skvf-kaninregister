@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import Spinner from "react-bootstrap/Spinner";
-import Login from './Login'
-import Register from './Register'
+import Login from './login/Login'
+import Register from './register/Register'
 import Header from './Header'
 import Notification from './common/Notification'
 import Activation from './activation/Activation'

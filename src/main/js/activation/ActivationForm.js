@@ -77,9 +77,6 @@ const ActivationForm = (props) => {
                                 id="autoLogin"
                                 onChange={e => setAutoLogin(e.target.checked)}
                             />
-                            <div className="invalid-feedback">
-                                Du måste upprepa ditt lösenord!
-                            </div>
                         </div>
                     </div>
                     <div className="row mb-2">

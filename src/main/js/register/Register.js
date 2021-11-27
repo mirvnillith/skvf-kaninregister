@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import RegisterForm from './common/RegisterForm';
-import { createOwner, updateOwner, loginUser } from './utils/api';
+import React from 'react';
+import RegisterForm from './RegisterForm';
+import { createOwner, loginUser } from '../utils/api';
 import { useNavigate } from "react-router-dom";
-import { useSessionUpdater} from "./utils/SessionContext";
+import { useSessionUpdater} from "../utils/SessionContext";
 
 
 const Register = (props) => {
@@ -12,7 +12,7 @@ const Register = (props) => {
     const setError = (msg) => props.setNotification([{type: "danger", msg: msg}]);
     const clearPreviousErrors = () => props.setNotification([]);
 
-    const createRegistrationSuccessHandler = (userName, pwd) => {
+    const createRegistrationSuccessHandler = (userName, pwd, autoLogin) => {
         const onSuccessfulLogin = (user) => {
             sessionUpdater({user});
 			navigate("/bunnies");
@@ -20,12 +20,16 @@ const Register = (props) => {
 
         return async (_) => {
             clearPreviousErrors();
-            await loginUser(userName, pwd, onSuccessfulLogin, setError)
+			if (autoLogin) {
+            	await loginUser(userName, pwd, onSuccessfulLogin, setError);
+			} else {
+				navigate("/login");
+			}
         }
     }
 
-    const submitForm = async (user, pwd) => {
-        await createOwner(user, pwd, createRegistrationSuccessHandler(user, pwd), setError)
+    const submitForm = async (user, pwd, autoLogin) => {
+        await createOwner(user, pwd, createRegistrationSuccessHandler(user, pwd, autoLogin), setError)
     }
 
     return (
