@@ -407,14 +407,33 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		list.setBunnies(bunnies.stream().map(BunnyRegistryApiImpl::toListDTO).collect(Collectors.toList()));
 		return list;
 	}
-	
+
+	@Override
+	public OwnerDTO session() {
+		return process(() -> {
+			String session = getSession();
+			if (session == null) {
+				return null;
+			}
+
+			String ownerId = sessions.getOwnerIdForSession(session);
+			if (isBlank(ownerId)) {
+				return null;
+			}
+
+			return toDTO(validateOwner(ownerId, false));
+		});
+	};
+
 	@Override
 	public OwnerDTO login(LoginDTO loginDTO) {
 		return process(() -> {
 
-			if (getSession() != null) {
-				throw new WebApplicationException(CONFLICT);
+			String session = getSession();
+			if (session != null) {
+				sessions.endSession(session);
 			}
+
 			if (loginDTO.getUserName() == null) {
 				throw new WebApplicationException(UNAUTHORIZED);
 			}

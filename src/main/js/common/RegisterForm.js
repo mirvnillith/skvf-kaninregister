@@ -19,11 +19,6 @@ const RegisterForm = (props) => {
         }
     }
 
-    const loginHandler = (e) => {
-        e.preventDefault();
-        props.loginHandler();
-    }
-
     return (
         <div className="row py-2">
             <form onSubmit={submitHandler} >

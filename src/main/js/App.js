@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import Spinner from "react-bootstrap/Spinner";
 import Login from './Login'
 import Register from './Register'
 import Header from './Header'
@@ -12,15 +13,24 @@ import {
     Outlet,
 	Navigate
 } from "react-router-dom";
+import {existingSession} from './utils/api';
+import {
+    maybeOngoingSession,
+    useSession,
+    useSessionUpdater,
+    SessionProvider
+} from "./utils/SessionContext";
 
 const WithoutSession = (props) => {
-    return props.session.noSession
+    const session = useSession();
+    return session === undefined
 			? props.element
 			: <Navigate to="/bunnies" />
 }
 
 const RequiresSession = (props) => {
-    return props.session.noSession
+    const session = useSession();
+    return session === undefined
 			? <Navigate to="/login" />
 			: props.element;
 }
@@ -35,29 +45,44 @@ const Bunnies = () => {
     );
 }
 
-const sessionCookieExists = () => {
-    return document.cookie.indexOf('BunnyRegistryApi=') != -1;
-}
-
 const App = () => {
-    const [session, setSession] = useState({noSession: !sessionCookieExists()});
     const [notifications, setNotificationState] = useState([]);
     const setNotification = (notification) => {
-        const newNotificationState = [...notifications, notification];
-        setNotificationState(newNotificationState);
+        setNotificationState(notification);
     }
 
-	return (
-        <Routes>
-            <Route path="/" element={<Layout session={session} setSession={setSession} notifications={notifications} />}>
-                <Route index element={session.noSession ? <Navigate to="/login" /> : <Navigate to="/bunnies" />} />
-                <Route path="/login" element={<WithoutSession session={session} element={ <Login setSession={setSession} setNotification={setNotification}/> }/>}/>
-                <Route path="/register" element={<WithoutSession session={session} element={ <Register setSession={setSession} setNotification={setNotification}/> }/>}/>
-                <Route path="/bunnies" element={<RequiresSession session={session} element={ <Bunnies session={session}/> }/>}/>
-                <Route path="/activation/:ownerId" element={<Activation setSession={setSession} setNotification={setNotification} />} />
-                <Route path="/*" element={<Navigate replace to="/" />} />
-            </Route>
-        </Routes>
+    const [loading, setLoading] = useState(true);
+    const session = useSession();
+    const sessionUpdater = useSessionUpdater();
+
+    // On initial rendering, or a refresh of the browser, we retrieve any initial session content
+    useEffect(() => {
+        if (maybeOngoingSession()) {
+            existingSession((sessionContent) => {
+                sessionUpdater(sessionContent);
+                setLoading(false);
+            });
+        }
+        else {
+            sessionUpdater(undefined);
+            setLoading(false);
+        }
+    }, []);
+
+    return (loading
+            ? <Spinner animation="border" role="status">
+                <span className="visually-hidden">laddar innehåll...</span>
+            </Spinner>
+            : <Routes>
+                <Route path="/" element={<Layout notifications={notifications} />}>
+                    <Route index element={session === undefined ? <Navigate to="/login" /> : <Navigate to="/bunnies" />} />
+                    <Route path="/login" element={<WithoutSession element={ <Login setNotification={setNotification}/> }/>}/>
+                    <Route path="/register" element={<WithoutSession element={ <Register setNotification={setNotification}/> }/>}/>
+                    <Route path="/bunnies" element={<RequiresSession element={ <Bunnies /> }/>}/>
+                    <Route path="/activation/:ownerId" element={<Activation setNotification={setNotification} />} />
+                    <Route path="/*" element={<Navigate replace to="/" />} />
+                </Route>
+              </Routes>
     );
 }
 
@@ -65,7 +90,7 @@ const Layout = (props) => {
 
     return (
         <div className="container-md px-0">
-            <Header setNotification={props.setNotification} session={props.session} setSession={props.setSession} />
+            <Header setNotification={props.setNotification} />
             <div className="row">
                 <div className="col-md-12 align-self-center p-4">
                     <h1 className="text-center green"> Kaninregister </h1>
@@ -82,7 +107,9 @@ const Layout = (props) => {
 }
 
 ReactDOM.render(
-    <BrowserRouter>
-        <App/>
-    </BrowserRouter>, document.getElementById('app'));
+    <SessionProvider>
+        <BrowserRouter>
+            <App/>
+        </BrowserRouter>
+    </SessionProvider>, document.getElementById('app'));
 

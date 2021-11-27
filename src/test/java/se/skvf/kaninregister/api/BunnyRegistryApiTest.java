@@ -94,16 +94,20 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 			.isEqualTo(expected.getStatusCode());
 	}
 
-	protected Owner mockOwner() throws IOException {
+	protected Owner mockOwner(String ownerId) throws IOException {
 		Owner owner = new Owner()
-				.setId(randomUUID().toString())
+				.setId(ownerId)
 				.setName(randomUUID().toString())
 				.setEmail(randomUUID().toString())
 				.setPublicOwner(true);
 		when(registry.findOwners(singleton(owner.getId()))).thenReturn(singleton(owner));
 		return owner;
 	}
-	
+
+	protected Owner mockOwner() throws IOException {
+		return mockOwner(randomUUID().toString());
+	}
+
 	protected Bunny mockBunny() throws IOException {
 		Bunny bunny = new Bunny()
 				.setId(randomUUID().toString())

@@ -514,6 +514,20 @@ const unapproveOwner = async (id, successHandler, errorHandler) => {
     }
 }
 
+const existingSession = async (sessionUpdater) => {
+    const response = await fetch("/api/session", {
+        method: 'GET',
+        headers: new Headers({'content-type': 'application/json'})
+    });
+    if (response.status === 200){
+        const user = await response.json();
+        sessionUpdater({user});
+    }
+    else {
+        sessionUpdater(undefined);
+    }
+}
+
 const loginUser = async (user, pwd, successHandler, errorHandler) => {
     const response = await fetch("/api/login", {
         method: 'POST',
@@ -567,6 +581,34 @@ const signOffline = async (token, signature, successHandler, errorHandler) => {
     }
 }
 
+const approve = async (id, approvedOwnerHandler, approvalFailedHandler, approvalOngoingHandler, errorHandler) => {
+    const response = await fetch(`/api/owners/${id}/approve`, {
+        method: 'POST',
+        headers: new Headers({'content-type': 'application/json'}),
+        body: JSON.stringify({})
+    });
+
+    if (response.status === 200){
+        approvedOwnerHandler();
+    }
+    else if (response.status === 204){
+        approvalFailedHandler();
+    }
+    else if (response.status === 307) {
+        const location = response.headers.get('Location')
+        approvalOngoingHandler(location)
+    }
+    else if (response.status === 401) {
+        errorHandler("Något gick fel när signering skulle verifieras, prova att logga ut och logga in igen.")
+    }
+    else if (response.status === 404) {
+        errorHandler("Ägaren kunde inte hittas")
+    }
+    else {
+        errorHandler("Något gick fel när signeringen skulle verifieras")
+    }
+}
+
 export {
 	createOwner,
 	activateOwner,
@@ -574,9 +616,11 @@ export {
 	getOwner,
 	updateOwner,
 	deleteOwner,
+    existingSession,
 	loginUser,
 	logoutUser,
 	signOffline,
+    approve,
 	unapproveOwner,
 	changeUserPassword,
 	recoverUser,

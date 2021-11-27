@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { loginUser } from './utils/api';
 import { useNavigate, Link } from "react-router-dom";
+import { useSessionUpdater } from "./utils/SessionContext";
 
 const Login = (props) => {
     const navigate = useNavigate();
+    const sessionUpdater = useSessionUpdater();
+
     const [user, setUser] = useState("");
     const [pwd, setPwd] = useState("");
     const [isValidated, setIsValidated] = useState(false);
 
-    const setError = (msg) => props.setNotification({type: "danger", msg: msg});
+    const setError = (msg) => props.setNotification([{type: "danger", msg: msg}]);
+    const clearPreviousErrors = () => props.setNotification([]);
 
     const onSuccessfulLogin = (user) => {
-        props.setSession({...user, noSession: false});
+        sessionUpdater({user});
 		navigate("/bunnies");
     }
 
@@ -19,6 +23,7 @@ const Login = (props) => {
         e.preventDefault();
         setIsValidated(true);
         if (user && pwd) {
+            clearPreviousErrors();
             await loginUser(user, pwd, onSuccessfulLogin, setError);
         }
     }
