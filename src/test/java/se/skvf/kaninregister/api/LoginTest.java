@@ -35,7 +35,7 @@ public class LoginTest extends BunnyRegistryApiTest {
 		
 		assertThat(filterArgument.getValue().get("Användarnamn"))
 			.accepts(dto.getUserName());
-		assertCookie(sessionId ,true);
+		assertCookies(sessionId ,true);
 	}
 	
 	@Test

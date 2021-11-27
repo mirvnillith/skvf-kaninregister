@@ -9,11 +9,20 @@ import {
     BrowserRouter,
     Routes,
     Route,
-    Outlet
+    Outlet,
+	Navigate
 } from "react-router-dom";
 
-const NoSession = (props) => {
-    return (<Login setSession={props.setSession} setNotification={props.setNotification} />);
+const WithoutSession = (props) => {
+    return props.session.noSession
+			? props.element
+			: <Navigate to="/bunnies" />
+}
+
+const RequiresSession = (props) => {
+    return props.session.noSession
+			? <Navigate to="/login" />
+			: props.element;
 }
 	
 const Bunnies = () => {
@@ -27,7 +36,7 @@ const Bunnies = () => {
 }
 
 const sessionCookieExists = () => {
-    return document.cookie.match(RegExp('(?:^|;\\s*)BunnyRegistryApi=([^;]*)'));
+    return document.cookie.indexOf('BunnyRegistryApi=') != -1;
 }
 
 const App = () => {
@@ -41,12 +50,12 @@ const App = () => {
 	return (
         <Routes>
             <Route path="/" element={<Layout session={session} setSession={setSession} notifications={notifications} />}>
-                <Route index element={<Login setSession={setSession} setNotification={setNotification} />} />
-                <Route path="/login" element={<Login setSession={setSession} setNotification={setNotification} />} />
-                <Route path="/register" element={<Register setSession={setSession} setNotification={setNotification} />} />
-                <Route path="/bunnies" element={session.noSession ? <NoSession setSession={setSession} setNotification={setNotification} /> : <Bunnies session={session}/>} />
+                <Route index element={session.noSession ? <Navigate to="/login" /> : <Navigate to="/bunnies" />} />
+                <Route path="/login" element={<WithoutSession session={session} element={ <Login setSession={setSession} setNotification={setNotification}/> }/>}/>
+                <Route path="/register" element={<WithoutSession session={session} element={ <Register setSession={setSession} setNotification={setNotification}/> }/>}/>
+                <Route path="/bunnies" element={<RequiresSession session={session} element={ <Bunnies session={session}/> }/>}/>
                 <Route path="/activation/:ownerId" element={<Activation setSession={setSession} setNotification={setNotification} />} />
-                <Route path="/*" element={session.noSession ? <NoSession setSession={setSession} setNotification={setNotification} /> : <Bunnies session={session}/>} />
+                <Route path="/*" element={<Navigate replace to="/" />} />
             </Route>
         </Routes>
     );
