@@ -7,6 +7,8 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -83,6 +85,18 @@ public class GetOwnerBunniesTest extends BunnyRegistryApiTest {
 		String ownerId = randomUUID().toString();
 		
 		assertError(UNAUTHORIZED, () -> api.getOwnerBunnies(ownerId));
+	}
+	
+	@Test
+	public void getOwnerBunnies_oldSession() throws IOException {
+		
+		String ownerId = randomUUID().toString();
+		String sessionId = mockSession(ownerId);
+		reset(sessions);
+		
+		assertError(UNAUTHORIZED, () -> api.getOwnerBunnies(ownerId));
+		
+		assertCookies(sessionId, false);
 	}
 	
 	@Test
