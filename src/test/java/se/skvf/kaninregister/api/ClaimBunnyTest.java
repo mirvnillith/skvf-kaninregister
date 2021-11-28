@@ -4,6 +4,7 @@ import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -11,6 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
@@ -98,17 +101,19 @@ public class ClaimBunnyTest extends BunnyRegistryApiTest {
 		dto.setClaimToken(tempOwner.getId());
 		assertError(NOT_FOUND, () -> api.claimBunny(owner.getId(), dto));
 	}
-	
+		
 	@Test
-	public void claimBunny_notPreviousOwner() throws IOException {
+	public void claimBunny_unapproved() throws IOException {
 		
 		Owner owner = mockOwner();
+		owner.setSignature(null);
+		
 		mockSession(owner.getId());
 		
 		Bunny bunny = mockBunny();
 		bunny.setPreviousOwner(randomUUID().toString());
 		
-		assertError(UNAUTHORIZED, () -> api.claimBunny(owner.getId(), new BunnyClaimDTO()));
+		assertError(PRECONDITION_FAILED, () -> api.claimBunny(owner.getId(), new BunnyClaimDTO()));
 	}
 	
 	@Test

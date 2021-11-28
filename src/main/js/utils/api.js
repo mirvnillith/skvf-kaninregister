@@ -49,6 +49,9 @@ const updateOwner = async (id, owner, successHandler, errorHandler) => {
     else if (response.status === 401) {
         errorHandler("Du måste vara inloggad!")
     }
+    else if (response.status === 412) {
+        errorHandler("Du måste ha godkänt datahantering!")
+    }
     else {
         errorHandler("Något gick fel vid uppdatering!")
     }
@@ -193,7 +196,7 @@ const getBunnies = async (owner, successHandler, errorHandler) => {
     }
 }
 
-const createBunny = async (id, bunny, successHandler, errorHandler) => {
+const createBunny = async (owner, bunny, successHandler, errorHandler) => {
     const data = {};
     if (bunny.name) data.name = bunny.name;
     if (bunny.leftEar) data.leftEar = bunny.leftEar;
@@ -210,7 +213,7 @@ const createBunny = async (id, bunny, successHandler, errorHandler) => {
     if (bunny.colourMarkings) data.colourMarkings = bunny.colourMarkings;
     if (bunny.features) data.features = bunny.features;
 
-    const response = await fetch(`/api/owners/${id}/bunnies`, {
+    const response = await fetch(`/api/owners/${owner}/bunnies`, {
         method: 'POST',
         headers: new Headers({'content-type': 'application/json'}),
         body: JSON.stringify(data)
@@ -221,7 +224,7 @@ const createBunny = async (id, bunny, successHandler, errorHandler) => {
         successHandler(responseMsg);
     }
     else if (response.status === 400) {
-        errorHandler("Fel ägare av kanin!")
+        errorHandler("Felaktig information om din kanin!")
     }
     else if (response.status === 401) {
         errorHandler("Du måste vara inloggad!")
@@ -231,6 +234,9 @@ const createBunny = async (id, bunny, successHandler, errorHandler) => {
     }
     else if (response.status === 409) {
         errorHandler("Kaninen finns redan!")
+    }
+    else if (response.status === 412) {
+        errorHandler("Du måste ha godkänt datahantering!")
     }
     else {
         errorHandler("Något gick fel vid skapande!")
@@ -265,7 +271,7 @@ const updateBunny = async (owner, bunny, successHandler, errorHandler) => {
         successHandler(responseMsg);
     }
     else if (response.status === 400) {
-        errorHandler("Fel kanin ID!")
+        errorHandler("Felaktig information om din kanin!")
     }
     else if (response.status === 401) {
         errorHandler("Du måste vara inloggad!")
@@ -276,8 +282,11 @@ const updateBunny = async (owner, bunny, successHandler, errorHandler) => {
     else if (response.status === 409) {
         errorHandler("Kaninen finns redan!")
     }
+    else if (response.status === 412) {
+        errorHandler("Du måste ha godkänt datahantering!")
+    }
     else {
-        errorHandler("Något gick fel vid skapande!")
+        errorHandler("Något gick fel vid sparande!")
     }
 }
 
@@ -321,6 +330,9 @@ const claimBunny = async (owner, token, successHandler, errorHandler) => {
     }
     else if (response.status === 404) {
         errorHandler("Okänd överföring!")
+    }
+    else if (response.status === 412) {
+        errorHandler("Du måste ha godkänt datahantering!")
     }
     else {
         errorHandler("Något gick fel vid mottagning!")
@@ -508,6 +520,9 @@ const unapproveOwner = async (id, successHandler, errorHandler) => {
     }
     else if (response.status === 404) {
         errorHandler("Okänd ägare!")
+    }
+    else if (response.status === 412) {
+        errorHandler("Du måste ha godkänt datahantering!")
     }
     else {
         errorHandler("Något gick fel vid deaktivering!")

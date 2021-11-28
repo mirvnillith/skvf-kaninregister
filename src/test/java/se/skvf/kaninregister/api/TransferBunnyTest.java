@@ -3,6 +3,7 @@ package se.skvf.kaninregister.api;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyCollection;
@@ -11,6 +12,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
@@ -70,15 +73,6 @@ public class TransferBunnyTest extends BunnyRegistryApiTest {
 	public void transferBunny_noSession() throws IOException {
 		
 		Owner owner = mockOwner();
-		
-		assertError(UNAUTHORIZED, () -> api.transferBunny(owner.getId(), randomUUID().toString()));
-	}
-	
-	@Test
-	public void transferBunny_notApproved() throws IOException {
-		
-		Owner owner = mockOwner();
-		mockSession(owner.getId());
 		
 		assertError(UNAUTHORIZED, () -> api.transferBunny(owner.getId(), randomUUID().toString()));
 	}
