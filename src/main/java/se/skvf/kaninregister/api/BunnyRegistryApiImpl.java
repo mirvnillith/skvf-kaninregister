@@ -11,6 +11,7 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static javax.ws.rs.core.Response.Status.TEMPORARY_REDIRECT;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
@@ -49,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
@@ -327,7 +329,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		}
 		Owner owner = owners.iterator().next();
 		if (requiresApproval && !owner.isApproved()) {
-			throw new WebApplicationException(UNAUTHORIZED);
+			throw new WebApplicationException(PRECONDITION_FAILED);
 		}
 		return owner;
 	}
@@ -845,7 +847,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		return process(() -> {
 			
 			validateSession(ownerId);
-			validateOwner(ownerId, true);
+			validateOwner(ownerId, false);
 			
 			Bunny bunny = validateBunny(bunnyId);
 			if (!bunny.getOwner().equals(ownerId)) {

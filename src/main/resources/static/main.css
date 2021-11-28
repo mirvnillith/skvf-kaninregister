@@ -27,3 +27,6 @@ h2 {
 a {
     cursor: pointer;
 }
+.large {
+	font-size: 2rem;
+}
