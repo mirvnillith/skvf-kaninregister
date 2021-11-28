@@ -6,13 +6,16 @@ const LoginForm = (props) => {
     const [user, setUser] = useState("");
     const [pwd, setPwd] = useState("");
     const [isValidated, setIsValidated] = useState(false);
+    const [submit, setSubmit] = useState(true);
 
     const submitHandler = async (e) => {
+		setSubmit(false);
         e.preventDefault();
         setIsValidated(true);
         if (user && pwd) {
             await props.submitForm(user, pwd);
         }
+		setSubmit(true);
     }
 
     return (
@@ -56,7 +59,7 @@ const LoginForm = (props) => {
                             </p>
                         </div>
                         <div className="col-sm-4">
-                            <button type="submit" className="btn btn-primary float-end">Logga in</button>
+                            <button type="submit" className="btn btn-primary float-end" disabled={!submit}>Logga in</button>
                         </div>
                     </div>
                 </form>

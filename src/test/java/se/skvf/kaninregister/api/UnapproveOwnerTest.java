@@ -2,11 +2,14 @@ package se.skvf.kaninregister.api;
 
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +58,7 @@ public class UnapproveOwnerTest extends BunnyRegistryApiTest {
 		Owner owner = mockOwner();
 		mockSession(owner.getId());
 		
-		assertError(UNAUTHORIZED, () -> api.unapproveOwner(owner.getId()));
+		assertError(PRECONDITION_FAILED, () -> api.unapproveOwner(owner.getId()));
 	}
 	
 	@Test
