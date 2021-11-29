@@ -30,3 +30,20 @@ a {
 .large {
 	font-size: 2rem;
 }
+
+.col-form-label.large {
+	font-weight: bold;
+}
+
+fieldset {
+	border: 2px groove;
+	padding: 10px;
+}
+
+legend {
+	font-weight: bold;
+}
+
+.spacer {
+	height: 10px;
+}

@@ -62,6 +62,7 @@ const BunnyForm = (props) => {
                             </div>
                         </div>
                     </div>
+					<div className="row spacer"/>
 					<fieldset> <legend>Märkning</legend>
                     <div className="row mb-2">
                         <label htmlFor="chip" className="col-md-6 col-form-label">Chipnummer</label>
@@ -120,6 +121,7 @@ const BunnyForm = (props) => {
                         </div>
                     </div>
 					</fieldset>
+					<div className="row spacer"/>
 					<fieldset> <legend>Information</legend>
                     <div className="row mb-2">
                         <label htmlFor="birthDate" className="col-md-6 col-form-label">Födelsedag</label>
@@ -159,6 +161,7 @@ const BunnyForm = (props) => {
                         </div>
                     </div>
 					</fieldset>
+					<div className="row spacer"/>
 					<fieldset> <legend>Utseende</legend>
                     <div className="row mb-2">
                         <label htmlFor="picture" className="col-md-6 col-form-label">Länk till bild</label>
@@ -215,13 +218,14 @@ const BunnyForm = (props) => {
                             />
                         </div>
                     </div>
+					</fieldset>
+					<div className="row spacer"/>
                     <div className="row mb-2">
                         <div className="col-sm-8"/>
                         <div className="col-sm-4">
                             <button type="submit" className="btn btn-primary float-end" disabled={!submit}>Registrera</button>
                         </div>
                     </div>
-					</fieldset>
                 </div>
             </form>
         </div>
