@@ -1,7 +1,7 @@
 import React from 'react';
 import { logoutUser } from './utils/api';
 import { useNavigate } from "react-router-dom";
-import {useSession, useSessionUpdater} from "./utils/SessionContext";
+import {useSession, useSessionUpdater} from "./hooks/SessionContext";
 
 const Logout = (props) => {
     const navigate = useNavigate();

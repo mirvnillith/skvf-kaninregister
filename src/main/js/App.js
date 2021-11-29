@@ -21,13 +21,14 @@ import {
     useSession,
     useSessionUpdater,
     SessionProvider
-} from "./utils/SessionContext";
+} from "./hooks/SessionContext";
+import CheckApproval from "./approval/CheckApproval";
 
 const WithoutSession = (props) => {
     const session = useSession();
     return session === undefined
 			? props.element
-			: <Navigate to="/bunnies" />
+			: <Navigate to="/approval" />
 }
 
 const RequiresSession = (props) => {
@@ -35,6 +36,13 @@ const RequiresSession = (props) => {
     return session === undefined
 			? <Navigate to="/login" />
 			: props.element;
+}
+
+const RequiresApproval = (props) => {
+    const session = useSession();
+    return session.approved
+        ? props.element
+        : <Navigate to="/approval"/>;
 }
 	
 const App = () => {
@@ -70,7 +78,8 @@ const App = () => {
                     <Route index element={session === undefined ? <Navigate to="/login" /> : <Navigate to="/bunnies" />} />
                     <Route path="/login" element={<WithoutSession element={ <Login setNotification={setNotification}/> }/>}/>
                     <Route path="/register" element={<WithoutSession element={ <Register setNotification={setNotification}/> }/>}/>
-                    <Route path="/bunnies" element={<RequiresSession element={ <Bunnies /> }/>}/>
+                    <Route path="/approval" element={<RequiresSession element={ <CheckApproval /> }/>}/>
+                    <Route path="/bunnies" element={<RequiresSession element={<RequiresApproval element={ <Bunnies /> }/> }/>}/>
                     <Route path="/bunny" element={<RequiresSession element={ <Bunny setNotification={setNotification}/> }/>}/>
                     <Route path="/activation/:ownerId" element={<Activation setNotification={setNotification} />} />
                     <Route path="/*" element={<Navigate replace to="/" />} />

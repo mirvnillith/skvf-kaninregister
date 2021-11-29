@@ -2,7 +2,7 @@ import React from 'react';
 import RegisterForm from './RegisterForm';
 import { createOwner, loginUser } from '../utils/api';
 import { useNavigate } from "react-router-dom";
-import { useSessionUpdater} from "../utils/SessionContext";
+import { useSessionUpdater} from "../hooks/SessionContext";
 
 
 const Register = (props) => {

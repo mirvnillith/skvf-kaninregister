@@ -62,6 +62,8 @@ const BunnyForm = (props) => {
                             </div>
                         </div>
                     </div>
+					<div className="row spacer"/>
+					<fieldset> <legend>Märkning</legend>
                     <div className="row mb-2">
                         <label htmlFor="chip" className="col-md-6 col-form-label">Chipnummer</label>
                         <div className="col-md-6">
@@ -72,7 +74,7 @@ const BunnyForm = (props) => {
                                 onChange={e => setChip(e.target.value)}
                             />
                             <div className="invalid-feedback">
-                                Du måste ange minst en identifikation!
+                                Du måste ange minst en märkning!
                             </div>
                         </div>
                     </div>
@@ -86,7 +88,7 @@ const BunnyForm = (props) => {
                                 onChange={e => setLeftEar(e.target.value)}
                             />
                             <div className="invalid-feedback">
-                                Du måste ange minst en identifikation!
+                                Du måste ange minst en märkning!
                             </div>
                         </div>
                     </div>
@@ -100,7 +102,7 @@ const BunnyForm = (props) => {
                                 onChange={e => setRightEar(e.target.value)}
                             />
                             <div className="invalid-feedback">
-                                Du måste ange minst en identifikation!
+                                Du måste ange minst en märkning!
                             </div>
                         </div>
                     </div>
@@ -114,18 +116,21 @@ const BunnyForm = (props) => {
                                 onChange={e => setRing(e.target.value)}
                             />
                             <div className="invalid-feedback">
-                                Du måste ange minst en identifikation!
+                                Du måste ange minst en märkning!
                             </div>
                         </div>
                     </div>
+					</fieldset>
+					<div className="row spacer"/>
+					<fieldset> <legend>Information</legend>
                     <div className="row mb-2">
-                        <label htmlFor="picture" className="col-md-6 col-form-label">Länk till bild</label>
+                        <label htmlFor="birthDate" className="col-md-6 col-form-label">Födelsedag</label>
                         <div className="col-md-6">
                             <input
                                 type="text"
                                 className="form-control"
-                                id="picture"
-                                onChange={e => setPicture(e.target.value)}
+                                id="birthDate"
+                                onChange={e => setBirthDate(e.target.value)}
                             />
                         </div>
                     </div>
@@ -155,14 +160,17 @@ const BunnyForm = (props) => {
                             />
                         </div>
                     </div>
+					</fieldset>
+					<div className="row spacer"/>
+					<fieldset> <legend>Utseende</legend>
                     <div className="row mb-2">
-                        <label htmlFor="birthDate" className="col-md-6 col-form-label">Födelsedag</label>
+                        <label htmlFor="picture" className="col-md-6 col-form-label">Länk till bild</label>
                         <div className="col-md-6">
                             <input
                                 type="text"
                                 className="form-control"
-                                id="birthDate"
-                                onChange={e => setBirthDate(e.target.value)}
+                                id="picture"
+                                onChange={e => setPicture(e.target.value)}
                             />
                         </div>
                     </div>
@@ -210,6 +218,8 @@ const BunnyForm = (props) => {
                             />
                         </div>
                     </div>
+					</fieldset>
+					<div className="row spacer"/>
                     <div className="row mb-2">
                         <div className="col-sm-8"/>
                         <div className="col-sm-4">
