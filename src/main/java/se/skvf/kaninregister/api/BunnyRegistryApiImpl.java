@@ -258,6 +258,9 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private String validateSession(String ownerId) {
 		String session = getSession();
 		if (!sessions.isSession(session, ownerId)) {
+			if (session != null) {
+				removeCookies();
+			}
 			throw new WebApplicationException(UNAUTHORIZED);
 		}
 		return session;
