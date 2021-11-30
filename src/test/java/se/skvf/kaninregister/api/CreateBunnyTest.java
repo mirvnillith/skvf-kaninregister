@@ -6,6 +6,7 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.never;
@@ -16,6 +17,8 @@ import static se.skvf.kaninregister.api.BunnyDTO.GenderEnum.UNKNOWN;
 import static se.skvf.kaninregister.model.Bunny.IdentifierLocation.RING;
 
 import java.io.IOException;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
@@ -177,6 +180,6 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 		mockSession(ownerId);
 		BunnyDTO dto = new BunnyDTO();
 		
-		assertError(UNAUTHORIZED, () -> api.createBunny(ownerId, dto));
+		assertError(PRECONDITION_FAILED, () -> api.createBunny(ownerId, dto));
 	}
 }

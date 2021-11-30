@@ -6,6 +6,8 @@ import Register from './register/Register'
 import Header from './Header'
 import Notification from './common/Notification'
 import Activation from './activation/Activation'
+import Bunnies from './bunnies/Bunnies'
+import Bunny from './bunny/Bunny'
 import {
     BrowserRouter,
     Routes,
@@ -35,16 +37,6 @@ const RequiresSession = (props) => {
 			: props.element;
 }
 	
-const Bunnies = () => {
-    return (
-        <div className="row">
-            <div className="col-md-12 align-self-center p-4">
-                <h2 className="text-center dark"> Mina Kaniner </h2>
-           </div>
-       </div>
-    );
-}
-
 const App = () => {
     const [notifications, setNotificationState] = useState([]);
     const setNotification = (notification) => {
@@ -79,6 +71,7 @@ const App = () => {
                     <Route path="/login" element={<WithoutSession element={ <Login setNotification={setNotification}/> }/>}/>
                     <Route path="/register" element={<WithoutSession element={ <Register setNotification={setNotification}/> }/>}/>
                     <Route path="/bunnies" element={<RequiresSession element={ <Bunnies /> }/>}/>
+                    <Route path="/bunny" element={<RequiresSession element={ <Bunny setNotification={setNotification}/> }/>}/>
                     <Route path="/activation/:ownerId" element={<Activation setNotification={setNotification} />} />
                     <Route path="/*" element={<Navigate replace to="/" />} />
                 </Route>

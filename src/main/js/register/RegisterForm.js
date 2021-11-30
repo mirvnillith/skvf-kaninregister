@@ -8,8 +8,10 @@ const RegisterForm = (props) => {
     const [autoLogin, setAutoLogin] = useState(true);
     const [isValidPwd, setIsValidPwd] = useState(true);
     const [isValidated, setIsValidated] = useState(false);
+    const [submit, setSubmit] = useState(true);
 
     const submitHandler = async (e) => {
+		setSubmit(false);
         e.preventDefault();
         setIsValidated(true);
         if (pwd !== pwd2) {
@@ -18,6 +20,7 @@ const RegisterForm = (props) => {
         if (user && pwd && pwd2 && isValidPwd) {
             await props.submitForm(user, pwd, autoLogin);
         }
+		setSubmit(true);
     }
 
     return (
@@ -89,7 +92,7 @@ const RegisterForm = (props) => {
                             </p>
                         </div>
                         <div className="col-sm-4">
-                            <button type="submit" className="btn btn-primary float-end" >Registrera dig</button>
+                            <button type="submit" className="btn btn-primary float-end" disabled={!submit} >Registrera dig</button>
                         </div>
                     </div>
                 </div>

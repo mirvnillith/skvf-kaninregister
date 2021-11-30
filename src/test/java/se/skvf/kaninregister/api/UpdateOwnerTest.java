@@ -4,11 +4,14 @@ import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doNothing;
 
 import java.io.IOException;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
@@ -121,6 +124,6 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 		OwnerDTO dto = new OwnerDTO();
 		dto.setEmail(randomUUID().toString());
 		
-		assertError(UNAUTHORIZED, () -> api.updateOwner(owner.getId(), dto));
+		assertError(PRECONDITION_FAILED, () -> api.updateOwner(owner.getId(), dto));
 	}
 }

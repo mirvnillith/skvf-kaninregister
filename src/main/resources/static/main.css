@@ -27,3 +27,23 @@ h2 {
 a {
     cursor: pointer;
 }
+.large {
+	font-size: 2rem;
+}
+
+.col-form-label.large {
+	font-weight: bold;
+}
+
+fieldset {
+	border: 1px groove;
+	padding: 10px;
+}
+
+legend {
+	font-weight: bold;
+}
+
+.spacer {
+	height: 10px;
+}
