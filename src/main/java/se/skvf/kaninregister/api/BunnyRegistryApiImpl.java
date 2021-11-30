@@ -260,6 +260,9 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private String validateSession(String ownerId) {
 		String session = getSession();
 		if (!sessions.isSession(session, ownerId)) {
+			if (session != null) {
+				removeCookies();
+			}
 			throw new WebApplicationException(UNAUTHORIZED);
 		}
 		return session;
@@ -425,7 +428,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 
 			return toDTO(validateOwner(ownerId, false));
 		});
-	};
+	}
 
 	@Override
 	public OwnerDTO login(LoginDTO loginDTO) {

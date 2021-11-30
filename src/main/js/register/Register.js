@@ -15,7 +15,7 @@ const Register = (props) => {
     const createRegistrationSuccessHandler = (userName, pwd, autoLogin) => {
         const onSuccessfulLogin = (user) => {
             sessionUpdater({user});
-			navigate("/bunnies");
+			navigate("/approval");
         }
 
         return async (_) => {

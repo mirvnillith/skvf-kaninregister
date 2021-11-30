@@ -11,6 +11,8 @@ const ApprovalOngoing = (props) => {
         await approve(session.user.id, props.approvedOwnerHandler, props.approvalFailedHandler, props.approvalOngoingHandler, props.setError);
     }, 3000);
 
-    return (<a rel="noopener noreferrer" href={props.approvalOngoing} target="_blank">Starta signeringen här och kom tillbaka hit när du är klar</a>)
+    return (<a rel="noopener noreferrer" href={props.approvalOngoing} target="_blank">Den här länken kommer starta
+        signeringen. Kom tillbaka hit när du har signerat så kommer du kunna lägga in kaniner i kaninregistret</a>)
 }
+
 export default ApprovalOngoing;

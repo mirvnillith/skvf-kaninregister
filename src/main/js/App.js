@@ -37,13 +37,6 @@ const RequiresSession = (props) => {
 			? <Navigate to="/login" />
 			: props.element;
 }
-
-const RequiresApproval = (props) => {
-    const session = useSession();
-    return session.approved
-        ? props.element
-        : <Navigate to="/approval"/>;
-}
 	
 const App = () => {
     const [notifications, setNotificationState] = useState([]);
@@ -79,7 +72,7 @@ const App = () => {
                     <Route path="/login" element={<WithoutSession element={ <Login setNotification={setNotification}/> }/>}/>
                     <Route path="/register" element={<WithoutSession element={ <Register setNotification={setNotification}/> }/>}/>
                     <Route path="/approval" element={<RequiresSession element={ <CheckApproval /> }/>}/>
-                    <Route path="/bunnies" element={<RequiresSession element={<RequiresApproval element={ <Bunnies /> }/> }/>}/>
+                    <Route path="/bunnies" element={<RequiresSession element={ <Bunnies /> }/>}/>
                     <Route path="/bunny" element={<RequiresSession element={ <Bunny setNotification={setNotification}/> }/>}/>
                     <Route path="/activation/:ownerId" element={<Activation setNotification={setNotification} />} />
                     <Route path="/*" element={<Navigate replace to="/" />} />
