@@ -7,7 +7,7 @@ const ApprovalOngoing = (props) => {
     const session = useSession();
 
     useInterval(async () => {
-        console.log('Checking for approval status')
+        console.log('Checking for approval status');
         await approve(session.user.id, props.approvedOwnerHandler, props.approvalFailedHandler, props.approvalOngoingHandler, props.setError);
     }, 3000);
 

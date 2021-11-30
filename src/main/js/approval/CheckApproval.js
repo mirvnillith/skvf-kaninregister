@@ -8,7 +8,6 @@ import ApprovalOngoing from "./ApprovalOngoing";
 
 const checkApprove = (props) => {
     const session = useSession();
-    const sessionUpdater = useSessionUpdater();
     const [loading, setLoading] = useState(true);
     const [approved, setApproved] = useState(false);
     const [approvalOngoing, setApprovalOngoing] = useState(undefined);
@@ -20,24 +19,19 @@ const checkApprove = (props) => {
 
     const approvedOwnerHandler = () => {
         setLoading(false);
-        sessionUpdater((existingSession) => {
-            return {...existingSession, approved: true};
-        });
         setApproved(true);
         setApprovalOngoing(undefined);
     }
 
     const approvalFailedHandler = () => {
         setLoading(false);
-        sessionUpdater((existingSession) => {
-            return {...existingSession, approved: false};
-        });
         setApproved(false);
         setApprovalOngoing(undefined);
     }
 
     const approvalOngoingHandler = (location) => {
         setLoading(false);
+        setApproved(false);
         setApprovalOngoing(location);
     }
 
