@@ -1,6 +1,7 @@
 package se.skvf.kaninregister.api;
 
 import static java.util.Collections.singleton;
+import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -176,6 +178,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		BunnyListDTO dto = new BunnyListDTO();
 		dto.setId(bunny.getId());
 		dto.setName(bunny.getName());
+		dto.setPicture(bunny.getPicture());
 		dto.setChip(bunny.getChip());
 		dto.setLeftEar(bunny.getLeftEar());
 		dto.setRightEar(bunny.getRightEar());
@@ -388,6 +391,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			BunnyList bunnies = toBunnyList(registry.findBunnies(byOwner(id)));
 			addTransferBunnies(bunnies, id);
+			bunnies.getBunnies().sort(comparing(BunnyListDTO::getName));
 			return bunnies;
 		});
 	}
@@ -624,6 +628,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		return process(() -> {
 			
 			if (getSession() != null) {
+				removeCookies();
 				throw new WebApplicationException(UNAUTHORIZED);								
 			}
 			
