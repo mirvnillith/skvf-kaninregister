@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import ActivationForm from './ActivationForm';
 import { activateOwner, loginUser } from '../utils/api';
-import { useSessionUpdater } from "../utils/SessionContext";
+import { useSessionUpdater } from "../hooks/SessionContext";
 
 const Activation = (props) => {
     const navigate = useNavigate();
@@ -17,7 +17,7 @@ const Activation = (props) => {
 	
         const onSuccessfulLogin = (user) => {
             sessionUpdater({user});
-			navigate("/bunnies");
+			navigate("/approval");
         }
 
         return async (_) => {

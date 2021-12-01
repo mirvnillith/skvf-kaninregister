@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from "react-router-dom";
 import LoginForm from './LoginForm';
 import { loginUser } from '../utils/api';
-import { useSessionUpdater } from "../utils/SessionContext";
+import { useSessionUpdater } from "../hooks/SessionContext";
 
 const Login = (props) => {
     const navigate = useNavigate();
@@ -13,7 +13,7 @@ const Login = (props) => {
 
     const onSuccessfulLogin = (user) => {
         sessionUpdater({user});
-		navigate("/bunnies");
+		navigate("/approval");
     }
 
     const submitForm = async (user, pwd) => {

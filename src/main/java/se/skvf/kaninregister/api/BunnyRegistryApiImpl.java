@@ -428,7 +428,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 
 			return toDTO(validateOwner(ownerId, false));
 		});
-	};
+	}
 
 	@Override
 	public OwnerDTO login(LoginDTO loginDTO) {
