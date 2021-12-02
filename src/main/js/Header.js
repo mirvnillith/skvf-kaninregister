@@ -11,7 +11,7 @@ const Header = (props) => {
               <p className=""> Menu placeholder </p>
            </div>
            <div className="col-sm-4 align-self-right">
-               <Logout setNotification={props.setNotification} />
+               <Logout />
            </div>
        </div>
     );

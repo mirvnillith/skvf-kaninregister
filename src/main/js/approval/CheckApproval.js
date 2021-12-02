@@ -3,6 +3,7 @@ import Spinner from 'react-bootstrap/Spinner'
 import { approve } from '../utils/api';
 import ApprovalFailed from "./ApprovalFailed";
 import { useSession, useSessionUpdater } from "../hooks/SessionContext";
+import { useNotificationUpdater } from "../hooks/NotificationContext";
 import { Navigate } from "react-router-dom";
 import ApprovalOngoing from "./ApprovalOngoing";
 
@@ -11,10 +12,13 @@ const checkApprove = (props) => {
     const [loading, setLoading] = useState(true);
     const [approved, setApproved] = useState(false);
     const [approvalOngoing, setApprovalOngoing] = useState(undefined);
+    const notificationUpdater = useNotificationUpdater();
 
-    const setError = (msg) => {
+    const notifyError = (message) => notificationUpdater([{type: "danger", msg: message}]);
+
+    const setError = (message) => {
         setLoading(false);
-        props.setNotification([{type: "danger", msg: msg}]);
+        notifyError(message)
     }
 
     const approvedOwnerHandler = () => {

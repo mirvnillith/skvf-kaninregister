@@ -4,7 +4,6 @@ import Spinner from "react-bootstrap/Spinner";
 import Login from './login/Login'
 import Register from './register/Register'
 import Header from './Header'
-import Notification from './common/Notification'
 import Activation from './activation/Activation'
 import Bunnies from './bunnies/Bunnies'
 import Bunny from './bunny/Bunny'
@@ -23,6 +22,8 @@ import {
     SessionProvider
 } from "./hooks/SessionContext";
 import CheckApproval from "./approval/CheckApproval";
+import Notifications from "./common/Notifications";
+import {NotificationProvider} from "./hooks/NotificationContext";
 
 const WithoutSession = (props) => {
     const session = useSession();
@@ -39,11 +40,6 @@ const RequiresSession = (props) => {
 }
 	
 const App = () => {
-    const [notifications, setNotificationState] = useState([]);
-    const setNotification = (notification) => {
-        setNotificationState(notification);
-    }
-
     const [loading, setLoading] = useState(true);
     const session = useSession();
     const sessionUpdater = useSessionUpdater();
@@ -67,33 +63,31 @@ const App = () => {
                 <span className="visually-hidden">laddar innehåll...</span>
             </Spinner>
             : <Routes>
-                <Route path="/" element={<Layout notifications={notifications} />}>
+                <Route path="/" element={<Layout />}>
                     <Route index element={session === undefined ? <Navigate to="/login" /> : <Navigate to="/bunnies" />} />
-                    <Route path="/login" element={<WithoutSession element={ <Login setNotification={setNotification}/> }/>}/>
-                    <Route path="/register" element={<WithoutSession element={ <Register setNotification={setNotification}/> }/>}/>
+                    <Route path="/login" element={<WithoutSession element={ <Login /> }/>}/>
+                    <Route path="/register" element={<WithoutSession element={ <Register /> }/>}/>
                     <Route path="/approval" element={<RequiresSession element={ <CheckApproval /> }/>}/>
                     <Route path="/bunnies" element={<RequiresSession element={ <Bunnies /> }/>}/>
-                    <Route path="/bunny" element={<RequiresSession element={ <Bunny setNotification={setNotification}/> }/>}/>
-                    <Route path="/activation/:ownerId" element={<Activation setNotification={setNotification} />} />
+                    <Route path="/bunny" element={<RequiresSession element={ <Bunny /> }/>}/>
+                    <Route path="/activation/:ownerId" element={<Activation />} />
                     <Route path="/*" element={<Navigate replace to="/" />} />
                 </Route>
               </Routes>
     );
 }
 
-const Layout = (props) => {
+const Layout = () => {
 
     return (
         <div className="container-md px-0">
-            <Header setNotification={props.setNotification} />
+            <Header />
             <div className="row">
                 <div className="col-md-12 align-self-center p-4">
                     <h1 className="text-center green"> Kaninregister </h1>
                 </div>
             </div>
-            { props.notifications.map(({type, msg}, index) => {
-                return (<Notification type={type} msg={msg} key={index}/>)
-            })}
+            <Notifications />
             <div className="container">
                 <Outlet/>
             </div>
@@ -103,8 +97,10 @@ const Layout = (props) => {
 
 ReactDOM.render(
     <SessionProvider>
-        <BrowserRouter>
-            <App/>
-        </BrowserRouter>
+        <NotificationProvider>
+            <BrowserRouter>
+                <App/>
+            </BrowserRouter>
+        </NotificationProvider>
     </SessionProvider>, document.getElementById('app'));
 
