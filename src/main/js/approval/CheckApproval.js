@@ -12,9 +12,7 @@ const checkApprove = (props) => {
     const [loading, setLoading] = useState(true);
     const [approved, setApproved] = useState(false);
     const [approvalOngoing, setApprovalOngoing] = useState(undefined);
-    const notificationUpdater = useNotificationUpdater();
-
-    const notifyError = (message) => notificationUpdater([{type: "danger", msg: message}]);
+    const [_, { notifyError } ] = useNotificationUpdater();
 
     const setError = (message) => {
         setLoading(false);

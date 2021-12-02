@@ -8,16 +8,13 @@ import { useNotificationUpdater } from "../hooks/NotificationContext";
 const Bunny = (props) => {
     const navigate = useNavigate();
     const session = useSession();
-    const notificationUpdater = useNotificationUpdater();
-
-    const notifyError = (message) => notificationUpdater([{type: "danger", msg: message}]);
-    const clearNotifications = () => notificationUpdater([]);
+    const [_, { notifyError, clearNotifications } ] = useNotificationUpdater();
 
     const successfulCreation = () => navigate("/bunnies");
 
     const submitForm = async (bunny) => {
         clearNotifications();
-        await createBunny(session.user.id, bunny, successfulCreation, notifyError());
+        await createBunny(session.user.id, bunny, successfulCreation, notifyError);
     }
 
     return (

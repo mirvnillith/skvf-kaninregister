@@ -14,7 +14,7 @@ import {
     Outlet,
 	Navigate
 } from "react-router-dom";
-import {existingSession} from './utils/api';
+import { existingSession } from './utils/api';
 import {
     maybeOngoingSession,
     useSession,
@@ -23,7 +23,7 @@ import {
 } from "./hooks/SessionContext";
 import CheckApproval from "./approval/CheckApproval";
 import Notifications from "./common/Notifications";
-import {NotificationProvider} from "./hooks/NotificationContext";
+import { NotificationProvider } from "./hooks/NotificationContext";
 
 const WithoutSession = (props) => {
     const session = useSession();

@@ -8,9 +8,7 @@ const Logout = (props) => {
     const navigate = useNavigate();
     const session = useSession();
     const sessionUpdater = useSessionUpdater();
-    const notificationUpdater = useNotificationUpdater();
-
-    const notifyError = (message) => notificationUpdater([{type: "danger", msg: message}]);
+    const [_, { notifyError } ] = useNotificationUpdater();
 
     const onSuccessfulLogout = () => {
         sessionUpdater(undefined);

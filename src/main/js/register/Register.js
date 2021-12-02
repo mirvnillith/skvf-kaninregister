@@ -8,10 +8,7 @@ import { useNotificationUpdater } from "../hooks/NotificationContext";
 const Register = (props) => {
     const navigate = useNavigate();
     const sessionUpdater = useSessionUpdater();
-    const notificationUpdater = useNotificationUpdater();
-
-    const notifyError = (message) => notificationUpdater([{type: "danger", msg: message}]);
-    const clearNotifications = () => notificationUpdater([]);
+    const [_, { notifyError, clearNotifications } ] = useNotificationUpdater();
 
     const createRegistrationSuccessHandler = (userName, pwd, autoLogin) => {
         const onSuccessfulLogin = (user) => {
