@@ -17,8 +17,13 @@ const Bunny = (props) => {
         await createBunny(session.user.id, bunny, successfulCreation, notifyError);
     }
 
+    const cancelForm = async () => {
+        clearNotifications();
+        navigate("/bunnies");
+    }
+
     return (
-        <BunnyForm submitForm={submitForm} />
+        <BunnyForm submitForm={submitForm} cancelForm={cancelForm}/>
     );
 }
 
