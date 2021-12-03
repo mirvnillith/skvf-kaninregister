@@ -17,13 +17,16 @@ const NotificationProvider = ( {children} ) => {
     const handlers = useMemo(
         () => ({
             notifyInfo: (message) => {
-                setNotifications([{type: "info", msg: message}]);
+                setNotifications((previous) => [...previous, {type: "info", msg: message}]);
+            },
+            notifySuccess: (message) => {
+                setNotifications((previous) => [...previous, {type: "success", msg: message}]);
             },
             notifyWarning: (message) => {
-                setNotifications([{type: "warning", msg: message}]);
+                setNotifications((previous) => [...previous, {type: "warning", msg: message}]);
             },
             notifyError: (message) => {
-                setNotifications([{type: "danger", msg: message}]);
+                setNotifications((previous) => [...previous, {type: "danger", msg: message}]);
             },
             clearNotifications: () => {
                 setNotifications([]);
