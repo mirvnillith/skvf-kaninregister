@@ -2,13 +2,13 @@ import React from 'react';
 import { logoutUser } from './utils/api';
 import { useNavigate } from "react-router-dom";
 import {useSession, useSessionUpdater} from "./hooks/SessionContext";
+import { useNotificationUpdater } from "./hooks/NotificationContext";
 
 const Logout = (props) => {
     const navigate = useNavigate();
     const session = useSession();
     const sessionUpdater = useSessionUpdater();
-
-    const setError = (msg) => props.setNotification([{type: "danger", msg: msg}]);
+    const [_, { notifyError } ] = useNotificationUpdater();
 
     const onSuccessfulLogout = () => {
         sessionUpdater(undefined);
@@ -17,7 +17,7 @@ const Logout = (props) => {
 
     const logoutHandler = (e) => {
         e.preventDefault();
-        logoutUser(onSuccessfulLogout, setError);
+        logoutUser(onSuccessfulLogout, notifyError);
     }
 
     return (

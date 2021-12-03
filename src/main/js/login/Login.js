@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 import LoginForm from './LoginForm';
 import { loginUser } from '../utils/api';
 import { useSessionUpdater } from "../hooks/SessionContext";
+import { useNotificationUpdater } from "../hooks/NotificationContext";
 
 const Login = (props) => {
     const navigate = useNavigate();
     const sessionUpdater = useSessionUpdater();
-
-    const setError = (msg) => props.setNotification([{type: "danger", msg: msg}]);
-    const clearPreviousErrors = () => props.setNotification([]);
+    const [_, { notifyError, clearNotifications } ] = useNotificationUpdater();
 
     const onSuccessfulLogin = (user) => {
         sessionUpdater({user});
@@ -17,8 +16,8 @@ const Login = (props) => {
     }
 
     const submitForm = async (user, pwd) => {
-		clearPreviousErrors();
-        await loginUser(user, pwd, onSuccessfulLogin, setError);
+        clearNotifications();
+        await loginUser(user, pwd, onSuccessfulLogin, notifyError);
     }
 
     return (
