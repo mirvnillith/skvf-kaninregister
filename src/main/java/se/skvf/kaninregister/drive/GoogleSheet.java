@@ -140,14 +140,14 @@ public class GoogleSheet {
 		return name + " (" + id + ") in " + spreadsheet;
 	}
 
-	public Collection<Map<String, String>> findRows(String idColumn, Collection<String> ids) throws IOException {
+	public synchronized Collection<Map<String, String>> findRows(String idColumn, Collection<String> ids) throws IOException {
 		
 		Map<String, Predicate<String>> filter = new HashMap<>();
 		filter.put(idColumn, ids::contains);
 		return findRows(filter);
 	}
 	
-	public Collection<Map<String, String>> findRows(Map<String, Predicate<String>> filters) throws IOException {
+	public synchronized Collection<Map<String, String>> findRows(Map<String, Predicate<String>> filters) throws IOException {
 		
 		return getRows(findIndex(filters));
 	}
@@ -273,7 +273,7 @@ public class GoogleSheet {
 		LOG.info("Removed row " + (rowIndex + 2) + " from " + this);
 	}
 
-	public void addRow(String idColumn, Map<String, String> data) throws IOException {
+	public synchronized void addRow(String idColumn, Map<String, String> data) throws IOException {
 		
 		int firstColumn = -1;
 		int lastColumn = -1;

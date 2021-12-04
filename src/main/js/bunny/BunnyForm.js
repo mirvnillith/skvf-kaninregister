@@ -50,7 +50,7 @@ const BunnyForm = (props) => {
                     <div className="row mb-2">
                         <label htmlFor="name" className="col-md-6 col-form-label large">Namn</label>
                         <div className="col-md-6">
-                            <input
+                            <input autoFocus
                                 type="text"
 								size="20"
                                 className={"form-control large" + (isValidated && name === "" ? " is-invalid" : "")}

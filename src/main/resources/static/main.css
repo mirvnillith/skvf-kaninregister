@@ -19,16 +19,16 @@
 }
 h1 {
     font-weight: bold;
-    text-transform: uppercase;
-}
-h2 {
-    text-transform: uppercase;
 }
 a {
     cursor: pointer;
 }
 .large {
 	font-size: 2rem;
+}
+
+.extra-large {
+	font-size: 4rem;
 }
 
 .col-form-label.large {
@@ -46,4 +46,10 @@ legend {
 
 .spacer {
 	height: 10px;
+}
+
+.bunny-row {
+	border: 1px groove;
+	padding: 10px;	
+	font-weight: bold;
 }

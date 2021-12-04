@@ -28,7 +28,7 @@ const LoginForm = (props) => {
                     <div className="row mb-2">
                         <label htmlFor="userName" className="col-md-6 col-form-label">Användarnamn</label>
                         <div className="col-md-6">
-                            <input
+                            <input autoFocus
                                 type="text"
                                 className={isValidated && user === "" ? "form-control is-invalid" : "form-control"}
                                 id="username"
