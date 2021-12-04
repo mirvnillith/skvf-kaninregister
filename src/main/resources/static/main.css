@@ -38,18 +38,22 @@ a {
 fieldset {
 	border: 1px groove;
 	padding: 10px;
+	margin: 8px
 }
 
 legend {
 	font-weight: bold;
 }
 
-.spacer {
-	height: 10px;
-}
-
 .bunny-row {
 	border: 1px groove;
 	padding: 10px;	
 	font-weight: bold;
+	height: 120px;
+}
+
+.bunny-picture {
+	margin-right: 10px;	
+	width: 100px;
+	height: 100px;
 }
