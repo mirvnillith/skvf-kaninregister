@@ -43,6 +43,10 @@ const BunnyForm = (props) => {
 		setSubmit(true);
     }
 
+    const cancelHandler = async (e) => {
+		await props.cancelForm();
+	}
+	
     return (
         <div className="row py-2">
             <form onSubmit={submitHandler} >
@@ -224,6 +228,7 @@ const BunnyForm = (props) => {
                         <div className="col-sm-8"/>
                         <div className="col-sm-4">
                             <button type="submit" className="btn btn-primary float-end" disabled={!submit}>Registrera</button>
+                            <button type="cancel" className="btn btn-secondary float-end me-2" disabled={!submit} onClick={cancelHandler}>Avbryt</button>
                         </div>
                     </div>
                 </div>
