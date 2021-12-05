@@ -7,6 +7,7 @@ import Header from './Header'
 import Activation from './activation/Activation'
 import Bunnies from './bunnies/Bunnies'
 import Bunny from './bunny/Bunny'
+import Owner from './owner/Owner'
 import {
     BrowserRouter,
     Routes,
@@ -68,6 +69,7 @@ const App = () => {
                     <Route path="/login" element={<WithoutSession element={ <Login /> }/>}/>
                     <Route path="/register" element={<WithoutSession element={ <Register /> }/>}/>
                     <Route path="/approval" element={<RequiresSession element={ <CheckApproval /> }/>}/>
+                    <Route path="/owner" element={<RequiresSession element={ <Owner /> }/>}/>
                     <Route path="/bunnies" element={<RequiresSession element={ <Bunnies /> }/>}/>
                     <Route path="/bunny" element={<RequiresSession element={ <Bunny /> }/>}/>
                     <Route path="/activation/:ownerId" element={<Activation />} />
@@ -82,11 +84,6 @@ const Layout = () => {
     return (
         <div className="container-md px-0">
             <Header />
-            <div className="row">
-                <div className="col-md-12 align-self-center p-4">
-                    <h1 className="text-center green"> Kaninregister </h1>
-                </div>
-            </div>
             <Notifications />
             <div className="container">
                 <Outlet/>

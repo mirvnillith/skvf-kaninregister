@@ -29,6 +29,7 @@ import static se.skvf.kaninregister.model.Bunny.IdentifierLocation.CHIP;
 import static se.skvf.kaninregister.model.Bunny.IdentifierLocation.RING;
 import static se.skvf.kaninregister.model.Owner.byUserName;
 import static se.skvf.kaninregister.model.Owner.newOwner;
+import static se.skvf.kaninregister.model.Owner.otherByUserName;
 
 import java.io.IOException;
 import java.net.URL;
@@ -616,6 +617,14 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				throw new WebApplicationException(BAD_REQUEST);
 			}
 			Owner owner = validateOwner(id, true);
+			
+			if (ownerDTO.getUserName() != null) {
+				if (isBlank(ownerDTO.getUserName())) {
+					throw new WebApplicationException(BAD_REQUEST);
+				} else if (registry.findOwners(otherByUserName(owner.getId(), ownerDTO.getUserName())).size() > 0) {
+					throw new WebApplicationException(CONFLICT);
+				}
+			}
 			
 			update(owner, ownerDTO);
 			registry.update(owner);

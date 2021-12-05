@@ -26,15 +26,15 @@ const createOwner = async (user, pwd, successHandler, errorHandler) => {
 
 const updateOwner = async (id, owner, successHandler, errorHandler) => {
     const data = {};
-    if (owner.name) data.name = owner.name;
-    if (owner.email) data.email = owner.email;
-    if (owner.address) data.address = owner.address;
-    if (owner.phone) data.phone = owner.phone;
-    if (owner.breederName) data.breederName = owner.breederName;
-    if (owner.breederEmail) data.breederEmail = owner.breederEmail;
-    if (owner.userName) data.userName = owner.userName;
-    if (owner.publicOwner) data.publicOwner = owner.publicOwner;
-    if (owner.publicBreeder) data.publicBreeder = owner.publicBreeder;
+    if (owner.name !== undefined) data.name = owner.name;
+    if (owner.email !== undefined) data.email = owner.email;
+    if (owner.address !== undefined) data.address = owner.address;
+    if (owner.phone !== undefined) data.phone = owner.phone;
+    if (owner.breederName !== undefined) data.breederName = owner.breederName;
+    if (owner.breederEmail !== undefined) data.breederEmail = owner.breederEmail;
+    if (owner.userName !== undefined) data.userName = owner.userName;
+    if (owner.publicOwner !== undefined) data.publicOwner = owner.publicOwner;
+    if (owner.publicBreeder !== undefined) data.publicBreeder = owner.publicBreeder;
 
     const response = await fetch(`/api/owners/${id}`, {
         method: 'PUT',
@@ -48,6 +48,9 @@ const updateOwner = async (id, owner, successHandler, errorHandler) => {
     }
     else if (response.status === 401) {
         errorHandler("Du måste vara inloggad!")
+    }
+    else if (response.status === 409) {
+        errorHandler("Användarnamnet finns redan!")
     }
     else if (response.status === 412) {
         errorHandler("Du måste ha godkänt datahantering!")

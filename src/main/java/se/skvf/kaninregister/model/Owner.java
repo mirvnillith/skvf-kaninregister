@@ -2,6 +2,7 @@ package se.skvf.kaninregister.model;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static se.skvf.kaninregister.data.Table.ID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,8 @@ import java.util.function.Predicate;
 
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
+
+import se.skvf.kaninregister.data.Table;
 
 public class Owner extends Entity<Owner> {
 
@@ -211,6 +214,13 @@ public class Owner extends Entity<Owner> {
 
 	public static Map<String, Predicate<String>> byUserName(String userName) {
 		Map<String, Predicate<String>> filter = new HashMap<>();
+		filter.put("Användarnamn", userName::equals);
+		return filter;
+	}
+	
+	public static Map<String, Predicate<String>> otherByUserName(String originalId, String userName) {
+		Map<String, Predicate<String>> filter = new HashMap<>();
+		filter.put(ID, id -> !id.equals(originalId));
 		filter.put("Användarnamn", userName::equals);
 		return filter;
 	}

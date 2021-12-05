@@ -1,5 +1,6 @@
 import React from 'react';
 import Logout from './Logout';
+import Edit from './owner/Edit';
 
 const Header = (props) => {
     return (
@@ -8,10 +9,11 @@ const Header = (props) => {
             <img className="logo" src="/assets/logo.jpg"/>
            </div>
            <div className="col-sm-4 align-self-center">
-              <p className=""> Menu placeholder </p>
-           </div>
+				<h1 className="text-center green"> Kaninregister </h1>
+		   </div>
            <div className="col-sm-4 align-self-right">
                <Logout />
+               <Edit />
            </div>
        </div>
     );
