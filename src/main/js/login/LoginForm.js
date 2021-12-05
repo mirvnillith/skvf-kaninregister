@@ -32,7 +32,7 @@ const LoginForm = (props) => {
                                 type="text"
                                 className={isValidated && user === "" ? "form-control is-invalid" : "form-control"}
                                 id="username"
-                                autocomplete="username"
+                                autoComplete="username"
                                 onChange={e => setUser(e.target.value)}
                             />
                         </div>
@@ -44,7 +44,7 @@ const LoginForm = (props) => {
                                 type="password"
                                 className={isValidated && pwd === "" ? "form-control is-invalid" : "form-control"}
                                 id="password"
-                                autocomplete="current-password"
+                                autoComplete="current-password"
                                 onChange={e => setPwd(e.target.value)}
                             />
                         </div>

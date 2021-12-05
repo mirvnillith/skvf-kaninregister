@@ -37,7 +37,7 @@ const RegisterForm = (props) => {
                                 type="text"
                                 className={isValidated && user === "" ? "form-control is-invalid" : "form-control"}
                                 id="userName"
-                                autocomplete="username"
+                                autoComplete="username"
                                 onChange={e => setUser(e.target.value)}
                             />
                             <div className="invalid-feedback">
@@ -52,7 +52,7 @@ const RegisterForm = (props) => {
                                 type="password"
                                 className={isValidated && pwd === "" ? "form-control is-invalid" : "form-control"}
                                 id="password"
-                                autocomplete="new-password"
+                                autoComplete="new-password"
                                 onChange={e => setPwd(e.target.value)}
                             />
                             <div className="invalid-feedback">
@@ -67,7 +67,7 @@ const RegisterForm = (props) => {
                                 type="password"
                                 className={isValidPwd ? "form-control" : "form-control is-invalid"}
                                 id="password2"
-                                autocomplete="new-password"
+                                autoComplete="new-password"
                                 onChange={e => setPwd2(e.target.value)}
                             />
                             <div className="invalid-feedback">

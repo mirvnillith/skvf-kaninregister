@@ -76,7 +76,7 @@ const ChangePassword = (_) => {
                                    value={values.currentPassword}
                                    className={errors.currentPassword ? "form-control is-invalid" : "form-control"}
                                    onChange={handleChange}
-                                   autocomplete="current-password"
+                                   autoComplete="current-password"
                             />
                             {errors.currentPassword && <div className="invalid-feedback">{errors.currentPassword}</div>}
                         </div>
@@ -90,7 +90,7 @@ const ChangePassword = (_) => {
                                    value={values.newPassword}
                                    className={errors.newPassword ? "form-control is-invalid" : "form-control"}
                                    onChange={handleChange}
-                                   autocomplete="new-password"
+                                   autoComplete="new-password"
                             />
                             {errors.newPassword && <div className="invalid-feedback">{errors.newPassword}</div>}
                         </div>
@@ -104,7 +104,7 @@ const ChangePassword = (_) => {
                                    value={values.newPassword2}
                                    className={errors.newPassword2 ? "form-control is-invalid" : "form-control"}
                                    onChange={handleChange}
-                                   autocomplete="new-password"
+                                   autoComplete="new-password"
                             />
                             {errors.newPassword2 && <div className="invalid-feedback">{errors.newPassword2}</div>}
                         </div>
