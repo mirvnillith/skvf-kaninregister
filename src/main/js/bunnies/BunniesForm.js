@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 const Bunny = (props) => {
 	
+	const navigate = useNavigate();
+	
     const [thisConfirm, setThisConfirm] = useState(false);
 
 	const picture = props.bunny.picture
@@ -23,26 +25,28 @@ const Bunny = (props) => {
 		props.setConfirm(true);
 		setThisConfirm(true);
 	}
-
+	
 	return (
 	<div>
 		<div className="bunny-row d-flex">
 			<a href={picture} target="_blank"><img className="bunny-picture self-align-start" src={picture}/></a>
-			<span className="bunny-name extra-large">
-				{props.bunny.name}
-			</span>
 			<span className="w-100">
+			<div className="bunny-name extra-large">
+				{props.bunny.name}
+			</div>
+			<div className="bunny-buttons">
 			{thisConfirm
 				?	<div className="h-100 d-flex justify-content-end">
 						<button className="btn btn-danger me-2 float-end mt-auto" onClick={removeHandler} disabled={props.remove}>Bekräfta avregistrering</button>
 						<button className="btn btn-secondary float-end mt-auto" onClick={unconfirmHandler} disabled={props.remove}>Avbryt</button>
 					</div>
 				:	<div className="h-100 d-flex justify-content-end">
-						<button className="btn btn-warning float-end mt-auto" onClick={confirmHandler} disabled={props.confirm}>Avregistrera</button>
+						<button className="btn btn-warning me-2 float-end mt-auto" onClick={confirmHandler} disabled={props.confirm}>Avregistrera</button>
+						<button className="btn btn-primary float-end mt-auto" onClick={(_) => navigate('/bunny/'+props.bunny.id)} disabled={props.confirm}>Ändra</button>
 					</div>
 			}
-			</span>
-            
+			</div>
+            </span>
 		</div>
 	</div>
 	);

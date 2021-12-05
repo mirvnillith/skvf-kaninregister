@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 
 const BunnyForm = (props) => {
-    const [name, setName] = useState("");
-    const [chip, setChip] = useState("");
-    const [leftEar, setLeftEar] = useState("");
-    const [rightEar, setRightEar] = useState("");
-    const [ring, setRing] = useState("");
-    const [picture, setPicture] = useState("");
-    const [gender, setGender] = useState("");
-    const [neutered, setNeutered] = useState(false);
-    const [birthDate, setBirthDate] = useState("");
-    const [race, setRace] = useState("");
-    const [coat, setCoat] = useState("");
-    const [colourMarkings, setColourMarkings] = useState("");
-    const [features, setFeatures] = useState("");
+    const [name, setName] = useState(props.bunny.name ? props.bunny.name : "");
+    const [chip, setChip] = useState(props.bunny.chip ? props.bunny.chip : "");
+    const [leftEar, setLeftEar] = useState(props.bunny.leftEar ? props.bunny.leftEar : "");
+    const [rightEar, setRightEar] = useState(props.bunny.rightEar ? props.bunny.rightEar : "");
+    const [ring, setRing] = useState(props.bunny.ring ? props.bunny.ring : "");
+    const [picture, setPicture] = useState(props.bunny.picture ? props.bunny.picture : "");
+    const [gender, setGender] = useState(props.bunny.gender ? props.bunny.gender : "");
+    const [neutered, setNeutered] = useState(props.bunny.neutered ? true : false);
+    const [birthDate, setBirthDate] = useState(props.bunny.birthDate ? props.bunny.birthDate : "");
+    const [race, setRace] = useState(props.bunny.race ? props.bunny.race : "");
+    const [coat, setCoat] = useState(props.bunny.coat ? props.bunny.coat : "");
+    const [colourMarkings, setColourMarkings] = useState(props.bunny.colourMarkings ? props.bunny.colourMarkings : "");
+    const [features, setFeatures] = useState(props.bunny.features ? props.bunny.features : "");
     const [isValidated, setIsValidated] = useState(false);
     const [oneIdentifier, setOneIdentifier] = useState(false);
     const [submit, setSubmit] = useState(true);
@@ -25,6 +25,7 @@ const BunnyForm = (props) => {
 		setOneIdentifier(chip || leftEar || rightEar || ring);
         if (name && oneIdentifier) {
 			const bunny = {};
+			bunny.id = props.bunny.id;
 			bunny.name = name;
 			bunny.chip = chip;
 			bunny.leftEar = leftEar;
@@ -59,6 +60,7 @@ const BunnyForm = (props) => {
 								size="20"
                                 className={"form-control large" + (isValidated && name === "" ? " is-invalid" : "")}
                                 id="name"
+								value={name}
                                 onChange={e => setName(e.target.value)}
                             />
                             <div className="invalid-feedback">
@@ -74,6 +76,7 @@ const BunnyForm = (props) => {
                                 type="text"
                                 className={"form-control" + (isValidated && !oneIdentifier ? " is-invalid" : "")}
                                 id="chip"
+								value={chip}
                                 onChange={e => setChip(e.target.value)}
                             />
                             <div className="invalid-feedback">
@@ -88,6 +91,7 @@ const BunnyForm = (props) => {
                                 type="text"
                                 className={"form-control" + (isValidated && !oneIdentifier ? " is-invalid" : "")}
                                 id="leftEar"
+								value={leftEar}
                                 onChange={e => setLeftEar(e.target.value)}
                             />
                             <div className="invalid-feedback">
@@ -102,6 +106,7 @@ const BunnyForm = (props) => {
                                 type="text"
                                 className={"form-control" + (isValidated && !oneIdentifier ? " is-invalid" : "")}
                                 id="rightEar"
+								value={rightEar}
                                 onChange={e => setRightEar(e.target.value)}
                             />
                             <div className="invalid-feedback">
@@ -116,6 +121,7 @@ const BunnyForm = (props) => {
                                 type="text"
                                 className={"form-control" + (isValidated && !oneIdentifier ? " is-invalid" : "")}
                                 id="ring"
+								value={ring}
                                 onChange={e => setRing(e.target.value)}
                             />
                             <div className="invalid-feedback">
@@ -132,6 +138,7 @@ const BunnyForm = (props) => {
                                 type="text"
                                 className="form-control"
                                 id="birthDate"
+								value={birthDate}
                                 onChange={e => setBirthDate(e.target.value)}
                             />
                         </div>
@@ -142,6 +149,7 @@ const BunnyForm = (props) => {
                             <select
                                 className="form-select"
                                 id="gender"
+								value={gender}
                                 onChange={e => setGender(e.target.value)}
                             >
 								<option value=""></option>
@@ -171,6 +179,7 @@ const BunnyForm = (props) => {
                                 type="text"
                                 className="form-control"
                                 id="picture"
+								value={picture}
                                 onChange={e => setPicture(e.target.value)}
                             />
                         </div>
@@ -182,6 +191,7 @@ const BunnyForm = (props) => {
                                 type="text"
                                 className="form-control"
                                 id="race"
+								value={race}
                                 onChange={e => setRace(e.target.value)}
                             />
                         </div>
@@ -193,6 +203,7 @@ const BunnyForm = (props) => {
                                 type="text"
                                 className="form-control"
                                 id="coat"
+								value={coat}
                                 onChange={e => setCoat(e.target.value)}
                             />
                         </div>
@@ -204,6 +215,7 @@ const BunnyForm = (props) => {
                                 type="text"
                                 className="form-control"
                                 id="colourMarkings"
+								value={colourMarkings}
                                 onChange={e => setColourMarkings(e.target.value)}
                             />
                         </div>
@@ -215,6 +227,7 @@ const BunnyForm = (props) => {
                                 type="text"
                                 className="form-control"
                                 id="features"
+								value={features}
                                 onChange={e => setFeatures(e.target.value)}
                             />
                         </div>
@@ -223,7 +236,7 @@ const BunnyForm = (props) => {
                     <div className="row mt-2">
                         <div className="col-sm-8"/>
                         <div className="col-sm-4">
-                            <button type="submit" className="btn btn-primary float-end" disabled={!submit}>Registrera</button>
+                            <button type="submit" className="btn btn-primary float-end" disabled={!submit}>Spara</button>
                             <button type="cancel" className="btn btn-secondary float-end me-2" disabled={!submit} onClick={cancelHandler}>Avbryt</button>
                         </div>
                     </div>

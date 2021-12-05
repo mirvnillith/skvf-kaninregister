@@ -72,6 +72,7 @@ const App = () => {
                     <Route path="/owner" element={<RequiresSession element={ <Owner /> }/>}/>
                     <Route path="/bunnies" element={<RequiresSession element={ <Bunnies /> }/>}/>
                     <Route path="/bunny" element={<RequiresSession element={ <Bunny /> }/>}/>
+                    <Route path="/bunny/:bunnyId" element={<RequiresSession element={ <Bunny /> }/>}/>
                     <Route path="/activation/:ownerId" element={<Activation />} />
                     <Route path="/*" element={<Navigate replace to="/" />} />
                 </Route>
