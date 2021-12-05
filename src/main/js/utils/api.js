@@ -132,7 +132,7 @@ const recoverUser = async (user, pwd, bunnyIdentifiers, successHandler, errorHan
         errorHandler("Du är redan inloggad!")
     }
     else if (response.status === 404) {
-        errorHandler("Okänd användare!")
+        errorHandler("Okänd användare eller kanin!")
     }
     else {
         errorHandler("Något gick fel vid återställning!")

@@ -14,9 +14,7 @@ const RegisterForm = (props) => {
 		setSubmit(false);
         e.preventDefault();
         setIsValidated(true);
-        if (pwd !== pwd2) {
-           setIsValidPwd(false);
-        }
+        setIsValidPwd(pwd === pwd2);
         if (user && pwd && pwd2 && isValidPwd) {
             await props.submitForm(user, pwd, autoLogin);
         }
@@ -61,7 +59,7 @@ const RegisterForm = (props) => {
                         </div>
                     </div>
                     <div className="row mb-2">
-                        <label htmlFor="password2" className="col-md-6 col-form-label">Upprepa Lösenord</label>
+                        <label htmlFor="password2" className="col-md-6 col-form-label">Upprepa lösenord</label>
                         <div className="col-md-6">
                             <input
                                 type="password"

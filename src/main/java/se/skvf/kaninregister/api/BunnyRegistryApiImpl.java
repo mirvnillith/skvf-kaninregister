@@ -263,7 +263,11 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	
 	private String validateSession(String ownerId) {
 		String session = getSession();
-		if (!sessions.isSession(session, ownerId)) {
+		if (ownerId == null) {
+			if (session == null) {
+				throw new WebApplicationException(UNAUTHORIZED);				
+			}
+		} else if (!sessions.isSession(session, ownerId)) {
 			if (session != null) {
 				removeCookies();
 			}
@@ -636,10 +640,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	public OwnerDTO createOwner(CreateOwnerDTO creationDTO) {
 		return process(() -> {
 			
-			if (getSession() != null) {
-				removeCookies();
-				throw new WebApplicationException(UNAUTHORIZED);								
-			}
+			validateNoSession();
 			
 			if (isBlank(creationDTO.getUserName())) {
 					throw new WebApplicationException(BAD_REQUEST);
@@ -659,14 +660,19 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			return toDTO(owner);
 		});
 	}
+
+	private void validateNoSession() {
+		if (getSession() != null) {
+			removeCookies();
+			throw new WebApplicationException(UNAUTHORIZED);								
+		}
+	}
 	
 	@Override
 	public OwnerDTO activateOwner(String id, CreateOwnerDTO creationDTO) {
 		return process(() -> {
 			
-			if (getSession() != null) {
-				throw new WebApplicationException(UNAUTHORIZED);								
-			}
+			validateNoSession();
 			
 			Owner owner = validateOwner(id, false);
 			if (isNotEmpty(owner.getUserName())) {
@@ -695,9 +701,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	public BunnyDTO reclaimBunny(String id) {
 		return process(() -> {
 
-			if (getSession() == null) {
-				throw new WebApplicationException(UNAUTHORIZED);
-			}
+			validateSession(null);
 			
 			Bunny bunny = validateBunny(id);
 			
@@ -894,8 +898,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	public void recoverOwner(String userName, RecoveryDTO recoveryDTO) {
 		process(() -> {
 			
-			if (getSession() != null) {
-				throw new WebApplicationException(UNAUTHORIZED);
+			validateNoSession();
+			
+			if (isAllBlank(recoveryDTO.getNewPassword())) {
+				throw new WebApplicationException(BAD_REQUEST);
 			}
 			
 			Collection<Owner> owners = registry.findOwners(byUserName(userName));
@@ -926,10 +932,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			if (!bunny.getOwner().equals(owner.getId())) {
 				throw new WebApplicationException(NOT_FOUND);
-			}
-			
-			if (isAllBlank(recoveryDTO.getNewPassword())) {
-				throw new WebApplicationException(BAD_REQUEST);
 			}
 			
 			owner.setPassword(recoveryDTO.getNewPassword());

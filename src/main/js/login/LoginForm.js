@@ -64,6 +64,15 @@ const LoginForm = (props) => {
                             <button type="submit" className="btn btn-primary float-end" disabled={!submit}>Logga in</button>
                         </div>
                     </div>
+                    <div className="row mb-2">
+                        <div className="col-sm-8 align-self-end">
+                            <p className="mb-0">
+                                Har du glömt ditt lösenord?
+                                &nbsp;
+                                <Link className="link-primary" to="/recoverpassword">Återställ lösenordet här!</Link>
+                            </p>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>

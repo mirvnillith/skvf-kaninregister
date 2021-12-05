@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import Spinner from "react-bootstrap/Spinner";
 import Login from './login/Login'
 import Register from './register/Register'
+import RecoverPassword from './recoverpassword/RecoverPassword'
 import Header from './Header'
 import Activation from './activation/Activation'
 import Bunnies from './bunnies/Bunnies'
@@ -68,6 +69,7 @@ const App = () => {
                 <Route path="/" element={<Layout />}>
                     <Route index element={session === undefined ? <Navigate to="/login" /> : <Navigate to="/bunnies" />} />
                     <Route path="/login" element={<WithoutSession element={ <Login /> }/>}/>
+                    <Route path="/recoverpassword" element={<WithoutSession element={ <RecoverPassword /> }/>}/>
                     <Route path="/register" element={<WithoutSession element={ <Register /> }/>}/>
                     <Route path="/approval" element={<RequiresSession element={ <CheckApproval /> }/>}/>
                     <Route path="/owner" element={<RequiresSession element={ <Owner /> }/>}/>

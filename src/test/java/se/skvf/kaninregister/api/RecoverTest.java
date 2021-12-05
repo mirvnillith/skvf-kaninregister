@@ -105,11 +105,6 @@ public class RecoverTest extends BunnyRegistryApiTest {
 		
 		Owner owner = mockOwner()
 				.setUserName(randomUUID().toString());
-		when(registry.findOwners(filterArgument.capture())).thenReturn(singleton(owner));
-		
-		Bunny bunny = mockBunny()
-				.setOwner(owner.getId());
-		when(registry.findBunnies(filterArgument.capture())).thenReturn(new HashSet<>(singleton(bunny)));
 
 		RecoveryDTO dto = new RecoveryDTO();
 		dto.setBunnyIdentifiers(asList(bunnyIdentifier(randomUUID().toString())));
