@@ -21,7 +21,7 @@ const OwnerForm = (props) => {
 		setSubmit(false);
         e.preventDefault();
         setIsValidated(true);
-        if (name) {
+        if (name && userName) {
 			const owner = {};
 			owner.name = name;
 			owner.userName = userName;
