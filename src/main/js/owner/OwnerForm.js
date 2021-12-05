@@ -5,15 +5,15 @@ const OwnerForm = (props) => {
 	
 	const session = useSession();
 	
-    const [name, setName] = useState(session.user.name !== undefined ? session.user.name : "");
-    const [userName, setUserName] = useState(session.user.userName !== undefined ? session.user.userName : "");
-    const [publicOwner, setPublicOwner] = useState(session.user.publicOwner !== undefined ? session.user.publicOwner : "");
-    const [email, setEmail] = useState(session.user.email !== undefined ? session.user.email : "");
-    const [address, setAddress] = useState(session.user.address !== undefined ? session.user.address : "");
-    const [phone, setPhone] = useState(session.user.phone !== undefined ? session.user.phone : "");
-    const [breederName, setBreederName] = useState(session.user.breederName !== undefined ? session.user.breederName : "");
-    const [breederEmail, setBreederEmail] = useState(session.user.breederEmail !== undefined ? session.user.breederEmail : "");
-    const [publicBreeder, setPublicBreeder] = useState(session.user.publicBreeder !== undefined ? session.user.publicBreeder : "");
+    const [name, setName] = useState(session.user.name ? session.user.name : "");
+    const [userName, setUserName] = useState(session.user.userName ? session.user.userName : "");
+    const [publicOwner, setPublicOwner] = useState(session.user.publicOwner ? session.user.publicOwner : "");
+    const [email, setEmail] = useState(session.user.email ? session.user.email : "");
+    const [address, setAddress] = useState(session.user.address ? session.user.address : "");
+    const [phone, setPhone] = useState(session.user.phone ? session.user.phone : "");
+    const [breederName, setBreederName] = useState(session.user.breederName ? session.user.breederName : "");
+    const [breederEmail, setBreederEmail] = useState(session.user.breederEmail ? session.user.breederEmail : "");
+    const [publicBreeder, setPublicBreeder] = useState(session.user.publicBreeder ? session.user.publicBreeder : "");
     const [isValidated, setIsValidated] = useState(false);
     const [submit, setSubmit] = useState(true);
 
