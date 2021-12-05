@@ -9,7 +9,7 @@ const Activation = (props) => {
     const navigate = useNavigate();
     const params = useParams();
     const sessionUpdater = useSessionUpdater();
-    const [_, { notifyError, clearNotifications } ] = useNotificationUpdater();
+    const [_, { notifyError, notifySuccess, clearNotifications } ] = useNotificationUpdater();
 	
     const createActivationSuccessHandler = (userName, pwd, autoLogin) => {
 	
@@ -18,10 +18,15 @@ const Activation = (props) => {
 			navigate("/approval");
         }
 
+        const onFailedLogin = (msg) => {
+			notifySuccess("Aktiveringen lyckades");
+			notifyError(msg);
+			navigate("/login");
+        }
+
         return async (_) => {
 			if (autoLogin) {
-                clearNotifications();
-           		await loginUser(userName, pwd, onSuccessfulLogin, notifyError);
+           		await loginUser(userName, pwd, onSuccessfulLogin, onFailedLogin);
 			} else {
 				navigate("/login");
 			}
@@ -29,6 +34,7 @@ const Activation = (props) => {
     }
 
     const submitForm = async (user, pwd, autoLogin) => {
+        clearNotifications();
         await activateOwner(params.ownerId, user, pwd, createActivationSuccessHandler(user, pwd, autoLogin), notifyError);
     }
 

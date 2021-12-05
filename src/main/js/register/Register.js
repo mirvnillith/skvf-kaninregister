@@ -8,18 +8,24 @@ import { useNotificationUpdater } from "../hooks/NotificationContext";
 const Register = (props) => {
     const navigate = useNavigate();
     const sessionUpdater = useSessionUpdater();
-    const [_, { notifyError, clearNotifications } ] = useNotificationUpdater();
+    const [_, { notifyError, notifySuccess, clearNotifications } ] = useNotificationUpdater();
 
     const createRegistrationSuccessHandler = (userName, pwd, autoLogin) => {
+	
         const onSuccessfulLogin = (user) => {
             sessionUpdater({user});
 			navigate("/approval");
         }
 
+        const onFailedLogin = (msg) => {
+			notifySuccess("Registrering lyckades");
+			notifyError(msg);
+			navigate("/login");
+        }
+
         return async (_) => {
-            clearNotifications();
 			if (autoLogin) {
-            	await loginUser(userName, pwd, onSuccessfulLogin, notifyError);
+            	await loginUser(userName, pwd, onSuccessfulLogin, onFailedLogin);
 			} else {
 				navigate("/login");
 			}
@@ -27,6 +33,7 @@ const Register = (props) => {
     }
 
     const submitForm = async (user, pwd, autoLogin) => {
+        clearNotifications();
         await createOwner(user, pwd, createRegistrationSuccessHandler(user, pwd, autoLogin), notifyError)
     }
 
