@@ -1,20 +1,23 @@
 package se.skvf.kaninregister.api;
 
+import static java.util.Collections.singleton;
 import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static se.skvf.kaninregister.data.Table.ID;
 
 import java.io.IOException;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.junit.jupiter.api.Test;
 
+import se.skvf.kaninregister.data.Table;
 import se.skvf.kaninregister.model.Owner;
 
 public class UpdateOwnerTest extends BunnyRegistryApiTest {
@@ -125,5 +128,33 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 		dto.setEmail(randomUUID().toString());
 		
 		assertError(PRECONDITION_FAILED, () -> api.updateOwner(owner.getId(), dto));
+	}
+	
+	@Test
+	public void updateOwner_duplicateUserName() throws IOException {
+		
+		Owner owner = mockOwner()
+			.setSignature(randomUUID().toString());
+		mockSession(owner.getId());
+		
+		OwnerDTO dto = new OwnerDTO();
+		dto.setUserName(randomUUID().toString());
+		
+		when(registry.findOwners(filterArgument.capture())).thenReturn(singleton(new Owner()));
+		
+		assertError(CONFLICT, () -> api.updateOwner(owner.getId(), dto));
+		
+		assertThat(filterArgument.getValue())
+			.hasSize(2)
+			.anySatisfy((field, filter) -> {
+				assertThat(field).isEqualTo(ID);
+				assertThat(filter).accepts(randomUUID().toString());
+				assertThat(filter).rejects(owner.getId());
+			})
+			.anySatisfy((field, filter) -> {
+				assertThat(field).isEqualTo("Användarnamn");
+				assertThat(filter).rejects(randomUUID().toString());
+				assertThat(filter).accepts(dto.getUserName());
+			});
 	}
 }

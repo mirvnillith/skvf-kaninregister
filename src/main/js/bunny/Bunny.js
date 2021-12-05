@@ -5,10 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { useSession} from "../hooks/SessionContext";
 import { useNotificationUpdater } from "../hooks/NotificationContext";
 
-const Bunny = (props) => {
+const Bunny = (_) => {
     const navigate = useNavigate();
     const session = useSession();
-    const [_, { notifyError, clearNotifications } ] = useNotificationUpdater();
+    const [__, { notifyError, clearNotifications } ] = useNotificationUpdater();
 
     const successfulCreation = () => navigate("/bunnies");
 

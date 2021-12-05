@@ -155,6 +155,8 @@ paths:
           description: Session required
         '404':
           description: Owner not found
+        '409':
+          description: User name already in use
         '412':
           description: Owner not approved
     delete:

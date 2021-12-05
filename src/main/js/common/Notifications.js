@@ -5,10 +5,13 @@ import { useNotification } from "../hooks/NotificationContext";
 const Notifications = () => {
     const notifications = useNotification();
 
-    return (notifications.map(({type, msg}, index) => {
-            return (<Notification type={type} msg={msg} key={index}/>)
-        })
-    )
+    return (<div>
+        {
+            notifications.map(({type, msg}, index) => {
+                return (<Notification type={type} msg={msg} key={index}/>)
+            })
+        }
+    </div>)
 }
 
 export default Notifications;

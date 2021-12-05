@@ -23,7 +23,7 @@ const Logout = (props) => {
     return (
         <div>
             {session ?
-                <button className="btn btn-primary" onClick={logoutHandler}>Logga ut</button> :
+                <button className="btn btn-primary float-end" onClick={logoutHandler}>Logga ut</button> :
                 null
             }
         </div>
