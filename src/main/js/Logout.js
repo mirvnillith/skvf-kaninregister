@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 import {useSession, useSessionUpdater} from "./hooks/SessionContext";
 import { useNotificationUpdater } from "./hooks/NotificationContext";
 
-const Logout = (props) => {
+const Logout = (_) => {
     const navigate = useNavigate();
     const session = useSession();
     const sessionUpdater = useSessionUpdater();
-    const [_, { notifyError } ] = useNotificationUpdater();
+    const [__, { notifyError, clearNotifications } ] = useNotificationUpdater();
 
     const onSuccessfulLogout = () => {
         sessionUpdater(undefined);
@@ -17,13 +17,14 @@ const Logout = (props) => {
 
     const logoutHandler = (e) => {
         e.preventDefault();
+        clearNotifications();
         logoutUser(onSuccessfulLogout, notifyError);
     }
 
     return (
         <div>
             {session ?
-                <button className="btn btn-primary float-end" onClick={logoutHandler}>Logga ut</button> :
+                <button className="btn btn-secondary float-end" onClick={logoutHandler}>Logga ut</button> :
                 null
             }
         </div>
