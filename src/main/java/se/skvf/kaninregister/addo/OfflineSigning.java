@@ -5,18 +5,18 @@ import static java.util.UUID.randomUUID;
 
 public class OfflineSigning extends Signing {
 
-	static final String OFFLINE_URL="/offlineSigning?token=";
+	static final String OFFLINE_URL="/signOffline/";
 	
 	private Boolean state;
 	private String subject;
 	
-	public OfflineSigning() {
-		super(null, randomUUID().toString(), null);
+	public OfflineSigning(String url) {
+		super(url, randomUUID().toString(), null);
 	}
 	
 	@Override
 	public String getTransactionUrl() {
-		return OFFLINE_URL+getToken();
+		return OFFLINE_URL + getToken();
 	}
 	
 	public void setState(String subject, boolean state) {
@@ -29,6 +29,6 @@ public class OfflineSigning extends Signing {
 	}
 
 	public Signature getSignature() {
-		return new Signature(subject, fromString(subject).toString());
+		return new Signature(url, subject, token);
 	}
 }

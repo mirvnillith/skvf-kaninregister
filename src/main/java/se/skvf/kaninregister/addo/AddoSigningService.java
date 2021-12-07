@@ -14,6 +14,7 @@ import static org.apache.commons.codec.digest.DigestUtils.getSha512Digest;
 import static org.apache.commons.io.IOUtils.copy;
 import static org.apache.commons.lang3.StringUtils.isAnyEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static se.skvf.kaninregister.addo.DistributionMethod.NONE;
 import static se.skvf.kaninregister.addo.SigningMethod.SWEDISH_BANKID;
 
@@ -27,6 +28,7 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.WebApplicationException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.ext.logging.LoggingInInterceptor;
@@ -72,6 +74,9 @@ public class AddoSigningService {
 	private String email;
 	@Value("${skvf.addo.password:}")
 	private String password;
+	@Value("${skvf.approval.url:}")
+	private String approvalUrl;
+	private URL testUrl;
 	@Value("${skvf.dev.addo:false}")
 	private boolean test;
 	
@@ -89,6 +94,14 @@ public class AddoSigningService {
 	
 	void setPassword(String password) {
 		this.password = password;
+	}
+	
+	void setApprovalUrl(String approvalUrl) {
+		this.approvalUrl = approvalUrl;
+	}
+	
+	void setTestUrl(URL testUrl) {
+		this.testUrl = testUrl;
 	}
 	
 	private boolean isOffline() {
@@ -115,10 +128,18 @@ public class AddoSigningService {
 		}
 	}
 	
-	public synchronized Signing startSigning(URL pdf) throws IOException {
+	public synchronized void clearSigning(String token) {
+		offlineSignings.remove(token);
+	}
+	
+	public synchronized Signing startSigning() throws IOException {
+		
+		if (isEmpty(approvalUrl)) {
+			return new NoSigning();
+		}
 		
 		if (isOffline()) {
-			OfflineSigning signing = new OfflineSigning();
+			OfflineSigning signing = new OfflineSigning(approvalUrl);
 			offlineSignings.put(signing.getToken(), signing);
 			return signing;
 		}
@@ -136,7 +157,7 @@ public class AddoSigningService {
 			SigningDataDTO signingData = new SigningDataDTO();
 			signingData.setSender(createSender());
 			signingData.setRecipients(singletonList(createRecipient()));
-			signingData.setDocuments(singletonList(createDocument(pdf)));
+			signingData.setDocuments(singletonList(createDocument(testUrl == null ? new URL(approvalUrl) : testUrl)));
 			signingData.setAllowInboundEnclosures(false);
 			signingData.setAllowRecipientComment(false);
 			signingData.setSenderComment(SIGNING_COMMENT);
@@ -249,7 +270,7 @@ public class AddoSigningService {
 			
 			SigningRecipientDTO signature = signing.getRecipients().get(0);
 			SigningDocumentDTO document = signing.getDocuments().get(0);
-			return new Signature(signature.getSignatureSubject(), document.getXmlDSig());
+			return new Signature(approvalUrl, signature.getSignatureSubject(), document.getXmlDSig());
 		});
 	}
 	

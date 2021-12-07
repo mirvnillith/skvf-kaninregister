@@ -78,6 +78,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 	@Captor
 	private ArgumentCaptor<InitiateSigningRequestDTO> signingRequest;
 	
+	private String approvalUrl;
 	private String url;
 	private String email;
 	private String password;
@@ -90,6 +91,8 @@ public class AddoSigningServiceTest extends BunnyTest {
 		service.setEmail(email);
 		password = randomUUID().toString();
 		service.setPassword(password);
+		approvalUrl = randomUUID().toString();
+		service.setApprovalUrl(approvalUrl);
 	}
 	
 	@Test
@@ -97,7 +100,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 		
 		WebApplicationException error = mockLoginError();
 		
-		WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.startSigning(null));
+		WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.startSigning());
 		assertThat(exception).isSameAs(error);
 		
 		verifyLogin();
@@ -112,7 +115,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 	@Test
 	public void startSigning_signingError() throws Exception {
 		
-		URL pdf = url(new byte[0]);
+		service.setTestUrl(url(new byte[0]));
 		
 		String session = mockSession();
 		mockTemplate(session);
@@ -121,7 +124,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 		when(addo.initiateSigning(signingRequest.capture())).thenThrow(error);
 		try {
 
-			WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.startSigning(pdf));
+			WebApplicationException exception = assertThrows(WebApplicationException.class, () -> service.startSigning());
 			assertThat(exception).isSameAs(error);
 			
 		} finally {
@@ -159,7 +162,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 	@Test
 	public void startSigning_apiError() throws Exception {
 		
-		URL pdf = url(new byte[0]);
+		service.setTestUrl(url(new byte[0]));
 		
 		String session = mockSession();
 		mockTemplate(session);
@@ -168,7 +171,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 		when(addo.initiateSigning(signingRequest.capture())).thenThrow(error);
 		try {
 			
-			IOException exception = assertThrows(IOException.class, () -> service.startSigning(pdf));
+			IOException exception = assertThrows(IOException.class, () -> service.startSigning());
 			assertThat(exception.getCause()).isSameAs(error);
 			
 		} finally {
@@ -180,7 +183,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 	public void startSigning() throws Exception {
 		
 		String data = randomUUID().toString();
-		URL pdf = url(data.getBytes());
+		service.setTestUrl(url(data.getBytes()));
 		
 		String session = mockSession();
 		String templateId = mockTemplate(session);
@@ -201,7 +204,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 
 		try {
 		
-			Signing signing = service.startSigning(pdf);
+			Signing signing = service.startSigning();
 			assertThat(signing.getToken())
 				.isEqualTo(signingResponse.getSigningToken());
 			assertThat(signing.getTransactionUrl())

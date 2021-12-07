@@ -585,8 +585,8 @@ const logoutUser = async (successHandler, errorHandler) => {
 
 const signOffline = async (token, signature, successHandler, errorHandler) => {
 	const data = {};
-    if (signature.subject) data.subject = signature.subject;
-    if (signature.success) data.success = signature.success;
+    if (signature.subject !== undefined) data.subject = signature.subject;
+    if (signature.success !== undefined) data.success = signature.success;
 	
     const response = await fetch(`/api/signOffline/${token}`, {
         method: 'POST',
@@ -611,15 +611,15 @@ const approve = async (id, approvedOwnerHandler, approvalFailedHandler, approval
     if (response.status === 200){
         approvedOwnerHandler();
     }
-    else if (response.status === 204){
-        approvalFailedHandler();
-    }
-    else if (response.status === 307) {
+    else if (response.status === 202) {
         const location = response.headers.get('Location')
         approvalOngoingHandler(location)
     }
+    else if (response.status === 204){
+        approvalFailedHandler();
+    }
     else if (response.status === 401) {
-        errorHandler("Något gick fel när signering skulle verifieras, prova att logga ut och logga in igen.")
+        errorHandler("Något gick fel när signeringen skulle verifieras, prova att logga ut och logga in igen.")
     }
     else if (response.status === 404) {
         errorHandler("Ägaren kunde inte hittas")
