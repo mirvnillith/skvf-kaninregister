@@ -40,9 +40,9 @@ const ChangePassword = (_) => {
         navigate("/bunnies");
     }
 
-    const submitHandler = async () => {
+    const submitHandler = () => {
         clearNotifications();
-        await changeUserPassword(session.user.id, values.currentPassword, values.newPassword, onSuccessfulUpdate, notifyError);
+        return changeUserPassword(session.user.id, values.currentPassword, values.newPassword, onSuccessfulUpdate, notifyError);
     }
 
     const cancelHandler = async () => {
@@ -112,7 +112,9 @@ const ChangePassword = (_) => {
                     <div className="row mb-2">
                         <div className="col-sm-6 align-self-end" />
                         <div className="col-sm-6">
-                            <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting} >Ändra ditt lösenord</button>
+                            <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting} >
+                                { isSubmitting && <span className="spinner-border spinner-border-sm mr-1"></span> }
+                                Ändra ditt lösenord</button>
                             <button type="cancel" className="btn btn-secondary float-end me-2" disabled={isSubmitting} onClick={cancelHandler}>Avbryt</button>
                         </div>
                     </div>

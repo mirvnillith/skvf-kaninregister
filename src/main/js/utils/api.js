@@ -101,7 +101,7 @@ const changeUserPassword = async (id, currentPassword, newPassword, successHandl
         errorHandler("Ogiltigt lösenord!")
     }
     else if (response.status === 401) {
-        errorHandler("Du måste vara inloggad!")
+        errorHandler("Det gamla lösenordet är felaktigt!")
     }
     else if (response.status === 404) {
         errorHandler("Okänd användare!")

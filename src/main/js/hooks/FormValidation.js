@@ -5,17 +5,17 @@ function useFormValidation(initialState, validate, submitHandler) {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setSubmitting] = useState(false);
 
-    useEffect(() => {
+    useEffect( async () => {
         if (isSubmitting) {
             const noErrors = Object.keys(errors).length === 0;
             if (noErrors) {
-                submitHandler();
+                await submitHandler();
                 setSubmitting(false);
             } else {
                 setSubmitting(false);
             }
         }
-    }, [errors]);
+    }, [errors, isSubmitting]);
 
     function handleChange(event) {
         setValues({
