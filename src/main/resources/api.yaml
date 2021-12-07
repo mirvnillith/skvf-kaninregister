@@ -352,7 +352,7 @@ paths:
               schema: 
                 $ref: '#/components/schemas/BunnyDTO'
         '400':
-          description: Incoming BunnyDTO must have at least one identifier, no ID and if it has an owner, it must match the path
+          description: Incoming BunnyDTO must have at least one identifier, no ID and if it has an owner, it must match the path. Also, breeder must be empty or owner.
         '401':
           description: Session required
         '404':
@@ -443,7 +443,7 @@ paths:
               schema: 
                 $ref: '#/components/schemas/BunnyDTO'
         '400':
-          description: If Incoming BunnyDTO has an ID, it must match the path.
+          description: If Incoming BunnyDTO has an ID, it must match the path. Also, breeder must be empty, owner or existing breeder.
         '401':
           description: Session required, of owner
         '404':

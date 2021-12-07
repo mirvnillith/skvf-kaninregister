@@ -1,14 +1,13 @@
 import React from 'react';
 import useFormValidation from "../hooks/FormValidation";
 
-
 const validate = (values) => {
     const errors = {};
-
+	
     if (!values.name) {
         errors.name = "Du måste ange ett namn!";
-    }
-
+	}
+	
     const oneIdentifier = values.chip || values.leftEar || values.rightEar || values.ring;
     if (!oneIdentifier) {
         errors.chip = "Du måste ange minst en märkning!";
@@ -16,11 +15,12 @@ const validate = (values) => {
         errors.rightEar = "Du måste ange minst en märkning!";
         errors.ring = "Du måste ange minst en märkning!";
     }
-
+	
     return errors;
 }
 
 const BunnyForm = (props) => {
+
 
 	const initialState = {
 	    name: props.bunny.name ? props.bunny.name : "",
@@ -35,8 +35,10 @@ const BunnyForm = (props) => {
 	    race: props.bunny.race ? props.bunny.race : "",
 	    coat: props.bunny.coat ? props.bunny.coat : "",
 	    colourMarkings: props.bunny.colourMarkings ? props.bunny.colourMarkings : "",
-	    features: props.bunny.features ? props.bunny.features : ""
+	    features: props.bunny.features ? props.bunny.features : "",
+	    ownerBreeder: false
 	};
+	
 	
     const {
         handleSubmit,
@@ -238,6 +240,23 @@ const BunnyForm = (props) => {
                             </div>
                         </div>
 					</fieldset>
+					{props.bunny.id === undefined
+					?	<fieldset>
+                        	<legend>Uppfödare</legend>
+                    		<div className="row mb-2">
+                        		<label htmlFor="ownerBreeder" className="col-md-6 col-form-label">Jag är uppfödaren</label>
+                       	 		<div className="col-md-6">
+                            		<input
+                               			id="ownerBreeder"
+                               			name="ownerBreeder"
+                                		type="checkbox"
+										defaultChecked={values.ownerBreeder}
+                                    	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
+                            		/>
+                        		</div>
+                    		</div>
+						</fieldset>
+					:	null}
                     <div className="row mt-2">
                         <div className="col-sm-8"/>
                         <div className="col-sm-4">

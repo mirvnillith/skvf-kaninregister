@@ -40,6 +40,7 @@ const Bunny = (_) => {
 		if (bunny.id) {
         	return updateBunny(session.user.id, bunny, successfulSave, notifyError);			
 		} else {
+			if (values.ownerBreeder) bunny.breeder = session.user.id;
         	return createBunny(session.user.id, bunny, successfulSave, notifyError);
 		}
     }

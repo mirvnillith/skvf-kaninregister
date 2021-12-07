@@ -100,10 +100,21 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			}
 			validateOwner(ownerId, true);
 			
+			validateBreeder(bunnyDTO.getBreeder(), ownerId, null);
+			
 			bunnyDTO.setOwner(ownerId);
-			bunnyDTO.setId(registry.add(toBunny(bunnyDTO)));
+			Bunny bunny = toBunny(bunnyDTO);
+			bunnyDTO.setId(registry.add(bunny));
 			return bunnyDTO;
 		});
+	}
+
+	private void validateBreeder(String newBreederId, String ownerId, String currentBreederId) throws IOException {
+		if (isNotEmpty(newBreederId) &&
+				!newBreederId.equals(ownerId) &&
+				!newBreederId.equals(currentBreederId)) {
+			throw new WebApplicationException(BAD_REQUEST);
+		}
 	}
 
 	private static <T> T process(Callable<T> call) {
@@ -507,10 +518,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			}
 			Bunny bunny = validateBunny(bunnyId);
 			
-			if (bunnyDTO.getBreeder() != null &&
-					!bunnyDTO.getBreeder().equals(bunny.getBreeder())) {
-				bunnyDTO.setBreeder("");
-			}
+			validateBreeder(bunnyDTO.getBreeder(), ownerId, bunny.getBreeder());
 			
 			update(bunny, bunnyDTO);
 			registry.update(bunny);

@@ -35,12 +35,12 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 		mockSession(ownerId);
 		BunnyDTO dto = new BunnyDTO();
 		dto.setName(randomUUID().toString());
-		dto.setBreeder(randomUUID().toString());
 		dto.setChip(randomUUID().toString());
 		dto.setCoat(randomUUID().toString());
 		dto.setColourMarkings(randomUUID().toString());
 		dto.setFeatures(randomUUID().toString());
 		dto.setGender(FEMALE);
+		dto.setBreeder(ownerId);
 		dto.setLeftEar(randomUUID().toString());
 		dto.setNeutered(true);
 		dto.setPicture(randomUUID().toString());
@@ -139,6 +139,19 @@ public class CreateBunnyTest extends BunnyRegistryApiTest {
 		mockSession(ownerId);
 		BunnyDTO dto = new BunnyDTO();
 		dto.setOwner(randomUUID().toString());
+		
+		assertError(BAD_REQUEST, () -> api.createBunny(ownerId, dto));
+	}
+	
+	@Test
+	public void createBunny_otherBreeder() throws IOException {
+		
+		String ownerId = mockOwner()
+				.setSignature("-")
+				.getId();
+		mockSession(ownerId);
+		BunnyDTO dto = new BunnyDTO();
+		dto.setBreeder(randomUUID().toString());
 		
 		assertError(BAD_REQUEST, () -> api.createBunny(ownerId, dto));
 	}
