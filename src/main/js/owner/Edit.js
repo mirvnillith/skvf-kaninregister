@@ -8,9 +8,9 @@ const Edit = (_) => {
 
     return (
         <div>
-            {session ?
-                <button className="btn btn-secondary float-end me-2" onClick={() => navigate('/owner')}>Mitt konto</button> :
-                null
+            {session && window.location.pathname.indexOf('/owner') != 0
+				?	<button className="btn btn-secondary float-end me-2" onClick={() => navigate('/owner')}> Mitt konto </button> 
+				:	null
             }
         </div>
     );
