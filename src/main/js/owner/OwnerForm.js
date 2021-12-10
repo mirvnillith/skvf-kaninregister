@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useSession } from "../hooks/SessionContext";
+import {Link} from "react-router-dom";
 
 const OwnerForm = (props) => {
 	
@@ -164,7 +165,9 @@ const OwnerForm = (props) => {
                     </div>
 					</fieldset>
                     <div className="row mt-2">
-                        <div className="col-sm-8"/>
+                        <div className="col-sm-8 align-self-end">
+                            <Link className="link-primary" to="/changepassword">Vill du byta ditt lösenord?</Link>
+                        </div>
                         <div className="col-sm-4">
                             <button type="submit" className="btn btn-primary float-end" disabled={!submit}>Spara</button>
                             <button type="cancel" className="btn btn-secondary float-end me-2" disabled={!submit} onClick={cancelHandler}>Avbryt</button>

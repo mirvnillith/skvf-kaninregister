@@ -25,6 +25,7 @@ import {
 import CheckApproval from "./approval/CheckApproval";
 import Notifications from "./common/Notifications";
 import { NotificationProvider } from "./hooks/NotificationContext";
+import ChangePassword from "./changepassword/ChangePassword";
 
 const WithoutSession = (props) => {
     const session = useSession();
@@ -70,6 +71,7 @@ const App = () => {
                     <Route path="/register" element={<WithoutSession element={ <Register /> }/>}/>
                     <Route path="/approval" element={<RequiresSession element={ <CheckApproval /> }/>}/>
                     <Route path="/owner" element={<RequiresSession element={ <Owner /> }/>}/>
+                    <Route path="/changepassword" element={<RequiresSession element={ <ChangePassword /> }/>}/>
                     <Route path="/bunnies" element={<RequiresSession element={ <Bunnies /> }/>}/>
                     <Route path="/bunny" element={<RequiresSession element={ <Bunny /> }/>}/>
                     <Route path="/activation/:ownerId" element={<Activation />} />

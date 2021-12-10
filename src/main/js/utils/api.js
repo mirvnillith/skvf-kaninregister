@@ -86,12 +86,12 @@ const activateOwner = async (id, user, pwd, successHandler, errorHandler) => {
     }
 }
 
-const changeUserPassword = async (id, oldPwd, newPwd, successHandler, errorHandler) => {
+const changeUserPassword = async (id, currentPassword, newPassword, successHandler, errorHandler) => {
 
-    const response = await fetch(`/api/owners/${id}/activate`, {
+    const response = await fetch(`/api/owners/${id}/password`, {
         method: 'PUT',
         headers: new Headers({'content-type': 'application/json'}),
-        body: JSON.stringify({currentPassword: oldPwd, newPassword: newPwd})
+        body: JSON.stringify({currentPassword, newPassword})
     });
 
     if (response.status === 204){
@@ -101,13 +101,13 @@ const changeUserPassword = async (id, oldPwd, newPwd, successHandler, errorHandl
         errorHandler("Ogiltigt lösenord!")
     }
     else if (response.status === 401) {
-        errorHandler("Du måste vara inloggad!")
+        errorHandler("Det gamla lösenordet är felaktigt!")
     }
     else if (response.status === 404) {
         errorHandler("Okänd användare!")
     }
     else {
-        errorHandler("Något gick fel vid aktivering!")
+        errorHandler("Något gick fel vid updatering av lösenord!")
     }
 }
 
