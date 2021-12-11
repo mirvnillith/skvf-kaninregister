@@ -38,9 +38,9 @@ const Bunny = (_) => {
         }
 
 		if (bunny.id) {
-        	await updateBunny(session.user.id, bunny, successfulSave, notifyError);			
+        	return updateBunny(session.user.id, bunny, successfulSave, notifyError);			
 		} else {
-        	await createBunny(session.user.id, bunny, successfulSave, notifyError);
+        	return createBunny(session.user.id, bunny, successfulSave, notifyError);
 		}
     }
 

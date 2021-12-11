@@ -1,6 +1,6 @@
 import React from 'react';
-import { useSession } from "../hooks/SessionContext";
-import { Link } from "react-router-dom";
+import {useSession} from "../hooks/SessionContext";
+import {Link} from "react-router-dom";
 import useFormValidation from "../hooks/FormValidation";
 
 const INITIAL_STATE = (session) => {
@@ -31,8 +31,8 @@ const validate = (values) => {
 }
 
 const OwnerForm = (props) => {
-	
-	const session = useSession();
+
+    const session = useSession();
 
     const {
         handleSubmit,
@@ -42,22 +42,22 @@ const OwnerForm = (props) => {
         errors,
         isSubmitting
     } = useFormValidation(INITIAL_STATE(session), validate, props.submitHandler);
-	
+
     return (
         <div className="row py-2">
-            <form onSubmit={handleSubmit} >
+            <form onSubmit={handleSubmit}>
                 <div className="col-md-12">
                     <div className="row mb-2">
                         <label htmlFor="name" className="col-md-6 col-form-label large">Namn</label>
                         <div className="col-md-6">
                             <input autoFocus
-                                id="name"
-                                name="name"
-                                type="text"
-                                value={values.name}
-								size="20"
-                                className={errors.name ? "form-control large is-invalid" : "form-control large"}
-                                onChange={handleChange}
+                                   id="name"
+                                   name="name"
+                                   type="text"
+                                   value={values.name}
+                                   size="20"
+                                   className={errors.name ? "form-control large is-invalid" : "form-control large"}
+                                   onChange={handleChange}
                             />
                             {errors.name && <div className="invalid-feedback">{errors.name}</div>}
                         </div>
@@ -66,18 +66,18 @@ const OwnerForm = (props) => {
                         <label htmlFor="userName" className="col-md-6 col-form-label">Användarnamn</label>
                         <div className="col-md-6">
                             <input autoFocus
-                                type="text"
-                                id="userName"
-                                name="userName"
-                                value={values.userName}
-								size="20"
-                                className={errors.userName ? "form-control is-invalid" : "form-control"}
-                                onChange={handleChange}
+                                   type="text"
+                                   id="userName"
+                                   name="userName"
+                                   value={values.userName}
+                                   size="20"
+                                   className={errors.userName ? "form-control is-invalid" : "form-control"}
+                                   onChange={handleChange}
                             />
                             {errors.userName && <div className="invalid-feedback">{errors.userName}</div>}
                         </div>
                     </div>
-					<fieldset>
+                    <fieldset>
                         <legend>Kontaktinformation</legend>
                         <div className="row mb-2">
                             <label htmlFor="publicOwner" className="col-md-6 col-form-label">Synlig som ägare för användare av kaninregistret</label>
@@ -130,8 +130,8 @@ const OwnerForm = (props) => {
                                 />
                             </div>
                         </div>
-					</fieldset>
-					<fieldset>
+                    </fieldset>
+                    <fieldset>
                         <legend>Uppfödare</legend>
                         <div className="row mb-2">
                             <label htmlFor="publicBreeder" className="col-md-6 col-form-label">Synlig som uppfödare för användare av kaninregistret</label>
@@ -157,7 +157,8 @@ const OwnerForm = (props) => {
                             </div>
                         </div>
                         <div className="row mb-2">
-                            <label htmlFor="breederEmail" className="col-md-6 col-form-label">E-post som uppfödare</label>
+                            <label htmlFor="breederEmail" className="col-md-6 col-form-label">E-post som
+                                uppfödare</label>
                             <div className="col-md-6">
                                 <input
                                     id="breederEmail"
@@ -169,17 +170,19 @@ const OwnerForm = (props) => {
                                 />
                             </div>
                         </div>
-					</fieldset>
+                    </fieldset>
                     <div className="row mt-2">
                         <div className="col-sm-8 align-self-end">
                             <Link className="link-primary" to="/changepassword">Vill du byta ditt lösenord?</Link>
                         </div>
                         <div className="col-sm-4">
-                            <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting} >
-                                { isSubmitting && <span className="spinner-border spinner-border-sm me-1" /> }
+                            <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting}>
+                                {isSubmitting && <span className="spinner-border spinner-border-sm me-1"/>}
                                 Spara
                             </button>
-                            <button type="cancel" className="btn btn-secondary float-end me-2" disabled={isSubmitting} onClick={props.cancelHandler}>Avbryt</button>
+                            <button type="cancel" className="btn btn-secondary float-end me-2" disabled={isSubmitting}
+                                    onClick={props.cancelHandler}>Avbryt
+                            </button>
                         </div>
                     </div>
                 </div>

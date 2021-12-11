@@ -243,8 +243,7 @@ const BunnyForm = (props) => {
                         <div className="col-sm-4">
                             <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting} >
                                 { isSubmitting && <span className="spinner-border spinner-border-sm me-1" /> }
-                                Registrera
-                            </button>
+                                Spara</button>
                             <button type="cancel" className="btn btn-secondary float-end me-2" disabled={isSubmitting} onClick={props.cancelHandler}>Avbryt</button>
                         </div>
                     </div>

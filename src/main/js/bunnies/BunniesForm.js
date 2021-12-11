@@ -38,11 +38,11 @@ const Bunny = (props) => {
 			<div className="bunny-buttons">
 			{thisConfirm
 				?	<div className="h-100 d-flex justify-content-end">
-						<button className="btn btn-danger me-2 float-end mt-auto" onClick={removeHandler} disabled={props.remove}>
+						<button className="btn btn-secondary me-2 float-end mt-auto" onClick={unconfirmHandler} disabled={props.remove}>Avbryt</button>
+						<button className="btn btn-danger float-end mt-auto" onClick={removeHandler} disabled={props.remove}>
 							{ props.remove && <span className="spinner-border spinner-border-sm me-1" /> }
 							Bekräfta avregistrering
 						</button>
-						<button className="btn btn-secondary float-end mt-auto" onClick={unconfirmHandler} disabled={props.remove}>Avbryt</button>
 					</div>
 				:	<div className="h-100 d-flex justify-content-end">
 						<button className="btn btn-warning me-2 float-end mt-auto" onClick={confirmHandler} disabled={props.confirm}>Avregistrera</button>
