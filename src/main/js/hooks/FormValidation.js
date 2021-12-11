@@ -18,10 +18,17 @@ function useFormValidation(initialState, validate, submitHandler) {
     }, [errors, isSubmitting]);
 
     function handleChange(event) {
-        setValues({
-            ...values,
-            [event.target.name]: event.target.value
-        });
+		if (event.target.type === 'checkbox') {
+        	setValues({
+            	...values,
+				[event.target.name]: event.target.checked
+      		});			
+		} else {
+        	setValues({
+            	...values,
+            	[event.target.name]: event.target.value
+        	});
+		}
     }
 
     function handleBlur() {
