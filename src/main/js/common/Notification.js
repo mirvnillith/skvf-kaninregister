@@ -1,13 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
+import {Alert} from "react-bootstrap";
 
 const Notification = (props) => {
-    const type = props.type;
-    const msg = props.msg
-    return (
-        <div className={`alert alert-${type} alert-dismissible fade show`} role="alert">
-            {msg}
-            <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close" />
-        </div>
+    const [show, setShow] = useState(true);
+
+    return (show ?
+            <Alert variant={props.type} onClose={() => setShow(false)} dismissible>
+                <p>{props.msg}</p>
+            </Alert> :
+            null
     )
 }
 
