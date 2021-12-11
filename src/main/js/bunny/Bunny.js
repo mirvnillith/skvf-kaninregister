@@ -17,8 +17,26 @@ const Bunny = (_) => {
 
     const successfulSave = () => navigate("/bunnies");
 
-    const submitForm = async (bunny) => {
+    const submitHandler = (values) => {
         clearNotifications();
+
+        const bunny = {
+			id: params.bunnyId,
+            name: values.name,
+            chip: values.chip,
+            leftEar:  values.leftEar,
+            rightEar: values.rightEar,
+            ring: values.ring,
+            picture: values.picture,
+            gender: values.gender ? values.gender : null,
+            neutered: values.neutered !== undefined ? values.neutered : null,
+            birthDate: values.birthDate,
+            race: values.race,
+            coat: values.coat,
+            colourMarkings: values.colourMarkings,
+            features: values.features
+        }
+
 		if (bunny.id) {
         	await updateBunny(session.user.id, bunny, successfulSave, notifyError);			
 		} else {
@@ -26,7 +44,7 @@ const Bunny = (_) => {
 		}
     }
 
-    const cancelForm = async () => {
+    const cancelHandler = async () => {
         clearNotifications();
         navigate("/bunnies");
     }
@@ -48,7 +66,7 @@ const Bunny = (_) => {
     return (
 		bunny === undefined
 		? <Spinner animation="border" role="status"> <span className="visually-hidden">laddar innehåll...</span> </Spinner>
-        : <BunnyForm bunny={bunny} submitForm={submitForm} cancelForm={cancelForm}/>
+        : <BunnyForm bunny={bunny} submitHandler={submitHandler} cancelHandler={cancelHandler}/>
     );
 }
 

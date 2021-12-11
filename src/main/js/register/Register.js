@@ -32,13 +32,13 @@ const Register = (props) => {
         }
     }
 
-    const submitForm = async (user, pwd, autoLogin) => {
+    const submitHandler = (values) => {
         clearNotifications();
-        await createOwner(user, pwd, createRegistrationSuccessHandler(user, pwd, autoLogin), notifyError)
+        return createOwner(values.user, values.pwd, createRegistrationSuccessHandler(values.user, values.pwd, values.autoLogin), notifyError)
     }
 
     return (
-        <RegisterForm submitForm={submitForm} />
+        <RegisterForm submitHandler={submitHandler} />
     );
 }
 

@@ -15,13 +15,13 @@ const Login = (props) => {
 		navigate("/approval");
     }
 
-    const submitForm = async (user, pwd) => {
+    const submitHandler = (values) => {
         clearNotifications();
-        await loginUser(user, pwd, onSuccessfulLogin, notifyError);
+        return loginUser(values.user, values.pwd, onSuccessfulLogin, notifyError);
     }
 
     return (
-        <LoginForm submitForm={submitForm}/>
+        <LoginForm submitHandler={submitHandler}/>
     );
 }
 

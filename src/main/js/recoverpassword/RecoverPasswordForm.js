@@ -104,7 +104,7 @@ const RecoverPasswordForm = (props) => {
                                 name="autoLogin"
                                 type="checkbox"
 								checked={values.autoLogin}
-                                onChange={handleChange}
+                                onChange={handleCheckboxChange}
                             />
                         </div>
                     </div>

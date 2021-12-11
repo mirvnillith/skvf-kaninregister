@@ -16,18 +16,31 @@ const Owner = (_) => {
 		navigate("/bunnies");
 	}
 
-    const submitForm = async (owner) => {
+    const submitHandler = (values) => {
         clearNotifications();
-        await updateOwner(session.user.id, owner, onSuccessfulUpdate, notifyError);
+
+        const owner = {
+            name: values.name,
+            userName: values.userName,
+            publicOwner: values.publicOwner,
+            email: values.email,
+            address: values.address,
+            phone: values.phone,
+            breederName: values.breederName,
+            breederEmail: values.breederEmail,
+            publicBreeder: values.publicBreeder
+        }
+
+        return updateOwner(session.user.id, owner, onSuccessfulUpdate, notifyError);
     }
 
-    const cancelForm = async () => {
+    const cancelHandler = async () => {
         clearNotifications();
         navigate("/bunnies");
     }
 
     return (
-        <OwnerForm submitForm={submitForm} cancelForm={cancelForm}/>
+        <OwnerForm submitHandler={submitHandler} cancelHandler={cancelHandler}/>
     );
 }
 

@@ -33,13 +33,13 @@ const Activation = (props) => {
         }
     }
 
-    const submitForm = async (user, pwd, autoLogin) => {
+    const submitHandler = (values) => {
         clearNotifications();
-        await activateOwner(params.ownerId, user, pwd, createActivationSuccessHandler(user, pwd, autoLogin), notifyError);
+        return activateOwner(params.ownerId, values.user, values.pwd, createActivationSuccessHandler(values.user, values.pwd, values.autoLogin), notifyError);
     }
 
     return (
-        <ActivationForm submitForm={submitForm}/>
+        <ActivationForm submitHandler={submitHandler}/>
     );
 }
 

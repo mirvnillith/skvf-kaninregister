@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 
-function useFormValidation(initialState, validate, submitHandler) {
+const useFormValidation = (initialState, validate, submitHandler) => {
     const [values, setValues] = useState(initialState);
     const [errors, setErrors] = useState({});
     const [isSubmitting, setSubmitting] = useState(false);
@@ -17,26 +17,26 @@ function useFormValidation(initialState, validate, submitHandler) {
         }
     }, [errors, isSubmitting]);
 
-    function handleChange(event) {
-		if (event.target.type === 'checkbox') {
-        	setValues({
-            	...values,
-				[event.target.name]: event.target.checked
-      		});			
-		} else {
-        	setValues({
-            	...values,
-            	[event.target.name]: event.target.value
-        	});
-		}
+    const handleChange = (event) => {
+        setValues({
+            ...values,
+            [event.target.name]: event.target.value
+        });
     }
 
-    function handleBlur() {
+    const handleCheckboxChange = (event) => {
+        setValues({
+            ...values,
+            [event.target.name]: event.target.checked
+        });
+    }
+
+    const handleBlur = () => {
         const validationErrors = validate(values);
         setErrors(validationErrors);
     }
 
-    function handleSubmit(event) {
+    const handleSubmit = (event) => {
         event.preventDefault();
         const validationErrors = validate(values);
         setErrors(validationErrors);
@@ -46,6 +46,7 @@ function useFormValidation(initialState, validate, submitHandler) {
     return {
         handleSubmit,
         handleChange,
+        handleCheckboxChange,
         handleBlur,
         values,
         errors,
