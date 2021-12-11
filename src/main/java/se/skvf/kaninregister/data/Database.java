@@ -27,11 +27,13 @@ public class Database {
 	
 	@PostConstruct
 	public void setup() throws IOException {
-		spreadsheet = drive.getSpreadsheet(NAME);
+		GoogleDrive.skipDelay(() -> spreadsheet = drive.getSpreadsheet(NAME));
 		LOG.info(spreadsheet);
 	}
 	
 	public Table getTable(String name, Collection<String> columns) throws IOException {
-		return new Table(spreadsheet.getSheet(name), columns);
+		Table[] table = {null};
+		GoogleDrive.skipDelay(() -> table[0] = new Table(spreadsheet.getSheet(name), columns));
+		return table[0];
 	}
 }

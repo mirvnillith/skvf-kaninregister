@@ -56,6 +56,35 @@ public class GoogleSheet {
 		this.id = id;
 	}
 
+	public Map<String,String> getColumns(Collection<String> columnNames) throws IOException {
+		
+		ValueRange data = spreadsheet.getApi().spreadsheets().values()
+				.get(spreadsheet.id, range(TOP_ROW))
+				.execute();
+		List<List<Object>> values = data.getValues();
+		if (values == null || values.isEmpty()) {
+			formatHeaders();
+			values = singletonList(emptyList());
+		}
+			
+		Map<String, String> columns = new HashMap<>();
+		List<Object> row = data.getValues().get(0);
+		for (int i = 0; i < row.size(); i++) {
+			if (columnNames.contains(row.get(i).toString())) {
+				columns.put(row.get(i).toString(), column(i));
+			}
+		}
+		
+		int columnCount = row.size();
+		for (String columnName : columnNames) {
+			if (!columns.containsKey(columnName)) {
+				columns.put(columnName, createColumn(columnName, columnCount));
+				columnCount++;
+			}
+		}
+		return columns;
+	}
+	
 	public String getColumn(String columnName) throws IOException {
 
 		ValueRange data = spreadsheet.getApi().spreadsheets().values()
@@ -112,7 +141,7 @@ public class GoogleSheet {
 				.execute();
 		
 		LOG.info("Created column " + columnName + " as " + column(columnIndex) + " in " + this);
-		return getColumn(columnName);
+		return column(columnIndex);
 	}
 
 	private static String headerCell(int columnIndex) {

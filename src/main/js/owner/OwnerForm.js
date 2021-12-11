@@ -176,7 +176,7 @@ const OwnerForm = (props) => {
                         </div>
                         <div className="col-sm-4">
                             <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting} >
-                                { isSubmitting && <span className="spinner-border spinner-border-sm mr-1" /> }
+                                { isSubmitting && <span className="spinner-border spinner-border-sm me-1" /> }
                                 Spara
                             </button>
                             <button type="cancel" className="btn btn-secondary float-end me-2" disabled={isSubmitting} onClick={props.cancelHandler}>Avbryt</button>

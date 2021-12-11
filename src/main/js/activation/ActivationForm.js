@@ -17,9 +17,6 @@ const validate = (values) => {
     if (!values.pwd) {
         errors.pwd = "Du måste ange ett lösenord!";
     }
-    if (!values.pwd2) {
-        errors.pwd2 = "Du måste ange ett lösenord!";
-    }
     if (values.pwd !== values.pwd2 ) {
         errors.pwd2 = "Du måste upprepa ditt lösenord!";
     }
@@ -106,7 +103,7 @@ const ActivationForm = (props) => {
                         </div>
                         <div className="col-sm-4">
                             <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting} >
-                                { isSubmitting && <span className="spinner-border spinner-border-sm mr-1" /> }
+                                { isSubmitting && <span className="spinner-border spinner-border-sm me-1" /> }
                                 Aktivera
                             </button>
                         </div>

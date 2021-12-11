@@ -8,8 +8,10 @@ import static java.util.stream.Collectors.toMap;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
@@ -33,11 +35,9 @@ public class Table {
 	
 	public Table(GoogleSheet sheet, Collection<String> columns) throws IOException {
 		this.sheet = sheet;
-		this.attributeColumns = new HashMap<String, String>();
-		this.attributeColumns.put(ID, sheet.getColumn(ID));
-		for (String column : columns) {
-			this.attributeColumns.put(column, sheet.getColumn(column));
-		}
+		Set<String> tableColumns = new HashSet<>(columns);
+		tableColumns.add(ID);
+		attributeColumns = sheet.getColumns(tableColumns);
 		columnAttributes = attributeColumns.entrySet().stream().collect(toMap(Map.Entry::getValue, Map.Entry::getKey));
 		LOG.info(sheet);
 	}

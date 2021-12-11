@@ -113,7 +113,7 @@ const RegisterForm = (props) => {
                         </div>
                         <div className="col-sm-4">
                             <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting}>
-                                {isSubmitting && <span className="spinner-border spinner-border-sm mr-1"/>}
+                                {isSubmitting && <span className="spinner-border spinner-border-sm me-1"/>}
                                 Registrera dig
                             </button>
                         </div>

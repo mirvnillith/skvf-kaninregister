@@ -31,7 +31,7 @@ const Logout = (_) => {
             {session ?
                 <form onSubmit={handleSubmit} >
                     <button className="btn btn-secondary float-end" disabled={isSubmitting} >
-                        { isSubmitting && <span className="spinner-border spinner-border-sm mr-1" /> }
+                        { isSubmitting && <span className="spinner-border spinner-border-sm me-1" /> }
                         Logga ut
                     </button>
                 </form> :

@@ -1,5 +1,6 @@
 package se.skvf.kaninregister.drive;
 
+import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singleton;
 import static org.apache.commons.io.IOUtils.readLines;
 
@@ -78,15 +79,34 @@ public class GoogleDrive {
 		lastSheets = System.currentTimeMillis();
 	}
 
+	private static ThreadLocal<Boolean> skipDelay = new ThreadLocal<Boolean>();
+	
+	public interface Skipper {
+		void skip() throws IOException;
+	}
+	
+	public static void skipDelay(Skipper skipper) throws IOException {
+		skipDelay.set(true);
+		try {
+			skipper.skip();
+		} finally {
+			skipDelay.remove();
+		}
+	}
+	
 	public synchronized Sheets getSheets() {
-		long sinceLast = System.currentTimeMillis() - lastSheets;
-		if (sinceLast < 1000) {
-			try {
-				Thread.sleep(1000 - sinceLast);
-			} catch (InterruptedException ignored) {
+		Boolean skip = skipDelay.get();
+		if (skip == null || !skip) {
+			long sinceLast = currentTimeMillis() - lastSheets;
+			if (sinceLast < 1000) {
+				try {
+					Thread.sleep(1000 - sinceLast);
+				} catch (InterruptedException ignored) {
+				}
 			}
 		}
-		lastSheets = System.currentTimeMillis();
+		lastSheets = currentTimeMillis();
+		
 		return sheets;
 	}
 
