@@ -201,20 +201,21 @@ const getBunnies = async (owner, successHandler, errorHandler) => {
 
 const createBunny = async (owner, bunny, successHandler, errorHandler) => {
     const data = {};
-    if (bunny.name) data.name = bunny.name;
-    if (bunny.leftEar) data.leftEar = bunny.leftEar;
-    if (bunny.rightEar) data.rightEar = bunny.rightEar;
-    if (bunny.chip) data.chip = bunny.chip;
-    if (bunny.ring) data.ring = bunny.ring;
-    if (bunny.picture) data.picture = bunny.picture;
-    if (bunny.breeder) data.breeder = bunny.breeder;
-    if (bunny.gender) data.gender = bunny.gender;
-    if (bunny.neutered) data.neutered = bunny.neutered;
-    if (bunny.birthDate) data.birthDate = bunny.birthDate;
-    if (bunny.race) data.race = bunny.race;
-    if (bunny.coat) data.coat = bunny.coat;
-    if (bunny.colourMarkings) data.colourMarkings = bunny.colourMarkings;
-    if (bunny.features) data.features = bunny.features;
+    if (bunny.name !== undefined) data.name = bunny.name;
+    if (bunny.leftEar !== undefined) data.leftEar = bunny.leftEar;
+    if (bunny.rightEar !== undefined) data.rightEar = bunny.rightEar;
+    if (bunny.chip !== undefined) data.chip = bunny.chip;
+    if (bunny.ring !== undefined) data.ring = bunny.ring;
+    if (bunny.picture !== undefined) data.picture = bunny.picture;
+    if (bunny.breeder !== undefined) data.breeder = bunny.breeder;
+    if (bunny.previousOwner !== undefined) data.previousOwner = bunny.previousOwner;
+    if (bunny.gender !== undefined) data.gender = bunny.gender;
+    if (bunny.neutered !== undefined) data.neutered = bunny.neutered;
+    if (bunny.birthDate !== undefined) data.birthDate = bunny.birthDate;
+    if (bunny.race !== undefined) data.race = bunny.race;
+    if (bunny.coat !== undefined) data.coat = bunny.coat;
+    if (bunny.colourMarkings !== undefined) data.colourMarkings = bunny.colourMarkings;
+    if (bunny.features !== undefined) data.features = bunny.features;
 
     const response = await fetch(`/api/owners/${owner}/bunnies`, {
         method: 'POST',
@@ -248,20 +249,21 @@ const createBunny = async (owner, bunny, successHandler, errorHandler) => {
 
 const updateBunny = async (owner, bunny, successHandler, errorHandler) => {
     const data = {};
-    if (bunny.name) data.name = bunny.name;
-    if (bunny.leftEar) data.leftEar = bunny.leftEar;
-    if (bunny.rightEar) data.rightEar = bunny.rightEar;
-    if (bunny.chip) data.chip = bunny.chip;
-    if (bunny.ring) data.ring = bunny.ring;
-    if (bunny.picture) data.picture = bunny.picture;
-    if (bunny.breeder) data.breeder = bunny.breeder;
-    if (bunny.gender) data.gender = bunny.gender;
-    if (bunny.neutered) data.neutered = bunny.neutered;
-    if (bunny.birthDate) data.birthDate = bunny.birthDate;
-    if (bunny.race) data.race = bunny.race;
-    if (bunny.coat) data.coat = bunny.coat;
-    if (bunny.colourMarkings) data.colourMarkings = bunny.colourMarkings;
-    if (bunny.features) data.features = bunny.features;
+    if (bunny.name !== undefined) data.name = bunny.name;
+    if (bunny.leftEar !== undefined) data.leftEar = bunny.leftEar;
+    if (bunny.rightEar !== undefined) data.rightEar = bunny.rightEar;
+    if (bunny.chip !== undefined) data.chip = bunny.chip;
+    if (bunny.ring !== undefined) data.ring = bunny.ring;
+    if (bunny.picture !== undefined) data.picture = bunny.picture;
+    if (bunny.breeder !== undefined) data.breeder = bunny.breeder;
+    if (bunny.previousOwner !== undefined) data.previousOwner = bunny.previousOwner;
+    if (bunny.gender !== undefined) data.gender = bunny.gender;
+    if (bunny.neutered !== undefined) data.neutered = bunny.neutered;
+    if (bunny.birthDate !== undefined) data.birthDate = bunny.birthDate;
+    if (bunny.race !== undefined) data.race = bunny.race;
+    if (bunny.coat !== undefined) data.coat = bunny.coat;
+    if (bunny.colourMarkings !== undefined) data.colourMarkings = bunny.colourMarkings;
+    if (bunny.features !== undefined) data.features = bunny.features;
 
     const response = await fetch(`/api/owners/${owner}/bunnies/${bunny.id}`, {
         method: 'PUT',
