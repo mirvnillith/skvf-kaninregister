@@ -29,7 +29,7 @@ const ActivationForm = (props) => {
     const {
         handleSubmit,
         handleChange,
-        handleCheckboxChange,
+        handleChangeProvideValue,
         values,
         errors,
         isSubmitting
@@ -93,7 +93,7 @@ const ActivationForm = (props) => {
                                 name="autoLogin"
                                 type="checkbox"
                                 defaultChecked={values.autoLogin}
-                                onChange={handleCheckboxChange}
+                                onChange={(event => handleChangeProvideValue(event, event.target.checked))}
                             />
                         </div>
                     </div>

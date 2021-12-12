@@ -33,7 +33,7 @@ const RegisterForm = (props) => {
     const {
         handleSubmit,
         handleChange,
-        handleCheckboxChange,
+        handleChangeProvideValue,
         values,
         errors,
         isSubmitting
@@ -99,7 +99,7 @@ const RegisterForm = (props) => {
                                 name="autoLogin"
                                 type="checkbox"
                                 defaultChecked={values.autoLogin}
-                                onChange={handleCheckboxChange}
+                                onChange={(event => handleChangeProvideValue(event, event.target.checked))}
                             />
                         </div>
                     </div>

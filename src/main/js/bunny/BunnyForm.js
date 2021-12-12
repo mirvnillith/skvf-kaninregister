@@ -41,7 +41,7 @@ const BunnyForm = (props) => {
     const {
         handleSubmit,
         handleChange,
-        handleCheckboxChange,
+        handleChangeProvideValue,
         values,
         errors,
         isSubmitting
@@ -165,7 +165,7 @@ const BunnyForm = (props) => {
                                     name="neutered"
                                     type="checkbox"
                                     defaultChecked={values.neutered}
-                                    onChange={handleCheckboxChange}
+                                    onChange={(event => handleChangeProvideValue(event, event.target.checked))}
                                 />
                             </div>
                         </div>

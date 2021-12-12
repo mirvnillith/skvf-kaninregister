@@ -39,7 +39,7 @@ const RecoverPasswordForm = (props) => {
 	const {
         handleSubmit,
         handleChange,
-        handleCheckboxChange,
+        handleChangeProvideValue,
         values,
         errors,
         isSubmitting
@@ -105,7 +105,7 @@ const RecoverPasswordForm = (props) => {
                                 name="autoLogin"
                                 type="checkbox"
 								checked={values.autoLogin}
-                                onChange={handleCheckboxChange}
+                                onChange={(event => handleChangeProvideValue(event, event.target.checked))}
                             />
                         </div>
                     </div>
