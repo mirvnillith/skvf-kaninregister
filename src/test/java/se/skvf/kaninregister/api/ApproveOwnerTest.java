@@ -92,7 +92,7 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		api.approveOwner(owner.getId());
 		
 		verify(response).setHeader("Location", signing.getTransactionUrl());
-		verify(response).setStatus(ACCEPTED.getStatusCode());
+		verify(response).sendError(ACCEPTED.getStatusCode(), "");
 		verify(sessions).setAttribute(session, SESSION_SIGNING, signing);
 		when(sessions.getAttribute(session, SESSION_SIGNING)).thenReturn(signing);
 		return signing;
@@ -135,7 +135,7 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		
 		api.approveOwner(owner.getId());
 		
-		verify(response, times(2)).setStatus(ACCEPTED.getStatusCode());
+		verify(response, times(2)).sendError(ACCEPTED.getStatusCode(), "");
 		verify(registry, never()).update(ownerArgument.capture());
 	}
 	

@@ -797,7 +797,9 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	private void clearSigning(String session, Signing signing) {
-		signingService.clearSigning(signing.getToken());
+		Optional.ofNullable(signing)
+			.map(Signing::getToken)
+			.ifPresent(signingService::clearSigning);
 		sessions.setAttribute(session, SESSION_SIGNING, null);
 	}
 
