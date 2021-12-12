@@ -102,7 +102,7 @@ public class AddoSigningServiceOfflineTest extends BunnyTest {
 		
 		assertThat(service.getSignature(token))
 			.extracting("subject", "signature")
-			.containsExactly(subject, fromString(subject).toString());
+			.containsExactly(subject, token);
 		
 		assertThat(service.getSignature(token)).isNull();
 	}
