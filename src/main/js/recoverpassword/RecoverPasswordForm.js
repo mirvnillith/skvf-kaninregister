@@ -39,7 +39,7 @@ const RecoverPasswordForm = (props) => {
 	const {
         handleSubmit,
         handleChange,
-        handleBlur,
+        handleCheckboxChange,
         values,
         errors,
         isSubmitting

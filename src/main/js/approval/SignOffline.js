@@ -17,13 +17,13 @@ const SignOffline = (_) => {
 		notifyInfo("Stäng nu denna sidan och gå tillbaka till där du tryckte på länken");
     }
 
-    const submitForm = async (subject, success) => {
+    const submitHandler = (values) => {
         clearNotifications();
-        await signOffline(params.token, {subject, success}, onSigned(success), notifyError);
+        return signOffline(params.token, values, () => onSigned(values.success), notifyError);
     }
 
     return (
-        <SignOfflineForm submitForm={submitForm}/>
+        <SignOfflineForm submitHandler={submitHandler}/>
     );
 }
 
