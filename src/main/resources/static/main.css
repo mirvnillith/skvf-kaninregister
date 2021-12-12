@@ -56,3 +56,7 @@ legend {
 	width: 100px;
 	height: 100px;
 }
+
+.alert {
+	padding-bottom: 0;
+}
