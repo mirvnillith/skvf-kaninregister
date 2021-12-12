@@ -2,59 +2,63 @@ import React, {useState, useEffect} from 'react';
 import Spinner from 'react-bootstrap/Spinner'
 import { approve } from '../utils/api';
 import ApprovalFailed from "./ApprovalFailed";
-import { useSession, useSessionUpdater } from "../hooks/SessionContext";
+import { useSession } from "../hooks/SessionContext";
 import { useNotificationUpdater } from "../hooks/NotificationContext";
 import { Navigate } from "react-router-dom";
 import ApprovalOngoing from "./ApprovalOngoing";
 
-const checkApprove = (props) => {
+const checkApprove = (_) => {
     const session = useSession();
     const [loading, setLoading] = useState(true);
-    const [approved, setApproved] = useState(false);
+    const [approved, setApproved] = useState(session.user.approved);
     const [approvalOngoing, setApprovalOngoing] = useState(undefined);
-    const [_, { notifyError } ] = useNotificationUpdater();
+    const [__, { notifyError } ] = useNotificationUpdater();
 
     const setError = (message) => {
-        setLoading(false);
         notifyError(message)
+        setLoading(false);
     }
 
     const approvedOwnerHandler = () => {
-        setLoading(false);
-        setApproved(true);
+        session.user.approved = true;
+		setApproved(true);
         setApprovalOngoing(undefined);
+        setLoading(false);
     }
 
     const approvalFailedHandler = () => {
-        setLoading(false);
-        setApproved(false);
+		setApproved(false);
         setApprovalOngoing(undefined);
+        setLoading(false);
     }
 
     const approvalOngoingHandler = (location) => {
-        setLoading(false);
-        setApproved(false);
         setApprovalOngoing(location);
+        setLoading(false);
     }
 
     useEffect(() => {
-        approve(session.user.id, approvedOwnerHandler, approvalFailedHandler, approvalOngoingHandler, setError);
+        if (!approved) {
+			approve(session.user.id, approvedOwnerHandler, approvalFailedHandler, approvalOngoingHandler, setError);
+		}
     }, []);
 
-    return (<div>
+    return (approved
+		? <Navigate to="/bunnies" replace />
+		: <div>
             {loading
                 ? <Spinner animation="border" role="status">
                     <span className="visually-hidden">laddar innehåll...</span>
                 </Spinner>
-                : approved
-                    ? <Navigate to="/bunnies"/>
-                    : approvalOngoing !== undefined
+                : approved 
+					? <Navigate to="/bunnies" replace />
+					: approvalOngoing !== undefined
                         ? <ApprovalOngoing approvalOngoing={approvalOngoing}
                                            approvedOwnerHandler={approvedOwnerHandler}
                                            approvalFailedHandler={approvalFailedHandler}
                                            approvalOngoingHandler={approvalOngoingHandler}
                                            setError={setError}/>
-                        : <ApprovalFailed setNotification={props.setNotification}/>}
+                        : <ApprovalFailed />}
         </div>
     );
 }

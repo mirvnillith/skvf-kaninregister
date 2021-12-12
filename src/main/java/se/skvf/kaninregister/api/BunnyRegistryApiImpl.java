@@ -6,6 +6,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.CONFLICT;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
@@ -13,7 +14,6 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
-import static javax.ws.rs.core.Response.Status.TEMPORARY_REDIRECT;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -32,10 +32,8 @@ import static se.skvf.kaninregister.model.Owner.newOwner;
 import static se.skvf.kaninregister.model.Owner.otherByUserName;
 
 import java.io.IOException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -53,13 +51,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 
 import se.skvf.kaninregister.addo.AddoSigningService;
@@ -86,12 +83,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	@Autowired
 	private AddoSigningService signingService;
 	
-	@Value("${skvf.approval.url:}")
-	private String approvalUrl;
-	
-	void setApprovalUrl(String approvalUrl) {
-		this.approvalUrl = approvalUrl;
-	}
 	
 	@Context
 	private HttpServletRequest request;
@@ -199,6 +190,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setBreederName(owner.getBreederName());
 		dto.setBreederEmail(owner.getBreederEmail());
 		dto.setPublicBreeder(owner.isPublicBreeder());
+		dto.setApproved(owner.isApproved());
 		return dto;
 	}
 	
@@ -771,11 +763,13 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				Signing signing = sessions.getAttribute(session, SESSION_SIGNING);
 				
 				if (signing == null) {
-					if (isNotEmpty(approvalUrl)) {
-						signing = signingService.startSigning(new URL(approvalUrl));
+					signing = signingService.startSigning();
+					if (signing != null && isNotEmpty(signing.getTransactionUrl())) {
 						sessions.setAttribute(session, SESSION_SIGNING, signing);
 						redirect(signing.getTransactionUrl());
+						return Void.class;
 					} else {
+						clearSigning(session, signing);
 						registry.update(owner.setSignature("-"));
 					}
 				} else {
@@ -783,8 +777,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 					if (signed.isPresent()) {
 						if (signed.get()) {
 							Signature signature = signingService.getSignature(signing.getToken());
-							registry.update(owner.setSignature(approvalUrl + " (" + signature.getSubject() + "@" + timestamp() + ") "+signature.getSignature()));							
+							clearSigning(session, signing);
+							registry.update(owner.setSignature(signature.getUrl() + " (" + signature.getSubject() + "@" + timestamp() + ") "+signature.getSignature()));							
 						} else {
+							clearSigning(session, signing);
 							throw new WebApplicationException(NO_CONTENT);
 						}
 					} else {
@@ -800,9 +796,14 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		});
 	}
 
-	private void redirect(String url) {
+	private void clearSigning(String session, Signing signing) {
+		signingService.clearSigning(signing.getToken());
+		sessions.setAttribute(session, SESSION_SIGNING, null);
+	}
+
+	private void redirect(String url) throws IOException {
 		response.setHeader("Location", url);
-		response.setStatus(TEMPORARY_REDIRECT.getStatusCode());
+		response.sendError(ACCEPTED .getStatusCode(), "");
 	}
 	
 	private static String timestamp() {

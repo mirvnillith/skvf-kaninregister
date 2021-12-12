@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
+import { useSession } from "../hooks/SessionContext";
 
 const Bunny = (props) => {
 	
@@ -29,7 +30,7 @@ const Bunny = (props) => {
 	return (
 	<div>
 		<div className="bunny-row d-flex">
-			<a href={picture} target="_blank"><img className="bunny-picture self-align-start" src={picture}/></a>
+			<a href={picture} rel="noopener noreferrer" target="_blank"><img className="bunny-picture self-align-start" src={picture}/></a>
 			<span className="w-100">
 			<div className="bunny-name extra-large">
 				{props.bunny.name}
@@ -68,6 +69,7 @@ const BunniesForm = (props) => {
     const [confirm, setConfirm] = useState(false);
     const [remove, setRemove] = useState(false);
 
+	const session = useSession();
 	const navigate = useNavigate();
 		
     return (
@@ -75,7 +77,10 @@ const BunniesForm = (props) => {
 		<div className="row">
 			<div className="col-md-12 align-self-center p-4">
 				<h2 className="text-center dark"> Mina kaniner </h2>
-				<button className="btn btn-primary float-end" onClick={() => navigate("/bunny")} disabled={confirm || remove}>Jag har en ny märkt kanin</button>
+				{session.user.approved
+					? <button className="btn btn-primary float-end" onClick={() => navigate("/bunny")} disabled={confirm || remove}>Jag har en ny märkt kanin</button>
+					: null
+				}
 			</div>
 			<BunnyList bunnies={props.bunnies} confirm={confirm} setConfirm={setConfirm} removeBunny={props.removeBunny} remove={remove} setRemove={setRemove}/>
 		</div>

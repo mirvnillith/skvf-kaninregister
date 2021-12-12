@@ -4,7 +4,7 @@ import static java.util.UUID.randomUUID;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
-import static javax.ws.rs.core.Response.Status.TEMPORARY_REDIRECT;
+import static javax.ws.rs.core.Response.Status.ACCEPTED;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.atLeastOnce;
@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
+import se.skvf.kaninregister.addo.NoSigning;
 import se.skvf.kaninregister.addo.Signature;
 import se.skvf.kaninregister.addo.Signing;
 import se.skvf.kaninregister.model.Owner;
@@ -39,6 +40,8 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		assertThat(owner.isActivated()).isTrue();
 		assertThat(owner.isApproved()).isFalse();
 		
+		when(signingService.startSigning()).thenReturn(new NoSigning());
+		
 		api.approveOwner(owner.getId());
 		
 		verify(registry).update(ownerArgument.capture());
@@ -54,8 +57,6 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		
 		URL url = new URL("http://localhost");
 		
-		setApprovalUrl(url.toString());
-		
 		Owner owner = mockOwner()
 				.setUserName(randomUUID().toString())
 				.setPassword(randomUUID().toString());
@@ -63,13 +64,13 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		
 		assertThat(owner.isApproved()).isFalse();
 		
-		Signing signing = assertStartSigning(session, owner, url);
+		Signing signing = assertStartSigning(session, owner);
 		
 		when(signingService.checkSigning(signing.getToken())).thenReturn(Optional.of(true));
 		
 		String subject = randomUUID().toString();
 		String signature = randomUUID().toString();
-		when(signingService.getSignature(signing.getToken())).thenReturn(new Signature(subject, signature));
+		when(signingService.getSignature(signing.getToken())).thenReturn(new Signature(url.toString(), subject, signature));
 		
 		api.approveOwner(owner.getId());
 		
@@ -84,14 +85,14 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		assertThat(updatedOwner.isApproved()).isTrue();
 	}
 
-	private Signing assertStartSigning(String session, Owner owner, URL url) throws IOException {
+	private Signing assertStartSigning(String session, Owner owner) throws IOException {
 		Signing signing = new Signing(randomUUID().toString(), randomUUID().toString(), randomUUID().toString());
-		when(signingService.startSigning(url)).thenReturn(signing);
+		when(signingService.startSigning()).thenReturn(signing);
 		
 		api.approveOwner(owner.getId());
 		
 		verify(response).setHeader("Location", signing.getTransactionUrl());
-		verify(response).setStatus(TEMPORARY_REDIRECT.getStatusCode());
+		verify(response).setStatus(ACCEPTED.getStatusCode());
 		verify(sessions).setAttribute(session, SESSION_SIGNING, signing);
 		when(sessions.getAttribute(session, SESSION_SIGNING)).thenReturn(signing);
 		return signing;
@@ -100,10 +101,6 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 	@Test
 	public void approve_failure() throws IOException {
 		
-		URL url = new URL("http://localhost");
-		
-		setApprovalUrl(url.toString());
-		
 		Owner owner = mockOwner()
 				.setUserName(randomUUID().toString())
 				.setPassword(randomUUID().toString());
@@ -111,7 +108,7 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		
 		assertThat(owner.isApproved()).isFalse();
 		
-		Signing signing = assertStartSigning(session, owner, url);
+		Signing signing = assertStartSigning(session, owner);
 		
 		when(sessions.getAttribute(session, SESSION_SIGNING)).thenReturn(signing);
 		when(signingService.checkSigning(signing.getToken())).thenReturn(Optional.of(false));
@@ -124,10 +121,6 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 	@Test
 	public void approve_ongoing() throws IOException {
 		
-		URL url = new URL("http://localhost");
-		
-		setApprovalUrl(url.toString());
-		
 		Owner owner = mockOwner()
 				.setUserName(randomUUID().toString())
 				.setPassword(randomUUID().toString());
@@ -135,14 +128,14 @@ public class ApproveOwnerTest extends BunnyRegistryApiTest {
 		
 		assertThat(owner.isApproved()).isFalse();
 		
-		Signing signing = assertStartSigning(session, owner, url);
+		Signing signing = assertStartSigning(session, owner);
 		
 		when(sessions.getAttribute(session, SESSION_SIGNING)).thenReturn(signing);
 		when(signingService.checkSigning(signing.getToken())).thenReturn(Optional.empty());
 		
 		api.approveOwner(owner.getId());
 		
-		verify(response, times(2)).setStatus(TEMPORARY_REDIRECT.getStatusCode());
+		verify(response, times(2)).setStatus(ACCEPTED.getStatusCode());
 		verify(registry, never()).update(ownerArgument.capture());
 	}
 	

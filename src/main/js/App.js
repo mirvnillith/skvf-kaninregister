@@ -24,6 +24,7 @@ import {
     SessionProvider
 } from "./hooks/SessionContext";
 import CheckApproval from "./approval/CheckApproval";
+import SignOffline from "./approval/SignOffline";
 import Notifications from "./common/Notifications";
 import { NotificationProvider } from "./hooks/NotificationContext";
 import ChangePassword from "./changepassword/ChangePassword";
@@ -78,6 +79,7 @@ const App = () => {
                     <Route path="/bunny" element={<RequiresSession element={ <Bunny /> }/>}/>
                     <Route path="/bunny/:bunnyId" element={<RequiresSession element={ <Bunny /> }/>}/>
                     <Route path="/activation/:ownerId" element={<Activation />} />
+                    <Route path="/signOffline/:token" element={<SignOffline />} />
                     <Route path="/*" element={<Navigate replace to="/" />} />
                 </Route>
               </Routes>

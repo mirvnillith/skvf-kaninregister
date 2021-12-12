@@ -10,6 +10,7 @@ import static se.skvf.kaninregister.addo.OfflineSigning.OFFLINE_URL;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -42,10 +43,15 @@ public class AddoSigningServiceOfflineTest extends BunnyTest {
 	@Captor
 	private ArgumentCaptor<InitiateSigningRequestDTO> signingRequest;
 	
+	@BeforeEach
+	public void setup() {
+		service.setApprovalUrl("pdf");
+	}
+	
 	@Test
 	public void startSigning() throws Exception {
 		
-		Signing signing = service.startSigning(null);
+		Signing signing = service.startSigning();
 		assertThat(signing.getToken())
 			.isNotNull();
 		assertThat(signing.getTransactionUrl())
@@ -53,11 +59,23 @@ public class AddoSigningServiceOfflineTest extends BunnyTest {
 			.endsWith(signing.getToken());
 	}
 	
+	@Test
+	public void noSigning() throws Exception {
+		
+		service.setApprovalUrl("");
+		
+		Signing signing = service.startSigning();
+		assertThat(signing.getToken())
+			.isNull();
+		assertThat(signing.getTransactionUrl())
+			.isNull();
+	}
+	
 	@ParameterizedTest
 	@MethodSource("signingStatusScenarios")
 	public void checkSigning(Boolean state, Optional<Boolean> expectedStatus) throws Exception {
 		
-		String token = service.startSigning(null).getToken();
+		String token = service.startSigning().getToken();
 		
 		if (state != null) {
 			service.setSigningState(token, null, state);
@@ -77,7 +95,7 @@ public class AddoSigningServiceOfflineTest extends BunnyTest {
 	@Test
 	public void getSignature() throws Exception {
 		
-		String token = service.startSigning(null).getToken();
+		String token = service.startSigning().getToken();
 		String subject = randomUUID().toString();
 		
 		service.setSigningState(token, subject, true);

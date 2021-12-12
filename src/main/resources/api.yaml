@@ -245,7 +245,7 @@ paths:
           description: Owner approved
         '204':
           description: Approval failed
-        '307':
+        '202':
           description: Approval ongoing, show Location to user  
         '401':
           description: Session required, of owner
@@ -675,6 +675,9 @@ components:
               type: boolean
             publicBreeder:
               type: boolean
+            approved:
+              type: boolean
+              readOnly: true
             
     LoginDTO:
        type: object

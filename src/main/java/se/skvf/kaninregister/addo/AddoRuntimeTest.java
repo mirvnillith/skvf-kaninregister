@@ -10,7 +10,8 @@ class AddoRuntimeTest {
 
 	void test(AddoSigningService service) throws IOException {
 		
-		Signing signing = service.startSigning(new File("src/test/resources/minimal.pdf").toURI().toURL());
+		service.setApprovalUrl(new File("src/test/resources/minimal.pdf").toURI().toURL().toString());
+		Signing signing = service.startSigning();
 		System.out.println(signing.getTransactionUrl());
 		
 		Optional<Boolean> status = null;
