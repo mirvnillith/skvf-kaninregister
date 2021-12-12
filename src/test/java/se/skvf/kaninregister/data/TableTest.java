@@ -3,18 +3,23 @@ package se.skvf.kaninregister.data;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.skvf.kaninregister.data.Table.ID;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +50,10 @@ public class TableTest extends BunnyTest {
 		
 		attribute1 = randomUUID().toString();
 		attribute2 = randomUUID().toString();
-		when(sheet.getColumn(anyString())).thenAnswer(i -> "Column" + i.getArgument(0));
+		when(sheet.getColumns(any())).thenAnswer(i -> {
+			Collection<String> names = i.getArgument(0);
+			return names.stream().collect(toMap(identity(), "Column"::concat));
+		});
 		
 		table = new Table(sheet, asList(attribute1, attribute2));
 		

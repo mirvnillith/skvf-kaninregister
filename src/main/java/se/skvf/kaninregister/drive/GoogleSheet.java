@@ -85,27 +85,6 @@ public class GoogleSheet {
 		return columns;
 	}
 	
-	public String getColumn(String columnName) throws IOException {
-
-		ValueRange data = spreadsheet.getApi().spreadsheets().values()
-				.get(spreadsheet.id, range(TOP_ROW))
-				.execute();
-		if (data.getValues() == null || data.getValues().isEmpty()) {
-			formatHeaders();
-			return createColumn(columnName, 0);
-		} else {
-			
-			List<Object> row = data.getValues().get(0);
-			for (int i = 0; i < row.size(); i++) {
-				if (columnName.equals(row.get(i).toString())) {
-					return column(i);
-				}
-			}
-
-			return createColumn(columnName, row.size());
-		}
-	}
-
 	private String range(String a1Range) {
 		return "'" + name + "'!" + a1Range;
 	}

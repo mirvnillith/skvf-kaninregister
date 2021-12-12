@@ -2,13 +2,17 @@ package se.skvf.kaninregister.data;
 
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.skvf.kaninregister.data.Database.NAME;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -45,7 +49,10 @@ public class DatabaseTest extends BunnyTest {
 		
 		when(drive.getSpreadsheet(NAME)).thenReturn(spreadsheet);
 		when(spreadsheet.getSheet(name)).thenReturn(sheet);
-		when(sheet.getColumn(anyString())).thenAnswer(i -> "Column" + i.getArgument(0));
+		when(sheet.getColumns(any())).thenAnswer(i -> {
+			Collection<String> names = i.getArgument(0);
+			return names.stream().collect(toMap(identity(), "Column"::concat));
+		});
 		String sheetName = randomUUID().toString();
 		when(sheet.getName()).thenReturn(sheetName);
 		

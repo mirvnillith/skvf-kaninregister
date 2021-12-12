@@ -2,8 +2,11 @@ package se.skvf.kaninregister.migration;
 
 import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
@@ -30,6 +33,7 @@ import static se.skvf.kaninregister.migration.OldRegistry.RING;
 import static se.skvf.kaninregister.migration.OldRegistry.STREET_ADDRESS;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -102,8 +106,14 @@ public class OldRegistryTest extends BunnyTest {
 		columns.put(RING, randomUUID().toString());
 		columns.put(STREET_ADDRESS, randomUUID().toString());
 		
-		when(ownerSheet.getColumn(anyString())).then(i -> columns.get(i.getArgument(0)));
-		when(breederSheet.getColumn(anyString())).then(i -> columns.get(i.getArgument(0)));
+		when(ownerSheet.getColumns(any())).thenAnswer(i -> {
+			Collection<String> names = i.getArgument(0);
+			return names.stream().collect(toMap(identity(), columns::get));
+		});
+		when(breederSheet.getColumns(any())).thenAnswer(i -> {
+			Collection<String> names = i.getArgument(0);
+			return names.stream().collect(toMap(identity(), columns::get));
+		});
 	}
 	
 	@Test
