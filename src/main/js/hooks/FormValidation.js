@@ -24,17 +24,10 @@ const useFormValidation = (initialState, validate, submitHandler) => {
         });
     }
 
-    const handleInvertedChange = (event) => {
+    const handleChangeProvideValue = (event, value) => {
         setValues({
             ...values,
-            [event.target.name]: !event.target.value
-        });
-    }
-
-    const handleCheckboxChange = (event) => {
-        setValues({
-            ...values,
-            [event.target.name]: event.target.checked
+            [event.target.name]: value
         });
     }
 
@@ -53,8 +46,7 @@ const useFormValidation = (initialState, validate, submitHandler) => {
     return {
         handleSubmit,
         handleChange,
-        handleCheckboxChange,
-        handleInvertedChange,
+        handleChangeProvideValue,
         handleBlur,
         values,
         errors,

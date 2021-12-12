@@ -37,7 +37,7 @@ const OwnerForm = (props) => {
     const {
         handleSubmit,
         handleChange,
-        handleCheckboxChange,
+        handleChangeProvideValue,
         values,
         errors,
         isSubmitting
@@ -87,7 +87,7 @@ const OwnerForm = (props) => {
                                     name="publicOwner"
                                     type="checkbox"
                                     defaultChecked={values.publicOwner}
-                                    onChange={handleCheckboxChange}
+                                    onChange={(event => handleChangeProvideValue(event, event.target.checked))}
                                 />
                             </div>
                         </div>
@@ -140,7 +140,8 @@ const OwnerForm = (props) => {
                                        name="publicBreeder"
                                        type="checkbox"
                                        defaultChecked={values.publicBreeder}
-                                       onChange={handleCheckboxChange}/>
+                                       onChange={(event => handleChangeProvideValue(event, event.target.checked))}
+                                />
                             </div>
                         </div>
                         <div className="row mb-2">

@@ -21,7 +21,7 @@ const SignOfflineForm = (props) => {
     const {
         handleSubmit,
         handleChange,
-        handleInvertedChange,
+        handleChangeProvideValue,
         values,
         errors,
         isSubmitting
@@ -43,7 +43,7 @@ const SignOfflineForm = (props) => {
                                 type="radio"
                                 className="form-check-input me-3"
 								checked={values.success}
-                                onChange={handleChange}
+                                onChange={(event => handleChangeProvideValue(event, event.target.checked))}
                             />
 							<label htmlFor="success" className="form-check-label">
 								Lyckad signering. Namn på den som signerar:
@@ -68,7 +68,7 @@ const SignOfflineForm = (props) => {
                                 type="radio"
                                 className="form-check-input me-3"
 								checked={!values.success}
-                                onChange={handleInvertedChange}
+                                onChange={(event) => handleChangeProvideValue(event, !event.target.checked)}
                             />
 							<label htmlFor="failure" className="form-check-label">
 								Misslyckad signering
