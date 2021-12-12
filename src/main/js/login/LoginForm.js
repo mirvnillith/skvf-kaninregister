@@ -1,22 +1,34 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
+import useFormValidation from "../hooks/FormValidation";
+
+const INITIAL_STATE = {
+    user: "",
+    pwd: ""
+};
+
+const validate = (values) => {
+    const errors = {};
+
+    if (!values.user) {
+        errors.user = "Du måste ange ett användarnamn!";
+    }
+    if (!values.pwd) {
+        errors.pwd = "Du måste ange ett lösenord!";
+    }
+
+    return errors;
+}
 
 const LoginForm = (props) => {
 
-    const [user, setUser] = useState("");
-    const [pwd, setPwd] = useState("");
-    const [isValidated, setIsValidated] = useState(false);
-    const [submit, setSubmit] = useState(true);
-
-    const submitHandler = async (e) => {
-		setSubmit(false);
-        e.preventDefault();
-        setIsValidated(true);
-        if (user && pwd) {
-            await props.submitForm(user, pwd);
-        }
-		setSubmit(true);
-    }
+    const {
+        handleSubmit,
+        handleChange,
+        values,
+        errors,
+        isSubmitting
+    } = useFormValidation(INITIAL_STATE, validate, props.submitHandler);
 
     return (
         <div className="row py-2">
@@ -24,32 +36,35 @@ const LoginForm = (props) => {
                 <h2>Logga in</h2>
             </div>
             <div className="col-md-12">
-                <form onSubmit={submitHandler}>
+                <form onSubmit={handleSubmit} >
                     <div className="row mb-2">
-                        <label htmlFor="userName" className="col-md-6 col-form-label">Användarnamn</label>
+                        <label htmlFor="user" className="col-md-6 col-form-label">Användarnamn</label>
                         <div className="col-md-6">
                             <input autoFocus
-                                type="text"
-                                className={isValidated && user === "" ? "form-control is-invalid" : "form-control"}
-                                id="username"
-                                autoComplete="username"
-                                onChange={e => setUser(e.target.value)}
+                                   id="user"
+                                   name="user"
+                                   type="text"
+                                   value={values.user}
+                                   className={errors.user ? "form-control is-invalid" : "form-control"}
+                                   autoComplete="username"
+                                   onChange={handleChange}
                             />
+                            {errors.user && <div className="invalid-feedback">{errors.user}</div>}
                         </div>
                     </div>
                     <div className="row mb-2">
-                        <label htmlFor="password" className="col-md-6 col-form-label">Lösenord</label>
+                        <label htmlFor="pwd" className="col-md-6 col-form-label">Lösenord</label>
                         <div className="col-md-6">
                             <input
+                                id="pwd"
+                                name="pwd"
                                 type="password"
-                                className={isValidated && pwd === "" ? "form-control is-invalid" : "form-control"}
-                                id="password"
-                                autoComplete="current-password"
-                                onChange={e => setPwd(e.target.value)}
+                                value={values.pwd}
+                                className={errors.pwd ? "form-control is-invalid" : "form-control"}
+                                onChange={handleChange}
+                                autoComplete="new-password"
                             />
-                        </div>
-                        <div className="invalid-feedback">
-                            Ogiltigt lösenord!
+                            {errors.pwd && <div className="invalid-feedback">{errors.pwd}</div>}
                         </div>
                     </div>
                     <div className="row mb-2">
@@ -61,7 +76,10 @@ const LoginForm = (props) => {
                             </p>
                         </div>
                         <div className="col-sm-4">
-                            <button type="submit" className="btn btn-primary float-end" disabled={!submit}>Logga in</button>
+                            <button type="submit" className="btn btn-primary float-end"  disabled={isSubmitting} >
+                                { isSubmitting && <span className="spinner-border spinner-border-sm me-1" /> }
+                                Logga in
+                            </button>
                         </div>
                     </div>
                     <div className="row mb-2">

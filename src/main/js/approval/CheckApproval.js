@@ -2,13 +2,14 @@ import React, {useState, useEffect} from 'react';
 import Spinner from 'react-bootstrap/Spinner'
 import { approve } from '../utils/api';
 import ApprovalFailed from "./ApprovalFailed";
-import { useSession } from "../hooks/SessionContext";
+import {useSession, useSessionUpdater} from "../hooks/SessionContext";
 import { useNotificationUpdater } from "../hooks/NotificationContext";
 import { Navigate } from "react-router-dom";
 import ApprovalOngoing from "./ApprovalOngoing";
 
 const checkApprove = (_) => {
     const session = useSession();
+    const updateSession = useSessionUpdater();
     const [loading, setLoading] = useState(true);
     const [approved, setApproved] = useState(session.user.approved);
     const [approvalOngoing, setApprovalOngoing] = useState(undefined);
@@ -20,7 +21,13 @@ const checkApprove = (_) => {
     }
 
     const approvedOwnerHandler = () => {
-        session.user.approved = true;
+        updateSession({
+            ...session,
+            user: {
+                ...session.user,
+                approved: true
+            }
+        });
 		setApproved(true);
         setApprovalOngoing(undefined);
         setLoading(false);

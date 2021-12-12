@@ -1,24 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
+import useFormValidation from "../hooks/FormValidation";
+
+const INITIAL_STATE = {
+    subject: "",
+    success: true
+};
+
+const validate = (values) => {
+    const errors = {};
+
+    if (values.success && !values.subject) {
+        errors.subject = "Du måste ange ett namn!";
+    }
+
+    return errors;
+}
 
 const SignOfflineForm = (props) => {
-    const [subject, setSubject] = useState("");
-    const [success, setSuccess] = useState(true);
-    const [isValidated, setIsValidated] = useState(false);
-    const [submit, setSubmit] = useState(true);
 
-    const submitHandler = async (e) => {
-		setSubmit(false);
-		e.preventDefault();
-        setIsValidated(true);
-        if (!success || subject) {
-            await props.submitForm(subject, success);
-        }
-		setSubmit(true);
-    }
+    const {
+        handleSubmit,
+        handleChange,
+        handleInvertedChange,
+        values,
+        errors,
+        isSubmitting
+    } = useFormValidation(INITIAL_STATE, validate, props.submitHandler);
 
     return (
         <div className="row py-2">
-            <form onSubmit={submitHandler} >
+            <form onSubmit={handleSubmit} >
                 <div className="col-md-12 mb-5">
                     <h2>Fejkad signering</h2>
 					Den här sidan är istället för en riktig BankID-signering i Addo för att kunna testa signeringsflödet.
@@ -27,35 +38,37 @@ const SignOfflineForm = (props) => {
                     <div className="row mb-2">
                         <div className="col-md-12">
                             <input
+                                id="success"
+                                name="success"
                                 type="radio"
                                 className="form-check-input me-3"
-								checked={success}
-                                id="success"
-                                onChange={e => setSuccess(e.target.value)}
+								checked={values.success}
+                                onChange={handleChange}
                             />
 							<label htmlFor="success" className="form-check-label">
 								Lyckad signering. Namn på den som signerar:
 							</label>
                             <input
-                                type="text"
-                                className={ "form-control ms-5 w-50"+(isValidated && success && subject === "" ? " is-invalid" : "") }
                                 id="subject"
-								disabled={!success}
-                                onChange={e => setSubject(e.target.value)}
+                                name="subject"
+                                type="text"
+                                value={values.subject}
+                                className={"form-control ms-5 w-50" + (errors.subject ? " is-invalid" : "")}
+								disabled={!values.success}
+                                onChange={handleChange}
                             />
-                            <div className="invalid-feedback ms-5">
-                                Du måste ange ett namn!
-                            </div>
+                            {errors.subject && <div className="invalid-feedback ms-5">{errors.subject}</div>}
 						</div>
                     </div>
                     <div className="row mb-2">
                         <div className="col-md-12">
                             <input
+                                id="failure"
+                                name="success"
                                 type="radio"
                                 className="form-check-input me-3"
-								checked={!success}
-                                id="failure"
-                                onChange={e => setSuccess(!e.target.value)}
+								checked={!values.success}
+                                onChange={handleInvertedChange}
                             />
 							<label htmlFor="failure" className="form-check-label">
 								Misslyckad signering
@@ -67,7 +80,10 @@ const SignOfflineForm = (props) => {
                             <p className="mb-0">&nbsp;</p>
                         </div>
                         <div className="col-sm-4">
-                            <button type="submit" className="btn btn-primary float-start" disabled={!submit} >Signera</button>
+                            <button type="submit" className="btn btn-primary float-start" disabled={isSubmitting} >
+                                { isSubmitting && <span className="spinner-border spinner-border-sm me-1" /> }
+                                Signera
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,6 @@
 package se.skvf.kaninregister.migration;
 
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -298,10 +299,6 @@ public class OldRegistry {
 	}
 
 	private Map<String, String> mapColumns(GoogleSheet sheet, String... headers) throws IOException {
-		Map<String, String> columns = new HashMap<>();
-		for (String header : headers) {
-			columns.put(header, sheet.getColumn(header));
-		}
-		return columns;
+		return sheet.getColumns(asList(headers));
 	}
 }

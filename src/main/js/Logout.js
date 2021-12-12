@@ -3,6 +3,7 @@ import { logoutUser } from './utils/api';
 import { useNavigate } from "react-router-dom";
 import {useSession, useSessionUpdater} from "./hooks/SessionContext";
 import { useNotificationUpdater } from "./hooks/NotificationContext";
+import useFormValidation from "./hooks/FormValidation";
 
 const Logout = (_) => {
     const navigate = useNavigate();
@@ -15,16 +16,25 @@ const Logout = (_) => {
 		navigate("/login");
     }
 
-    const logoutHandler = (e) => {
-        e.preventDefault();
+    const logoutHandler = (_) => {
         clearNotifications();
-        logoutUser(onSuccessfulLogout, notifyError);
+        return logoutUser(onSuccessfulLogout, notifyError);
     }
+
+    const {
+        handleSubmit,
+        isSubmitting
+    } = useFormValidation({}, () => { return {}}, logoutHandler);
 
     return (
         <div>
             {session ?
-                <button className="btn btn-secondary float-end" onClick={logoutHandler}>Logga ut</button> :
+                <form onSubmit={handleSubmit} >
+                    <button className="btn btn-secondary float-end" disabled={isSubmitting} >
+                        { isSubmitting && <span className="spinner-border spinner-border-sm me-1" /> }
+                        Logga ut
+                    </button>
+                </form> :
                 null
             }
         </div>

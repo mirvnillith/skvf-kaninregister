@@ -91,7 +91,7 @@ const ChangePasswordForm = (props) => {
                         <div className="col-sm-6 align-self-end" />
                         <div className="col-sm-6">
                             <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting} >
-                                { isSubmitting && <span className="spinner-border spinner-border-sm me-1"></span> }
+                                { isSubmitting && <span className="spinner-border spinner-border-sm me-1" /> }
                                 Ändra ditt lösenord</button>
                             <button type="cancel" className="btn btn-secondary float-end me-2" disabled={isSubmitting} onClick={props.cancelHandler}>Avbryt</button>
                         </div>

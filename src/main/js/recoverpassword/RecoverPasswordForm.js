@@ -25,7 +25,8 @@ const validate = (values) => {
     if (!values.pwd2 || values.pwd !== values.pwd2) {
         errors.pwd2 = "Du måste upprepa ditt nya lösenord!";
     }
-	if (!values.chip && !values.leftEar && !values.rightEar && !values.ring) {
+    const oneIdentifier = values.chip || values.leftEar || values.rightEar || values.ring;
+    if (!oneIdentifier) {
 		errors.chip = "Du måste ange minst en märkning!"
 		errors.leftEar = "Du måste ange minst en märkning!"
 		errors.rightEar = "Du måste ange minst en märkning!"
@@ -38,7 +39,7 @@ const RecoverPasswordForm = (props) => {
 	const {
         handleSubmit,
         handleChange,
-        handleBlur,
+        handleCheckboxChange,
         values,
         errors,
         isSubmitting
@@ -104,7 +105,7 @@ const RecoverPasswordForm = (props) => {
                                 name="autoLogin"
                                 type="checkbox"
 								checked={values.autoLogin}
-                                onChange={handleChange}
+                                onChange={handleCheckboxChange}
                             />
                         </div>
                     </div>

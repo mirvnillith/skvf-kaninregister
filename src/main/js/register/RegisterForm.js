@@ -1,86 +1,105 @@
-import React, { useState } from 'react';
-import { Link } from "react-router-dom";
+import React from 'react';
+import {Link} from "react-router-dom";
+import useFormValidation from "../hooks/FormValidation";
+
+const INITIAL_STATE = {
+    user: "",
+    pwd: "",
+    pwd2: "",
+    autoLogin: true
+};
+
+const validate = (values) => {
+    const errors = {};
+
+    if (!values.user) {
+        errors.user = "Du måste ange ett användarnamn!";
+    }
+    if (!values.pwd) {
+        errors.pwd = "Du måste ange ett lösenord!";
+    }
+    if (!values.pwd2) {
+        errors.pwd2 = "Du måste ange ett lösenord!";
+    }
+    if (values.pwd !== values.pwd2) {
+        errors.pwd2 = "Du måste upprepa ditt lösenord!";
+    }
+
+    return errors;
+}
 
 const RegisterForm = (props) => {
-    const [user, setUser] = useState("");
-    const [pwd, setPwd] = useState("");
-    const [pwd2, setPwd2] = useState("");
-    const [autoLogin, setAutoLogin] = useState(true);
-    const [isValidPwd, setIsValidPwd] = useState(true);
-    const [isValidated, setIsValidated] = useState(false);
-    const [submit, setSubmit] = useState(true);
 
-    const submitHandler = async (e) => {
-		setSubmit(false);
-        e.preventDefault();
-        setIsValidated(true);
-        setIsValidPwd(pwd === pwd2);
-        if (user && pwd && pwd2 && isValidPwd) {
-            await props.submitForm(user, pwd, autoLogin);
-        }
-		setSubmit(true);
-    }
+    const {
+        handleSubmit,
+        handleChange,
+        handleCheckboxChange,
+        values,
+        errors,
+        isSubmitting
+    } = useFormValidation(INITIAL_STATE, validate, props.submitHandler);
 
     return (
         <div className="row py-2">
-            <form onSubmit={submitHandler} >
+            <form onSubmit={handleSubmit}>
                 <div className="col-md-12">
-                    <h2 >Registrera dig</h2>
+                    <h2>Registrera dig</h2>
                 </div>
                 <div className="col-md-12">
                     <div className="row mb-2">
-                        <label htmlFor="userName" className="col-md-6 col-form-label">Användarnamn</label>
+                        <label htmlFor="user" className="col-md-6 col-form-label">Användarnamn</label>
                         <div className="col-md-6">
                             <input autoFocus
-                                type="text"
-                                className={isValidated && user === "" ? "form-control is-invalid" : "form-control"}
-                                id="userName"
-                                autoComplete="username"
-                                onChange={e => setUser(e.target.value)}
+                                   id="user"
+                                   name="user"
+                                   type="text"
+                                   value={values.user}
+                                   className={errors.user ? "form-control is-invalid" : "form-control"}
+                                   autoComplete="username"
+                                   onChange={handleChange}
                             />
-                            <div className="invalid-feedback">
-                                Du måste ange ett användarnamn!
-                            </div>
+                            {errors.user && <div className="invalid-feedback">{errors.user}</div>}
                         </div>
                     </div>
                     <div className="row mb-2">
-                        <label htmlFor="password" className="col-md-6 col-form-label">Lösenord</label>
+                        <label htmlFor="pwd" className="col-md-6 col-form-label">Lösenord</label>
                         <div className="col-md-6">
                             <input
+                                id="pwd"
+                                name="pwd"
                                 type="password"
-                                className={isValidated && pwd === "" ? "form-control is-invalid" : "form-control"}
-                                id="password"
+                                value={values.pwd}
+                                className={errors.pwd ? "form-control is-invalid" : "form-control"}
+                                onChange={handleChange}
                                 autoComplete="new-password"
-                                onChange={e => setPwd(e.target.value)}
                             />
-                            <div className="invalid-feedback">
-                                Du måste ange ett lösenord!
-                            </div>
+                            {errors.pwd && <div className="invalid-feedback">{errors.pwd}</div>}
                         </div>
                     </div>
                     <div className="row mb-2">
-                        <label htmlFor="password2" className="col-md-6 col-form-label">Upprepa lösenord</label>
+                        <label htmlFor="pwd2" className="col-md-6 col-form-label">Upprepa lösenord</label>
                         <div className="col-md-6">
                             <input
+                                id="pwd2" 
+								name="pwd2"
                                 type="password"
-                                className={isValidPwd ? "form-control" : "form-control is-invalid"}
-                                id="password2"
+                                value={values.pwd2}
+                                className={errors.pwd2 ? "form-control is-invalid" : "form-control"}
+                                onChange={handleChange}
                                 autoComplete="new-password"
-                                onChange={e => setPwd2(e.target.value)}
                             />
-                            <div className="invalid-feedback">
-                                Du måste upprepa ditt lösenord!
-                            </div>
+                            {errors.pwd2 && <div className="invalid-feedback">{errors.pwd2}</div>}
                         </div>
                     </div>
                     <div className="row mb-2">
                         <label htmlFor="autoLogin" className="col-md-6 col-form-label">Logga in automatiskt efter registrering</label>
                         <div className="col-md-6">
                             <input
-                                type="checkbox"
-								defaultChecked={autoLogin}
                                 id="autoLogin"
-                                onChange={e => setAutoLogin(e.target.checked)}
+                                name="autoLogin"
+                                type="checkbox"
+                                defaultChecked={values.autoLogin}
+                                onChange={handleCheckboxChange}
                             />
                         </div>
                     </div>
@@ -93,7 +112,10 @@ const RegisterForm = (props) => {
                             </p>
                         </div>
                         <div className="col-sm-4">
-                            <button type="submit" className="btn btn-primary float-end" disabled={!submit} >Registrera dig</button>
+                            <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting}>
+                                {isSubmitting && <span className="spinner-border spinner-border-sm me-1"/>}
+                                Registrera dig
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -48,7 +48,6 @@ public class GoogleSpreadsheet {
 		for (Sheet sheet : spreadsheet.getSheets()) {
 			String sheetTitle = sheet.getProperties().getTitle();
 			int sheetId = sheet.getProperties().getSheetId();
-			LOG.info(sheetTitle + " (" + sheetId + ")");
 			if (sheetTitle.equals(DEFAULT_SHEET)) {
 				setName(sheet, sheetName);
 				protect(sheet);
