@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import BunniesForm from './BunniesForm';
 import { useSession } from "../hooks/SessionContext";
 import { getBunnies, deleteBunny } from "../utils/api";
-import Spinner from "react-bootstrap/Spinner";
 import { useNotificationUpdater } from "../hooks/NotificationContext";
 
 const Bunnies = (props) => {
@@ -33,7 +32,7 @@ const Bunnies = (props) => {
 	
     return (
 		bunnies === undefined
-		? <Spinner animation="border" role="status"> <span className="visually-hidden">laddar innehåll...</span> </Spinner>
+		? <BunniesForm />
 		: <BunniesForm bunnies={bunnies} removeBunny={removeBunny}/>
     );
 }

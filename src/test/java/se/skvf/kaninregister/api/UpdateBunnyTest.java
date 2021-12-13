@@ -153,7 +153,7 @@ public class UpdateBunnyTest extends BunnyRegistryApiTest {
 	}
 	
 	@Test
-	public void updateBunny_otherBreeder() throws IOException {
+	public void updateBunny_noBreeder() throws IOException {
 		
 		Owner owner = mockOwner()
 				.setSignature(randomUUID().toString());
@@ -167,7 +167,7 @@ public class UpdateBunnyTest extends BunnyRegistryApiTest {
 		
 		BunnyDTO dto = new BunnyDTO();
 		dto.setName(randomUUID().toString());
-		dto.setBreeder(randomUUID().toString());
+		dto.setBreeder("");
 		
 		dto = api.updateBunny(owner.getId(), bunny.getId(), dto);
 		
@@ -278,5 +278,22 @@ public class UpdateBunnyTest extends BunnyRegistryApiTest {
 		dto.setName(randomUUID().toString());
 		
 		assertError(NOT_FOUND, () -> api.updateBunny(ownerId, bunny.getId(), dto));
+	}
+	
+	@Test
+	public void updateBunny_otherBreeder() throws IOException {
+		
+		String ownerId = mockOwner()
+				.setSignature("-")
+				.getId();
+		mockSession(ownerId);
+		
+		Bunny bunny = mockBunny();
+		bunny.setOwner(ownerId);
+		
+		BunnyDTO dto = new BunnyDTO();
+		dto.setBreeder(randomUUID().toString());
+		
+		assertError(BAD_REQUEST, () -> api.updateBunny(ownerId, bunny.getId(), dto));
 	}
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useSession } from "../hooks/SessionContext";
+import Spinner from "react-bootstrap/Spinner";
 
 const Bunny = (props) => {
 	
@@ -80,12 +81,15 @@ const BunniesForm = (props) => {
 		<div className="row">
 			<div className="col-md-12 align-self-center p-4">
 				<h2 className="text-center dark"> Mina kaniner </h2>
-				{session.user.approved
+				{(props.bunnies !== undefined && session.user.approved)
 					? <button className="btn btn-primary float-end" onClick={() => navigate("/bunny")} disabled={confirm || remove}>Jag har en ny märkt kanin</button>
 					: null
 				}
 			</div>
-			<BunnyList bunnies={props.bunnies} confirm={confirm} setConfirm={setConfirm} removeBunny={props.removeBunny} remove={remove} setRemove={setRemove}/>
+			{props.bunnies === undefined
+			?	<Spinner animation="border" role="status"> <span className="visually-hidden">laddar innehåll...</span> </Spinner>
+			:	<BunnyList bunnies={props.bunnies} confirm={confirm} setConfirm={setConfirm} removeBunny={props.removeBunny} remove={remove} setRemove={setRemove}/>
+			}
 		</div>
 	</div>
     );
