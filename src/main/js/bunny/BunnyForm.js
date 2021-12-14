@@ -1,5 +1,6 @@
 import React from 'react';
 import useFormValidation from "../hooks/FormValidation";
+import { useSession} from "../hooks/SessionContext";
 
 const validate = (values) => {
     const errors = {};
@@ -21,6 +22,7 @@ const validate = (values) => {
 
 const BunnyForm = (props) => {
 
+	const session = useSession();
 
 	const initialState = {
 	    name: props.bunny.name ? props.bunny.name : "",
@@ -36,7 +38,8 @@ const BunnyForm = (props) => {
 	    coat: props.bunny.coat ? props.bunny.coat : "",
 	    colourMarkings: props.bunny.colourMarkings ? props.bunny.colourMarkings : "",
 	    features: props.bunny.features ? props.bunny.features : "",
-	    ownerBreeder: false
+	    ownerBreeder: props.bunny.breeder === session.user.id,
+	    clearBreeder: false
 	};
 	
 	
@@ -240,23 +243,62 @@ const BunnyForm = (props) => {
                             </div>
                         </div>
 					</fieldset>
+					<fieldset>
+                    <legend>Uppfödare</legend>
 					{props.bunny.id === undefined
-					?	<fieldset>
-                        	<legend>Uppfödare</legend>
-                    		<div className="row mb-2">
-                        		<label htmlFor="ownerBreeder" className="col-md-6 col-form-label">Jag är uppfödaren</label>
-                       	 		<div className="col-md-6">
-                            		<input
-                               			id="ownerBreeder"
-                               			name="ownerBreeder"
-                                		type="checkbox"
-										defaultChecked={values.ownerBreeder}
-                                    	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
-                            		/>
-                        		</div>
-                    		</div>
-						</fieldset>
-					:	null}
+					?	<div className="row mb-2">
+	                    	<label htmlFor="ownerBreeder" className="col-md-6 col-form-label">Jag är uppfödaren</label>
+	                     	<div className="col-md-6">
+	                       		<input
+	                          			id="ownerBreeder"
+	                          			name="ownerBreeder"
+	                           		type="checkbox"
+								defaultChecked={values.ownerBreeder}
+	                               	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
+	                       		/>
+	                    	</div>
+	                   </div>
+					:	(props.breeder !== undefined)
+							?	<div>
+								<div className="row mb-2">
+									<label htmlFor="breederName" className="col-md-6 col-form-label">Namn</label>
+	                       	 		<div className="col-md-6" id="breederName">
+										{props.breeder.name}
+									</div>
+								</div>
+								<div className="row mb-2">
+									<label htmlFor="breederEmail" className="col-md-6 col-form-label">E-post</label>
+	                       	 		<div className="col-md-6" id="breederEmail">
+										{props.breeder.email}
+									</div>
+								</div>
+								<div className="row mb-2">
+	                        		<label htmlFor="clearBreeder" className="col-md-6 col-form-label">Radera information om kaninens uppfödare</label>
+	                       	 		<div className="col-md-6">
+	                            		<input
+	                               			id="clearBreeder"
+	                               			name="clearBreeder"
+	                                		type="checkbox"
+											defaultChecked={values.clearBreeder}
+	                                    	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
+	                            		/>
+	                        		</div>
+	                    		</div>
+								</div>
+							:	<div className="row mb-2">
+	                        		<label htmlFor="ownerBreeder" className="col-md-6 col-form-label">Jag är uppfödaren</label>
+	                       	 		<div className="col-md-6">
+	                            		<input
+	                               			id="ownerBreeder"
+	                               			name="ownerBreeder"
+	                                		type="checkbox"
+											defaultChecked={values.ownerBreeder}
+	                                    	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
+	                            		/>
+	                        		</div>
+	                    		</div>
+					}
+					</fieldset>
                     <div className="row mt-2">
                         <div className="col-sm-8"/>
                         <div className="col-sm-4">
