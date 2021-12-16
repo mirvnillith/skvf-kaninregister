@@ -45,10 +45,18 @@ const Bunny = (props) => {
 							Bekräfta avregistrering
 						</button>
 					</div>
-				:	<div className="h-100 d-flex justify-content-end">
-						<button className="btn btn-warning me-2 float-end mt-auto" onClick={confirmHandler} disabled={props.confirm}>Avregistrera</button>
-						<button className="btn btn-primary float-end mt-auto" onClick={(_) => navigate('/bunny/'+props.bunny.id)} disabled={props.confirm}>Ändra</button>
-					</div>
+				:	props.bunny.claimToken
+					?	<div className="h-100 d-flex justify-content-end">
+							<span className="btn-align align-middle">
+							Överlåtelsekod:&nbsp;<code className="bunny-token">{props.bunny.claimToken}</code>
+							</span>
+							<button className="btn btn-primary float-end mt-auto ms-3" onClick={(_) => navigate('/reclaim/'+props.bunny.id)} disabled={props.confirm}>Återta</button>
+						</div>
+					:	<div className="h-100 d-flex justify-content-end">
+							<button className="btn btn-warning me-2 float-end mt-auto" onClick={confirmHandler} disabled={props.confirm}>Avregistrera</button>
+							<button className="btn btn-secondary me-2 float-end mt-auto" onClick={(_) => navigate('/transfer/'+props.bunny.id)} disabled={props.confirm}>Ägarbyte</button>
+							<button className="btn btn-primary float-end mt-auto" onClick={(_) => navigate('/bunny/'+props.bunny.id)} disabled={props.confirm}>Ändra</button>
+						</div>
 			}
 			</div>
             </span>
@@ -80,9 +88,12 @@ const BunniesForm = (props) => {
 	<div>
 		<div className="row">
 			<div className="col-md-12 align-self-center p-4">
-				<h2 className="text-center dark"> Mina kaniner </h2>
+				<h2 className="text-center dark mb-3"> Mina kaniner </h2>
 				{(props.bunnies !== undefined && session.user.approved)
-					? <button className="btn btn-primary float-end" onClick={() => navigate("/bunny")} disabled={confirm || remove}>Jag har en ny märkt kanin</button>
+					? <span>
+						<button className="btn btn-primary float-end" onClick={() => navigate("/bunny")} disabled={confirm || remove}>Jag har en ny märkt kanin</button>
+						<button className="btn btn-secondary float-end me-2" onClick={() => navigate("/claim")} disabled={confirm || remove}>Jag har tagit över en registrerad kanin</button>
+					  </span>
 					: null
 				}
 			</div>

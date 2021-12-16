@@ -86,13 +86,14 @@ const ActivationForm = (props) => {
                         </div>
                     </div>
                     <div className="row mb-2">
-                        <label htmlFor="autoLogin" className="col-md-6 col-form-label">Logga in automatiskt efter aktivering</label>
+                        <label htmlFor="autoLogin" className="col-md-6 form-heck-label">Logga in automatiskt efter aktivering</label>
                         <div className="col-md-6">
                             <input
                                 id="autoLogin"
                                 name="autoLogin"
                                 type="checkbox"
                                 defaultChecked={values.autoLogin}
+								className="form-check-input"
                                 onChange={(event => handleChangeProvideValue(event, event.target.checked))}
                             />
                         </div>

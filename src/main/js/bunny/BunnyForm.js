@@ -163,12 +163,13 @@ const BunnyForm = (props) => {
                             </div>
                         </div>
                         <div className="row mb-2">
-                            <label htmlFor="neutered" className="col-md-6 col-form-label">Kastrerad</label>
+                            <label htmlFor="neutered" className="col-md-6 form-check-label">Kastrerad</label>
                             <div className="col-md-6">
                                 <input
                                     id="neutered"
                                     name="neutered"
                                     type="checkbox"
+									className="form-check-input"
                                     defaultChecked={values.neutered}
                                     onChange={(event => handleChangeProvideValue(event, event.target.checked))}
                                 />
@@ -247,13 +248,14 @@ const BunnyForm = (props) => {
                     <legend>Uppfödare</legend>
 					{props.bunny.id === undefined
 					?	<div className="row mb-2">
-	                    	<label htmlFor="ownerBreeder" className="col-md-6 col-form-label">Jag är uppfödaren</label>
+	                    	<label htmlFor="ownerBreeder" className="col-md-6 form-check-label">Jag är uppfödaren</label>
 	                     	<div className="col-md-6">
 	                       		<input
 	                          			id="ownerBreeder"
 	                          			name="ownerBreeder"
 	                           		type="checkbox"
 								defaultChecked={values.ownerBreeder}
+									className="form-check-input"
 	                               	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
 	                       		/>
 	                    	</div>
@@ -273,26 +275,28 @@ const BunnyForm = (props) => {
 									</div>
 								</div>
 								<div className="row mb-2">
-	                        		<label htmlFor="clearBreeder" className="col-md-6 col-form-label">Radera information om kaninens uppfödare</label>
+	                        		<label htmlFor="clearBreeder" className="col-md-6 form-check-label">Radera information om kaninens uppfödare</label>
 	                       	 		<div className="col-md-6">
 	                            		<input
 	                               			id="clearBreeder"
 	                               			name="clearBreeder"
 	                                		type="checkbox"
 											defaultChecked={values.clearBreeder}
+											className="form-check-input"
 	                                    	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
 	                            		/>
 	                        		</div>
 	                    		</div>
 								</div>
 							:	<div className="row mb-2">
-	                        		<label htmlFor="ownerBreeder" className="col-md-6 col-form-label">Jag är uppfödaren</label>
+	                        		<label htmlFor="ownerBreeder" className="col-md-6 form-check-label">Jag är uppfödaren</label>
 	                       	 		<div className="col-md-6">
 	                            		<input
 	                               			id="ownerBreeder"
 	                               			name="ownerBreeder"
 	                                		type="checkbox"
 											defaultChecked={values.ownerBreeder}
+											className="form-check-input"
 	                                    	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
 	                            		/>
 	                        		</div>

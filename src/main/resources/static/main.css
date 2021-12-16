@@ -60,3 +60,12 @@ legend {
 .alert {
 	padding-bottom: 0;
 }
+
+.btn-align {
+	padding-top: 0.375rem;
+	padding-bottom: 0.375rem;
+}
+
+.bunny-token {
+	font-size: 1rem;
+}
