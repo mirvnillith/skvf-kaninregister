@@ -449,8 +449,8 @@ const getBunnyBreeder = async (id, successHandler, errorHandler) => {
         method: 'GET'
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200){
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     if (response.status === 204){

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BunnyForm from './BunnyForm';
-import { createBunny, getBunny, updateBunny } from '../utils/api';
+import { createBunny, getBunny, getBunnyBreeder, updateBunny } from '../utils/api';
 import { useNavigate, useParams } from "react-router-dom";
 import { useSession} from "../hooks/SessionContext";
 import { useNotificationUpdater } from "../hooks/NotificationContext";
@@ -9,6 +9,7 @@ import Spinner from "react-bootstrap/Spinner";
 const Bunny = (_) => {
 
     const [bunny, setBunny] = useState();
+    const [bunnyBreeder, setBunnyBreeder] = useState();
 
     const navigate = useNavigate();
     const params = useParams();
@@ -37,10 +38,11 @@ const Bunny = (_) => {
             features: values.features
         }
 
+		if (values.ownerBreeder !== undefined) bunny.breeder = values.ownerBreeder ? session.user.id : "";
+		if (values.clearBreeder) bunny.breeder = "";
 		if (bunny.id) {
         	return updateBunny(session.user.id, bunny, successfulSave, notifyError);			
 		} else {
-			if (values.ownerBreeder) bunny.breeder = session.user.id;
         	return createBunny(session.user.id, bunny, successfulSave, notifyError);
 		}
     }
@@ -50,7 +52,19 @@ const Bunny = (_) => {
         navigate("/bunnies");
     }
 
-    const onBunny = (bunny) => {
+    const onBunnyBreeder = (bunnyBreeder) => {
+		if (bunnyBreeder === undefined) {
+			bunnyBreeder = {
+				name: "Privat", 
+				email: "kaninregistret@skvf.se"}
+		}
+		setBunnyBreeder(bunnyBreeder);
+	}
+	
+    const onBunny = async (bunny) => {
+		if (bunny.breeder && bunny.breeder !== session.user.id) {
+			await getBunnyBreeder(params.bunnyId, onBunnyBreeder, notifyError);
+		}
         setBunny(bunny);
     }
 
@@ -67,7 +81,7 @@ const Bunny = (_) => {
     return (
 		bunny === undefined
 		? <Spinner animation="border" role="status"> <span className="visually-hidden">laddar innehåll...</span> </Spinner>
-        : <BunnyForm bunny={bunny} submitHandler={submitHandler} cancelHandler={cancelHandler}/>
+        : <BunnyForm bunny={bunny} breeder={bunnyBreeder} submitHandler={submitHandler} cancelHandler={cancelHandler}/>
     );
 }
 

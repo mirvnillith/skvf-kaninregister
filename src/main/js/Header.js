@@ -11,11 +11,13 @@ const Header = (props) => {
            <div className="col-sm-4 align-self-center">
 				<h1 className="text-center green"> Kaninregister </h1>
 		   </div>
-           <div className="col-sm-4 align-self-right">
-               <Logout />
-               <Edit />
-           </div>
-       </div>
+			{props.loading
+			? 	null
+           	:	<div className="col-sm-4 align-self-right">
+               		<Logout />
+               		<Edit />
+           		</div>}
+       	</div>
     );
 }
 

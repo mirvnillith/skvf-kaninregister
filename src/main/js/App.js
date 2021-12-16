@@ -63,9 +63,12 @@ const App = () => {
     }, []);
 
     return (loading
-            ? <Spinner animation="border" role="status">
+            ? <div className="container-md px-0">
+            	<Header loading/>
+				<Spinner animation="border" role="status">
                 <span className="visually-hidden">laddar innehåll...</span>
-            </Spinner>
+            	</Spinner>
+			  </div>
             : <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={session === undefined ? <Navigate to="/login" /> : <Navigate to="/bunnies" />} />
