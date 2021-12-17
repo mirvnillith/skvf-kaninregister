@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BunnyForm from './BunnyForm';
-import { createBunny, getBunny, getBunnyBreeder, updateBunny } from '../utils/api';
+import { createBunny, getBunny, getBunnyBreeder, getBunnyPreviousOwner, updateBunny } from '../utils/api';
 import { useNavigate, useParams } from "react-router-dom";
 import { useSession} from "../hooks/SessionContext";
 import { useNotificationUpdater } from "../hooks/NotificationContext";
@@ -10,6 +10,7 @@ const Bunny = (_) => {
 
     const [bunny, setBunny] = useState();
     const [bunnyBreeder, setBunnyBreeder] = useState();
+    const [bunnyPreviousOwner, setBunnyPreviousOwner] = useState();
 
     const navigate = useNavigate();
     const params = useParams();
@@ -61,9 +62,21 @@ const Bunny = (_) => {
 		setBunnyBreeder(bunnyBreeder);
 	}
 	
+    const onBunnyPreviousOwner = (previousOwner) => {
+		if (previousOwner === undefined) {
+			previousOwner = {
+				name: "Privat", 
+				email: "kaninregistret@skvf.se"}
+		}
+		setBunnyPreviousOwner(previousOwner);
+	}
+	
     const onBunny = async (bunny) => {
 		if (bunny.breeder && bunny.breeder !== session.user.id) {
 			await getBunnyBreeder(params.bunnyId, onBunnyBreeder, notifyError);
+		}
+		if (bunny.previousOwner) {
+			await getBunnyPreviousOwner(params.bunnyId, onBunnyPreviousOwner, notifyError);
 		}
         setBunny(bunny);
     }
@@ -81,7 +94,7 @@ const Bunny = (_) => {
     return (
 		bunny === undefined
 		? <Spinner animation="border" role="status"> <span className="visually-hidden">laddar innehåll...</span> </Spinner>
-        : <BunnyForm bunny={bunny} breeder={bunnyBreeder} submitHandler={submitHandler} cancelHandler={cancelHandler}/>
+        : <BunnyForm bunny={bunny} breeder={bunnyBreeder} previousOwner={bunnyPreviousOwner} submitHandler={submitHandler} cancelHandler={cancelHandler}/>
     );
 }
 

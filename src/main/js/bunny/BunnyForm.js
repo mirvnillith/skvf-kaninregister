@@ -39,7 +39,8 @@ const BunnyForm = (props) => {
 	    colourMarkings: props.bunny.colourMarkings ? props.bunny.colourMarkings : "",
 	    features: props.bunny.features ? props.bunny.features : "",
 	    ownerBreeder: props.bunny.breeder === session.user.id,
-	    clearBreeder: false
+	    clearBreeder: false,
+	    clearPreviousOwner: false
 	};
 	
 	
@@ -303,6 +304,42 @@ const BunnyForm = (props) => {
 	                    		</div>
 					}
 					</fieldset>
+
+					{props.previousOwner &&	<fieldset>
+                    <legend>Föregående ägare</legend>
+						<div className="row mb-2">
+							<label htmlFor="previousOwnerName" className="col-md-6 col-form-label">Namn</label>
+	                       		<div className="col-md-6" id="previousOwnerName">
+								{props.previousOwner.name}
+							</div>
+						</div>
+						<div className="row mb-2">
+							<label htmlFor="previousOwnerEmail" className="col-md-6 col-form-label">E-post</label>
+	                       		<div className="col-md-6" id="previousOwnerEmail">
+								{props.previousOwner.email}
+							</div>
+						</div>
+						{props.previousOwner.phone &&
+							<div className="row mb-2">
+								<label htmlFor="previousOwnerPhone" className="col-md-6 col-form-label">Telefon</label>
+		                       		<div className="col-md-6" id="previousOwnerPhone">
+									{props.previousOwner.phone}
+								</div>
+							</div>
+						}
+						<div className="row mb-2">
+	                       	<label htmlFor="clearPreviousOwner" className="col-md-6 col-form-label">Radera information om kaninens föregående ägare</label>
+	                       		<div className="col-md-6">
+	                        		<input
+	                           			id="clearPreviousOwner"
+	                           			name="clearPreviousOwner"
+	                            		type="checkbox"
+										defaultChecked={values.clearPreviousOwner}
+	                                	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
+	                        		/>
+	                       	</div>
+	                    </div>
+					</fieldset>}
                     <div className="row mt-2">
                         <div className="col-sm-8"/>
                         <div className="col-sm-4">
