@@ -8,6 +8,7 @@ import Spinner from "react-bootstrap/Spinner";
 
 const Bunny = (_) => {
 
+    const [loading, setLoading] = useState(false);
     const [bunny, setBunny] = useState();
     const [bunnyBreeder, setBunnyBreeder] = useState();
     const [bunnyPreviousOwner, setBunnyPreviousOwner] = useState();
@@ -41,6 +42,7 @@ const Bunny = (_) => {
 
 		if (values.ownerBreeder !== undefined) bunny.breeder = values.ownerBreeder ? session.user.id : "";
 		if (values.clearBreeder) bunny.breeder = "";
+		if (values.clearPreviousOwner) bunny.previousOwner = "";
 		if (bunny.id) {
         	return updateBunny(session.user.id, bunny, successfulSave, notifyError);			
 		} else {
@@ -82,7 +84,8 @@ const Bunny = (_) => {
     }
 
 	useEffect(() => {
-		if (bunny === undefined) {
+		if (!loading && bunny === undefined) {
+			setLoading(true);
 			if (params.bunnyId) {
 				getBunny(params.bunnyId, onBunny, notifyError);
 			} else {

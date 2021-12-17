@@ -7,7 +7,7 @@ const createOwner = async (user, pwd, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 400) {
@@ -43,7 +43,7 @@ const updateOwner = async (id, owner, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
@@ -69,7 +69,7 @@ const activateOwner = async (id, user, pwd, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 400) {
@@ -94,7 +94,7 @@ const changeUserPassword = async (id, currentPassword, newPassword, successHandl
         body: JSON.stringify({currentPassword, newPassword})
     });
 
-    if (response.status === 204){
+    if (response.status === 204) {
         successHandler();
     }
     else if (response.status === 400) {
@@ -122,7 +122,7 @@ const recoverUser = async (user, pwd, bunnyIdentifiers, successHandler, errorHan
         body: JSON.stringify(data)
     });
 
-    if (response.status === 204){
+    if (response.status === 204) {
         successHandler();
     }
     else if (response.status === 400) {
@@ -146,7 +146,7 @@ const getOwner = async (id, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 204) {
@@ -170,7 +170,7 @@ const getBunny = async (id, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 404) {
@@ -188,7 +188,7 @@ const getBunnies = async (owner, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
@@ -224,7 +224,7 @@ const createBunny = async (owner, bunny, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 400) {
@@ -272,7 +272,7 @@ const updateBunny = async (owner, bunny, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 400) {
@@ -304,7 +304,7 @@ const transferBunny = async (owner, bunny, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
@@ -327,7 +327,7 @@ const claimBunny = async (owner, token, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
@@ -353,7 +353,7 @@ const reclaimBunny = async (id, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 204) {
@@ -388,7 +388,7 @@ const findBunnies = async (criterias, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 204) {
@@ -408,7 +408,7 @@ const deleteBunny = async (owner, bunny, successHandler, errorHandler) => {
         method: 'DELETE'
     });
 
-    if (response.status === 204){
+    if (response.status === 204) {
         successHandler();
     }
     else if (response.status === 401) {
@@ -429,10 +429,10 @@ const getBunnyOwner = async (id, successHandler, errorHandler) => {
     });
 
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
-    }
-    if (response.status === 204){
+    } 
+	else if (response.status === 204) {
         successHandler();
     }
     else if (response.status === 404) {
@@ -449,12 +449,36 @@ const getBunnyBreeder = async (id, successHandler, errorHandler) => {
         method: 'GET'
     });
 
-    if (response.status === 200){
+    if (response.status === 200) {
     	const responseMsg = await response.json();
         successHandler(responseMsg);
-    }
-    if (response.status === 204){
+    } 
+	else if (response.status === 204) {
         successHandler();
+    }
+    else if (response.status === 404) {
+        errorHandler("Okänd kanin!")
+    }
+    else {
+        errorHandler("Något gick fel vid hämtning!")
+    }
+}
+
+const getBunnyPreviousOwner = async (id, successHandler, errorHandler) => {
+
+    const response = await fetch(`/api/bunnies/${id}/previousOwner`, {
+        method: 'GET'
+    });
+
+    if (response.status === 200) {
+    	const responseMsg = await response.json();
+        successHandler(responseMsg);
+    } 
+	else if (response.status === 204) {
+        successHandler();
+    }
+    else if (response.status === 401) {
+        errorHandler("Du måste vara inloggad som kaninens ägare!")
     }
     else if (response.status === 404) {
         errorHandler("Okänd kanin!")
@@ -470,7 +494,7 @@ const deleteOwner = async (id, successHandler, errorHandler) => {
         method: 'DELETE'
     });
 
-    if (response.status === 204){
+    if (response.status === 204) {
         successHandler();
     }
     else if (response.status === 400) {
@@ -495,7 +519,7 @@ const deactivateOwner = async (id, successHandler, errorHandler) => {
         body: JSON.stringify({})
     });
 
-    if (response.status === 204){
+    if (response.status === 204) {
         successHandler();
     }
     else if (response.status === 401) {
@@ -517,7 +541,7 @@ const unapproveOwner = async (id, successHandler, errorHandler) => {
         body: JSON.stringify({})
     });
 
-    if (response.status === 204){
+    if (response.status === 204) {
         successHandler();
     }
     else if (response.status === 401) {
@@ -539,7 +563,7 @@ const existingSession = async (sessionUpdater) => {
         method: 'GET',
         headers: new Headers({'content-type': 'application/json'})
     });
-    if (response.status === 200){
+    if (response.status === 200) {
         const user = await response.json();
         sessionUpdater({user});
     }
@@ -555,7 +579,7 @@ const loginUser = async (user, pwd, successHandler, errorHandler) => {
         body: JSON.stringify({userName: user, password: pwd})
     });
     const responseMsg = await response.json();
-    if (response.status === 200){
+    if (response.status === 200) {
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
@@ -575,7 +599,7 @@ const logoutUser = async (successHandler, errorHandler) => {
         headers: new Headers({'content-type': 'application/json'}),
         body: JSON.stringify({})
     });
-    if (response.status === 204){
+    if (response.status === 204) {
         successHandler();
     }
     else {
@@ -593,7 +617,7 @@ const signOffline = async (token, signature, successHandler, errorHandler) => {
         headers: new Headers({'content-type': 'application/json'}),
         body: JSON.stringify(data)
     });
-    if (response.status === 204){
+    if (response.status === 204) {
         successHandler();
     }
     else {
@@ -608,14 +632,14 @@ const approve = async (id, approvedOwnerHandler, approvalFailedHandler, approval
         body: JSON.stringify({})
     });
 
-    if (response.status === 200){
+    if (response.status === 200) {
         approvedOwnerHandler();
     }
     else if (response.status === 202) {
         const location = response.headers.get('Location')
         approvalOngoingHandler(location)
     }
-    else if (response.status === 204){
+    else if (response.status === 204) {
         approvalFailedHandler();
     }
     else if (response.status === 401) {
@@ -654,5 +678,6 @@ export {
 	reclaimBunny,
 	getBunnyOwner,
 	getBunnyBreeder,
+	getBunnyPreviousOwner,
 	getBunny
 }
