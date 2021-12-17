@@ -86,7 +86,7 @@ const ActivationForm = (props) => {
                         </div>
                     </div>
                     <div className="row mb-2">
-                        <label htmlFor="autoLogin" className="col-md-6 form-heck-label">Logga in automatiskt efter aktivering</label>
+                        <label htmlFor="autoLogin" className="col-md-6 form-check-label">Logga in automatiskt efter aktivering</label>
                         <div className="col-md-6">
                             <input
                                 id="autoLogin"

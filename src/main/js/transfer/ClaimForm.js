@@ -43,7 +43,7 @@ const ReclaimForm = (props) => {
                             className={"form-control" + (errors.token ? " is-invalid" : "")}
                             onChange={handleChange}
                         />
-					{errors.user && <div className="invalid-feedback">{errors.token}</div>}
+					{errors.token && <div className="invalid-feedback">{errors.token}</div>}
                     </div>
                 </div>
 	            <div className="row mt-2">
