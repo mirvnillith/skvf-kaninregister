@@ -9,6 +9,7 @@ import Activation from './activation/Activation'
 import Bunnies from './bunnies/Bunnies'
 import Bunny from './bunny/Bunny'
 import Owner from './owner/Owner'
+import CloseAccount from './closeaccount/CloseAccount'
 import Transfer from './transfer/Transfer'
 import Reclaim from './transfer/Reclaim'
 import Claim from './transfer/Claim'
@@ -77,9 +78,10 @@ const App = () => {
                     <Route index element={session === undefined ? <Navigate to="/login" /> : <Navigate to="/bunnies" />} />
                     <Route path="/login" element={<WithoutSession element={ <Login /> }/>}/>
                     <Route path="/recoverpassword" element={<WithoutSession element={ <RecoverPassword /> }/>}/>
-                    <Route path="/register" element={<WithoutSession element={ <Register /> }/>}/>
+                    <Route path="/register" element={<Register />}/>
                     <Route path="/approval" element={<RequiresSession element={ <CheckApproval /> }/>}/>
                     <Route path="/owner" element={<RequiresSession element={ <Owner /> }/>}/>
+                    <Route path="/closeaccount" element={<RequiresSession element={ <CloseAccount /> }/>}/>
                     <Route path="/changepassword" element={<RequiresSession element={ <ChangePassword /> }/>}/>
                     <Route path="/bunnies" element={<RequiresSession element={ <Bunnies /> }/>}/>
                     <Route path="/bunny" element={<RequiresSession element={ <Bunny /> }/>}/>

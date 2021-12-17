@@ -839,21 +839,21 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public void unapproveOwner(String id) {
-		process(() -> {
+	public OwnerDTO unapproveOwner(String id) {
+		return process(() -> {
 			
 			validateSession(id);
 			Owner owner = validateOwner(id, true);
 
 			registry.update(owner.unapprove());
 			
-			return Void.class;
+			return toDTO(owner);
 		});
 	}
 
 	@Override
-	public void deactivateOwner(String id) {
-		process(() -> {
+	public OwnerDTO deactivateOwner(String id) {
+		return process(() -> {
 			
 			validateSession(id);
 			Owner owner = validateOwner(id, false);
@@ -863,7 +863,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			}
 			removeCookies();
 			
-			return Void.class;
+			return toDTO(owner);
 		});
 	}
 

@@ -31,7 +31,7 @@ public class UnapproveOwnerTest extends BunnyRegistryApiTest {
 		assertThat(owner.isActivated()).isTrue();
 		assertThat(owner.isApproved()).isTrue();
 		
-		api.unapproveOwner(owner.getId());
+		OwnerDTO dto = api.unapproveOwner(owner.getId());
 		
 		verify(registry).update(ownerArgument.capture());
 		
@@ -41,6 +41,8 @@ public class UnapproveOwnerTest extends BunnyRegistryApiTest {
 		assertThat(updatedOwner.isPublicBreeder()).isFalse();
 		assertThat(updatedOwner.isApproved()).isFalse();
 		assertThat(updatedOwner.isActivated()).isTrue();
+		
+		assertOwner(dto, updatedOwner);
 	}
 	
 	@Test

@@ -19,15 +19,16 @@ const Activation = (props) => {
         }
 
         const onFailedLogin = (msg) => {
-			notifySuccess("Aktiveringen lyckades");
 			notifyError(msg);
 			navigate("/login");
         }
 
         return async (_) => {
 			if (autoLogin) {
-           		await loginUser(userName, pwd, onSuccessfulLogin, onFailedLogin);
+ 				notifySuccess("Konto aktiverat, loggar in ...");
+          		await loginUser(userName, pwd, onSuccessfulLogin, onFailedLogin);
 			} else {
+ 				notifySuccess("Konto aktiverat");
 				navigate("/login");
 			}
         }

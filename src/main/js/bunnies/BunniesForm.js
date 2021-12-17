@@ -33,7 +33,7 @@ const Bunny = (props) => {
 		<div className="bunny-row d-flex">
 			<a href={picture} rel="noopener noreferrer" target="_blank"><img className="bunny-picture self-align-start" src={picture}/></a>
 			<span className="w-100">
-			<div className="bunny-name extra-large">
+			<div className={"bunny-name extra-large"+(props.bunny.claimToken?" fst-italic":"")}>
 				{props.bunny.name}
 			</div>
 			<div className="bunny-buttons">

@@ -18,15 +18,16 @@ const Register = (props) => {
         }
 
         const onFailedLogin = (msg) => {
-			notifySuccess("Registrering lyckades");
 			notifyError(msg);
 			navigate("/login");
         }
 
         return async (_) => {
 			if (autoLogin) {
+				notifySuccess("Konto registrerat, loggar in ...");
             	await loginUser(userName, pwd, onSuccessfulLogin, onFailedLogin);
 			} else {
+				notifySuccess("Konto registrerat");
 				navigate("/login");
 			}
         }
