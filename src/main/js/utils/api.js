@@ -297,7 +297,7 @@ const updateBunny = async (owner, bunny, successHandler, errorHandler) => {
 
 const transferBunny = async (owner, bunny, successHandler, errorHandler) => {
 
-    const response = await fetch(`/api/owners/${owner}/bunnies/${bunny.id}/transfer`, {
+    const response = await fetch(`/api/owners/${owner}/bunnies/${bunny}/transfer`, {
         method: 'PUT',
         headers: new Headers({'content-type': 'application/json'}),
         body: JSON.stringify({})
@@ -334,7 +334,7 @@ const claimBunny = async (owner, token, successHandler, errorHandler) => {
         errorHandler("Du måste vara inloggad!")
     }
     else if (response.status === 404) {
-        errorHandler("Okänd överföring!")
+        errorHandler("Okänd överlåtelsekod!")
     }
     else if (response.status === 412) {
         errorHandler("Du måste ha godkänt datahantering!")

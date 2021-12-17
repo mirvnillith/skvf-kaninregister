@@ -80,13 +80,14 @@ const OwnerForm = (props) => {
                     <fieldset>
                         <legend>Kontaktinformation</legend>
                         <div className="row mb-2">
-                            <label htmlFor="publicOwner" className="col-md-6 col-form-label">Synlig som ägare för användare av kaninregistret</label>
+                            <label htmlFor="publicOwner" className="col-md-6 form-check-label">Synlig som ägare för användare av kaninregistret</label>
                             <div className="col-md-6">
                                 <input
                                     id="publicOwner"
                                     name="publicOwner"
                                     type="checkbox"
                                     defaultChecked={values.publicOwner}
+									className="form-check-input"
                                     onChange={(event => handleChangeProvideValue(event, event.target.checked))}
                                 />
                             </div>
@@ -134,13 +135,15 @@ const OwnerForm = (props) => {
                     <fieldset>
                         <legend>Uppfödare</legend>
                         <div className="row mb-2">
-                            <label htmlFor="publicBreeder" className="col-md-6 col-form-label">Synlig som uppfödare för användare av kaninregistret</label>
+                            <label htmlFor="publicBreeder" className="col-md-6 form-check-label">Synlig som uppfödare för användare av kaninregistret</label>
                             <div className="col-md-6">
-                                <input id="publicBreeder"
-                                       name="publicBreeder"
-                                       type="checkbox"
-                                       defaultChecked={values.publicBreeder}
-                                       onChange={(event => handleChangeProvideValue(event, event.target.checked))}
+                                <input 
+									id="publicBreeder"
+                                    name="publicBreeder"
+                                    type="checkbox"
+                                    defaultChecked={values.publicBreeder}
+									className="form-check-input"
+                                    onChange={(event => handleChangeProvideValue(event, event.target.checked))}
                                 />
                             </div>
                         </div>

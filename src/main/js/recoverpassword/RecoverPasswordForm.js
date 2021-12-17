@@ -34,6 +34,7 @@ const validate = (values) => {
 	}
     return errors;
 }
+
 const RecoverPasswordForm = (props) => {
 	
 	const {
@@ -98,13 +99,14 @@ const RecoverPasswordForm = (props) => {
                         </div>
                     </div>
                     <div className="row mb-2">
-                        <label htmlFor="autoLogin" className="col-md-6 col-form-label">Logga in automatiskt efter återställning</label>
+                        <label htmlFor="autoLogin" className="col-md-6 form-check-label">Logga in automatiskt efter återställning</label>
                         <div className="col-md-6">
                             <input
                                 id="autoLogin"
                                 name="autoLogin"
                                 type="checkbox"
-								checked={values.autoLogin}
+								defaultChecked={values.autoLogin}
+								className="form-check-input"
                                 onChange={(event => handleChangeProvideValue(event, event.target.checked))}
                             />
                         </div>

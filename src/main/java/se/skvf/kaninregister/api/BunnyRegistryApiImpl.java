@@ -886,7 +886,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				throw new WebApplicationException(NOT_FOUND);
 			}
 			
-			String newOwnerId = registry.add(newOwner());
+			String newOwnerId = registry.add(newOwner().setName("Ägarbyte"));
 			bunny.setPreviousOwner(ownerId);
 			bunny.setOwner(newOwnerId);
 			registry.update(bunny);
