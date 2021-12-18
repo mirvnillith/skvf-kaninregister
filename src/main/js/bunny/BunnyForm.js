@@ -264,15 +264,11 @@ const BunnyForm = (props) => {
 					:	props.breeder && <div>
 								<div className="row mb-2">
 									<label htmlFor="breederName" className="col-md-6 col-form-label">Namn</label>
-	                       	 		<div className="col-md-6" id="breederName">
-										{props.breeder.name}
-									</div>
+									<label id="breederName" className="col-md-6 col-form-label">{props.breeder.name}</label>
 								</div>
 								<div className="row mb-2">
 									<label htmlFor="breederEmail" className="col-md-6 col-form-label">E-post</label>
-	                       	 		<div className="col-md-6" id="breederEmail">
-										{props.breeder.email}
-									</div>
+	                       	 		<label id="breederEmail" className="col-md-6 col-form-label">{props.breeder.email}</label>
 								</div>
 								<div className="row mb-2">
 	                        		<label htmlFor="clearBreeder" className="col-md-6 form-check-label">Radera information om kaninens uppfödare</label>
@@ -295,27 +291,19 @@ const BunnyForm = (props) => {
                     <legend>Föregående ägare</legend>
 						<div className="row mb-2">
 							<label htmlFor="previousOwnerName" className="col-md-6 col-form-label">Namn</label>
-	                       	<div className="col-md-6" id="previousOwnerName">
-								{props.previousOwner.name}
-							</div>
+							<label id="previousOwnerName" className="col-md-6 col-form-label">{props.previousOwner.name}</label>
 						</div>
 						<div className="row mb-2">
 							<label htmlFor="previousOwnerEmail" className="col-md-6 col-form-label">E-post</label>
-	                       	<div className="col-md-6" id="previousOwnerEmail">
-								{props.previousOwner.email}
-							</div>
+							<label id="previousOwnerEmail" className="col-md-6 col-form-label">{props.previousOwner.email}</label>
 						</div>
 						<div className="row mb-2">
 							<label htmlFor="previousOwnerPhone" className="col-md-6 col-form-label">Telefon</label>
-		                   	<div className="col-md-6" id="previousOwnerPhone">
-								{props.previousOwner.phone}
-							</div>
+							<label id="previousOwnerPhone" className="col-md-6 col-form-label">{props.previousOwner.phone}</label>
 						</div>
 						<div className="row mb-2">
 							<label htmlFor="previousOwnerAddress" className="col-md-6 col-form-label">Adress</label>
-		                   	<div className="col-md-6" id="previousOwnerAddress">
-								{props.previousOwner.address}
-							</div>
+							<label id="previousOwnerAddress" className="col-md-6 col-form-label">{props.previousOwner.address}</label>
 						</div>
 						<div className="row mb-2">
 	                       	<label htmlFor="clearPreviousOwner" className="col-md-6 form-check-label">Radera information om kaninens föregående ägare</label>

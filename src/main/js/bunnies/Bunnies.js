@@ -4,12 +4,12 @@ import { useSession } from "../hooks/SessionContext";
 import { getBunnies, deleteBunny } from "../utils/api";
 import { useNotificationUpdater } from "../hooks/NotificationContext";
 
-const Bunnies = (props) => {
+const Bunnies = (_) => {
 
     const [bunnies, setBunnies] = useState();
 
     const session = useSession();
-    const [_, { notifyError, clearNotifications } ] = useNotificationUpdater();
+    const [__, { notifyError, clearNotifications } ] = useNotificationUpdater();
 
     const onBunnies = (bunnies) => {
         setBunnies(bunnies.bunnies);
