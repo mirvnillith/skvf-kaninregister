@@ -370,6 +370,24 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			return toOwnerDTO(owner);
 		});
 	}
+	
+	@Override
+	public BunnyOwnerDTO getBunnyPreviousOwner(String id) {
+		return process(() -> {
+			
+			Bunny bunny = validateBunny(id);
+			if (bunny == null) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+			validateSession(bunny.getOwner());
+			
+			Owner previousOwner = validateOwner(bunny.getPreviousOwner(), false);
+			if (previousOwner.isNotPublicOwner()) {
+				throw new WebApplicationException(NO_CONTENT);
+			}
+			return toOwnerDTO(previousOwner);
+		});
+	}
 
 	@Override
 	public OwnerDTO getOwner(String id) {

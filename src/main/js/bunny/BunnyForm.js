@@ -39,7 +39,8 @@ const BunnyForm = (props) => {
 	    colourMarkings: props.bunny.colourMarkings ? props.bunny.colourMarkings : "",
 	    features: props.bunny.features ? props.bunny.features : "",
 	    ownerBreeder: props.bunny.breeder === session.user.id,
-	    clearBreeder: false
+	    clearBreeder: false,
+	    clearPreviousOwner: false
 	};
 	
 	
@@ -246,7 +247,7 @@ const BunnyForm = (props) => {
 					</fieldset>
 					<fieldset>
                     <legend>Uppfödare</legend>
-					{props.bunny.id === undefined
+					{(props.bunny.id === undefined || props.breeder === undefined)
 					?	<div className="row mb-2">
 	                    	<label htmlFor="ownerBreeder" className="col-md-6 form-check-label">Jag är uppfödaren</label>
 	                     	<div className="col-md-6">
@@ -259,9 +260,8 @@ const BunnyForm = (props) => {
 	                               	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
 	                       		/>
 	                    	</div>
-	                   </div>
-					:	(props.breeder !== undefined)
-							?	<div>
+						</div>
+					:	props.breeder && <div>
 								<div className="row mb-2">
 									<label htmlFor="breederName" className="col-md-6 col-form-label">Namn</label>
 	                       	 		<div className="col-md-6" id="breederName">
@@ -287,22 +287,50 @@ const BunnyForm = (props) => {
 	                            		/>
 	                        		</div>
 	                    		</div>
-								</div>
-							:	<div className="row mb-2">
-	                        		<label htmlFor="ownerBreeder" className="col-md-6 form-check-label">Jag är uppfödaren</label>
-	                       	 		<div className="col-md-6">
-	                            		<input
-	                               			id="ownerBreeder"
-	                               			name="ownerBreeder"
-	                                		type="checkbox"
-											defaultChecked={values.ownerBreeder}
-											className="form-check-input"
-	                                    	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
-	                            		/>
-	                        		</div>
-	                    		</div>
+						</div>
 					}
 					</fieldset>
+
+					{props.previousOwner &&	<fieldset>
+                    <legend>Föregående ägare</legend>
+						<div className="row mb-2">
+							<label htmlFor="previousOwnerName" className="col-md-6 col-form-label">Namn</label>
+	                       	<div className="col-md-6" id="previousOwnerName">
+								{props.previousOwner.name}
+							</div>
+						</div>
+						<div className="row mb-2">
+							<label htmlFor="previousOwnerEmail" className="col-md-6 col-form-label">E-post</label>
+	                       	<div className="col-md-6" id="previousOwnerEmail">
+								{props.previousOwner.email}
+							</div>
+						</div>
+						<div className="row mb-2">
+							<label htmlFor="previousOwnerPhone" className="col-md-6 col-form-label">Telefon</label>
+		                   	<div className="col-md-6" id="previousOwnerPhone">
+								{props.previousOwner.phone}
+							</div>
+						</div>
+						<div className="row mb-2">
+							<label htmlFor="previousOwnerAddress" className="col-md-6 col-form-label">Adress</label>
+		                   	<div className="col-md-6" id="previousOwnerAddress">
+								{props.previousOwner.address}
+							</div>
+						</div>
+						<div className="row mb-2">
+	                       	<label htmlFor="clearPreviousOwner" className="col-md-6 form-check-label">Radera information om kaninens föregående ägare</label>
+	                       		<div className="col-md-6">
+	                        		<input
+	                           			id="clearPreviousOwner"
+	                           			name="clearPreviousOwner"
+	                            		type="checkbox"
+										defaultChecked={values.clearPreviousOwner}
+										className="form-check-input"
+	                                	onChange={(event => handleChangeProvideValue(event, event.target.checked))}
+	                        		/>
+	                       	</div>
+	                    </div>
+					</fieldset>}
                     <div className="row mt-2">
                         <div className="col-sm-8"/>
                         <div className="col-sm-4">

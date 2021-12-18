@@ -609,6 +609,31 @@ paths:
           description: Bunny has no public owner
         '404':
           description: Bunny not found or has no owner
+  /bunnies/{id}/previousOwner:
+    get:
+      tags: [BunnyRegistry]
+      operationId: getBunnyPreviousOwner
+      summary: Returns any public previous owner of the bunny
+      description: A private owner can still be accessed using its ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Public owner
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/BunnyOwnerDTO'
+        '204':
+          description: Bunny has no public owner
+        '401':
+          description: Session required, of current owner
+        '404':
+          description: Bunny not found or has no previous owner
           
   /bunnies/{id}/breeder:
     get:
