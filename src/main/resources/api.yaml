@@ -222,8 +222,12 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        '200':
           description: Owner deactivated
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/OwnerDTO'
         '401':
           description: Session required, of activated owner
         '404':
@@ -264,8 +268,12 @@ paths:
           schema:
             type: string
       responses:
-        '204':
+        '200':
           description: Owner unapproved
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/OwnerDTO'
         '401':
           description: Session required
         '404':

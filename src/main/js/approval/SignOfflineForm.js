@@ -48,12 +48,12 @@ const SignOfflineForm = (props) => {
 							<label htmlFor="success" className="form-check-label">
 								Lyckad signering. Namn på den som signerar:
 							</label>
-                            <input
+                            <input autoFocus
                                 id="subject"
                                 name="subject"
                                 type="text"
                                 value={values.subject}
-                                className={"form-control ms-5 w-50" + (errors.subject ? " is-invalid" : "")}
+                                className={"form-control ms-5 mt-2 w-50" + (errors.subject ? " is-invalid" : "")}
 								disabled={!values.success}
                                 onChange={handleChange}
                             />

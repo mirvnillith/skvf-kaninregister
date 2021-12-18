@@ -45,7 +45,7 @@ const ActivationForm = (props) => {
                     <div className="row mb-2">
                         <label htmlFor="user" className="col-md-6 col-form-label">Användarnamn</label>
                         <div className="col-md-6">
-                            <input
+                            <input autoFocus
                                 id="user"
                                 name="user"
                                 type="text"

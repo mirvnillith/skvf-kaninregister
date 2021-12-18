@@ -178,6 +178,8 @@ const OwnerForm = (props) => {
                     <div className="row mt-2">
                         <div className="col-sm-8 align-self-end">
                             <Link className="link-primary" to="/changepassword">Vill du byta ditt lösenord?</Link>
+							<br/>
+                            <Link className="link-primary" to="/closeaccount">Vill du avsluta ditt konto?</Link>
                         </div>
                         <div className="col-sm-4">
                             <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting}>

@@ -519,8 +519,9 @@ const deactivateOwner = async (id, successHandler, errorHandler) => {
         body: JSON.stringify({})
     });
 
-    if (response.status === 204) {
-        successHandler();
+    if (response.status === 200){
+    	const responseMsg = await response.json();
+        successHandler(responseMsg);
     }
     else if (response.status === 401) {
         errorHandler("Du måste vara inloggad som denna ägare!")
@@ -541,8 +542,9 @@ const unapproveOwner = async (id, successHandler, errorHandler) => {
         body: JSON.stringify({})
     });
 
-    if (response.status === 204) {
-        successHandler();
+    if (response.status === 200){
+    	const responseMsg = await response.json();
+        successHandler(responseMsg);
     }
     else if (response.status === 401) {
         errorHandler("Du måste vara inloggad som denna ägare!")
