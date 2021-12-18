@@ -376,19 +376,19 @@ const reclaimBunny = async (id, successHandler, errorHandler) => {
     }
 }
 
-const findBunnies = async (criterias, successHandler, errorHandler) => {
+const findBunnies = async (identifiers, successHandler, errorHandler) => {
 	
-	function toPairs(criteria) {
-		return `identifierLocation=${criteria.location}&identifier=${criteria.identifier}`;
+	function toPairs(identifier) {
+		return `identifierLocation=${identifier.location}&identifier=${identifier.identifier}`;
 	}
-	const query = criterias.map(toPairs).join("&");
+	const query = identifiers.map(toPairs).join("&");
 	
     const response = await fetch(`/api/bunnies?${query}`, {
         method: 'GET'
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 204) {
@@ -428,8 +428,8 @@ const getBunnyOwner = async (id, successHandler, errorHandler) => {
         method: 'GET'
     });
 
-    const responseMsg = await response.json();
-    if (response.status === 200) {
+    if (response.status === 200){
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     } 
 	else if (response.status === 204) {

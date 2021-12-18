@@ -4,6 +4,7 @@ import { createBunny, getBunny, getBunnyBreeder, getBunnyPreviousOwner, updateBu
 import { useNavigate, useParams } from "react-router-dom";
 import { useSession} from "../hooks/SessionContext";
 import { useNotificationUpdater } from "../hooks/NotificationContext";
+import { nonPublic } from "../utils/data";
 import Spinner from "react-bootstrap/Spinner";
 
 const Bunny = (_) => {
@@ -57,18 +58,14 @@ const Bunny = (_) => {
 
     const onBunnyBreeder = (bunnyBreeder) => {
 		if (bunnyBreeder === undefined) {
-			bunnyBreeder = {
-				name: "Privat", 
-				email: "kaninregistret@skvf.se"}
+			bunnyBreeder = nonPublic();
 		}
 		setBunnyBreeder(bunnyBreeder);
 	}
 	
     const onBunnyPreviousOwner = (previousOwner) => {
 		if (previousOwner === undefined) {
-			previousOwner = {
-				name: "Privat", 
-				email: "kaninregistret@skvf.se"}
+			previousOwner = nonPublic();
 		}
 		setBunnyPreviousOwner(previousOwner);
 	}

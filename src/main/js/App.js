@@ -13,6 +13,7 @@ import CloseAccount from './closeaccount/CloseAccount'
 import Transfer from './transfer/Transfer'
 import Reclaim from './transfer/Reclaim'
 import Claim from './transfer/Claim'
+import Find from './find/Find'
 import {
     BrowserRouter,
     Routes,
@@ -91,6 +92,7 @@ const App = () => {
                     <Route path="/claim" element={<RequiresSession element={ <Claim /> }/>}/>
                     <Route path="/activation/:ownerId" element={<Activation />} />
                     <Route path="/signOffline/:token" element={<SignOffline />} />
+                    <Route path="/find" element={<Find />} />
                     <Route path="/*" element={<Navigate replace to="/" />} />
                 </Route>
               </Routes>
