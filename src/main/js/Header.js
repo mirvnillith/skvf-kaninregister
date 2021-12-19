@@ -22,8 +22,14 @@ const Header = (props) => {
 			{props.loading
 			? 	null
            	:	<div className="col-sm-4 align-self-right">
-               		<Logout />
-               		<Edit />
+					<div className="w-100">
+               			<Logout />
+               			<Edit />
+					</div>
+					<div className="mt-5">
+						<br/>
+						<span className="float-end"><a href="mailto:jonas201973@gmail.com?Subject=Åsikter om kaninregistret">Åsikter?</a></span>
+					</div>
            		</div>}
        	</div>
     );
