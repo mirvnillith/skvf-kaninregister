@@ -8,11 +8,11 @@ const ApprovalFailed = (_) => {
 			
 			Du har nu två alternativ:
 			<p/>
-			<a href="/approval"><b>Försök igen</b></a>
-			<br/> Det kan ha varit ett tillfälligt fel.
+			<a href="/approval"><h4>Försök igen</h4></a>
+			Det kan ha varit ett tillfälligt fel.
 			<p/>
-			<a href="/bunnies"><b>Fortsätt ändå</b></a>
-			<br/> Även utan signering kan du få se vad du eventuellt redan har i kaninregistret, men du kan inte lägga till eller ändra på något.
+			<a href="/bunnies"><h4>Fortsätt ändå</h4></a>
+			Även utan signering kan du få se vad du eventuellt redan har i kaninregistret, men du kan inte lägga till eller ändra på något.
 		</div>
 	);
 }
