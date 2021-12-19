@@ -31,7 +31,7 @@ const BunnyForm = (props) => {
 	    rightEar: props.bunny.rightEar ? props.bunny.rightEar : "",
 	    ring: props.bunny.ring ? props.bunny.ring : "",
 	    picture: props.bunny.picture ? props.bunny.picture : "",
-	    gender: props.bunny.gender ? props.bunny.gender : "",
+	    gender: props.bunny.gender ? props.bunny.gender : "Unknown",
 	    neutered: props.bunny.neutered ? true : false,
 	    birthDate: props.bunny.birthDate ? props.bunny.birthDate : "",
 	    race: props.bunny.race ? props.bunny.race : "",
@@ -156,10 +156,9 @@ const BunnyForm = (props) => {
                                     value={values.gender}
                                     className="form-select"
                                     onChange={handleChange}>
-                                        <option value=""></option>
+                                        <option value="Unknown">Okänt</option>
                                         <option value="Female">Hona</option>
                                         <option value="Male">Hane</option>
-                                        <option value="Unknown">Okänt</option>
                                 </select>
                             </div>
                         </div>
