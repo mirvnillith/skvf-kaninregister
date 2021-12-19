@@ -80,6 +80,11 @@ const OwnerForm = (props) => {
                     <fieldset>
                         <legend>Kontaktinformation</legend>
                         <div className="row mb-2">
+                            <div className="col-md-12 fst-italic">
+							Detta är vad upphittare av din kanin ska använda för att försöka nå dig, så var frikostig.
+							</div>
+						</div>
+                        <div className="row mb-2">
                             <label htmlFor="publicOwner" className="col-md-6 form-check-label">Synlig som ägare för användare av kaninregistret</label>
                             <div className="col-md-6">
                                 <input
@@ -134,6 +139,11 @@ const OwnerForm = (props) => {
                     </fieldset>
                     <fieldset>
                         <legend>Uppfödare</legend>
+                        <div className="row mb-2">
+                            <div className="col-md-12 fst-italic">
+							När du är angiven som uppfödare av en kanin kan du här välja att visas upp med annat namn och/eller e-post.
+							</div>
+						</div>
                         <div className="row mb-2">
                             <label htmlFor="publicBreeder" className="col-md-6 form-check-label">Synlig som uppfödare för användare av kaninregistret</label>
                             <div className="col-md-6">

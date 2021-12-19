@@ -38,8 +38,11 @@ const ActivationForm = (props) => {
     return (
         <div className="row py-2">
             <form onSubmit={handleSubmit} >
-                <div className="col-md-12">
+                <div className="col-md-12 mb-3">
                     <h2>Aktivera konto</h2>
+					Du är registrerad som kaninägare i registret, men saknar inloggningsuppgifter.
+					Här kan du välja användarnamn och lösenord så du får tillgång till ditt konto
+					och dina kaniner.
                 </div>
                 <div className="col-md-12">
                     <div className="row mb-2">

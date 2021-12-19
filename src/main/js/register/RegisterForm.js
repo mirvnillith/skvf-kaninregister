@@ -42,8 +42,10 @@ const RegisterForm = (props) => {
     return (
         <div className="row py-2">
             <form onSubmit={handleSubmit}>
-                <div className="col-md-12">
+                <div className="col-md-12 mb-3">
                     <h2>Registrera dig</h2>
+					För att registrera dig som ägare i Kaninregistret behöver du ett användarnamn och ett lösenord.
+					När du väl loggat in kan du komplettera med ditt riktiga namn och kontaktuppgifter.
                 </div>
                 <div className="col-md-12">
                     <div className="row mb-2">

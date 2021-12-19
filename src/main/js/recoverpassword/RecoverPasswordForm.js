@@ -49,8 +49,10 @@ const RecoverPasswordForm = (props) => {
     return (
         <div className="row py-2">
             <form onSubmit={handleSubmit} >
-                <div className="col-md-12">
+                <div className="col-md-12 mb-3">
                     <h2 >Återställ ditt lösenord</h2>
+					Om du glömt ditt lösenord kan du här ange ett nytt, om du kan identifiera en kanin
+					du registrerat på dig.
                 </div>
                 <div className="col-md-12">
                     <div className="row mb-2">
