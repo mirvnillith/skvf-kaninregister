@@ -264,7 +264,8 @@ const BunnyForm = (props) => {
 					:	props.breeder && <div>
 								<div className="row mb-2">
 									<label htmlFor="breederName" className="col-md-6 col-form-label">Namn</label>
-									<label id="breederName" className="col-md-6 col-form-label">{props.breeder.name}</label>
+									<label id="breederName" className="col-md-6 col-form-label">{props.breeder.name} 
+									&nbsp;{props.breeder.nonPublic && <Help topic="publicprivate"/>}</label>
 								</div>
 								<div className="row mb-2">
 									<label htmlFor="breederEmail" className="col-md-6 col-form-label">E-post</label>
@@ -291,7 +292,8 @@ const BunnyForm = (props) => {
                     <legend>Föregående ägare</legend>
 						<div className="row mb-2">
 							<label htmlFor="previousOwnerName" className="col-md-6 col-form-label">Namn</label>
-							<label id="previousOwnerName" className="col-md-6 col-form-label">{props.previousOwner.name}</label>
+							<label id="previousOwnerName" className="col-md-6 col-form-label">{props.previousOwner.name} 
+							&nbsp;{props.previousOwner.nonPublic && <Help topic="publicprivate"/>}</label>
 						</div>
 						<div className="row mb-2">
 							<label htmlFor="previousOwnerEmail" className="col-md-6 col-form-label">E-post</label>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import Spinner from "react-bootstrap/Spinner";
 import useFormValidation from "../hooks/FormValidation";
+import Help from "../help/Help";
 
 const INITIAL_STATE = {
     chip: "",
@@ -86,7 +86,8 @@ const Found = (props) => {
 				<legend>Ägare</legend>
 						<div className="row">
 							<label htmlFor="ownerName" className="col-md-6 col-form-label">Namn</label>
-			       	 		<label id="ownerName" className="col-md-6 col-form-label">{details.owner.name}</label>
+			       	 		<label id="ownerName" className="col-md-6 col-form-label">{details.owner.name} 
+							&nbsp;{details.owner.nonPublic && <Help topic="publicprivate"/>}</label>
 						</div>
 						<div className="row">
 							<label htmlFor="ownerEmail" className="col-md-6 col-form-label">E-post</label>

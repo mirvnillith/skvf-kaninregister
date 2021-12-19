@@ -15,6 +15,7 @@ import Reclaim from './transfer/Reclaim'
 import Claim from './transfer/Claim'
 import Find from './find/Find'
 import HelpPicture from './help/HelpPicture'
+import HelpPublicPrivate from './help/HelpPublicPrivate'
 import {
     BrowserRouter,
     Routes,
@@ -95,6 +96,7 @@ const App = () => {
                     <Route path="/signOffline/:token" element={<SignOffline />} />
                     <Route path="/find" element={<Find />} />
                     <Route path="/help/picture" element={<HelpPicture />} />
+                    <Route path="/help/publicprivate" element={<HelpPublicPrivate />} />
                     <Route path="/*" element={<Navigate replace to="/" />} />
                 </Route>
               </Routes>

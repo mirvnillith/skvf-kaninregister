@@ -1,7 +1,8 @@
 import React from 'react';
-import {useSession} from "../hooks/SessionContext";
-import {Link} from "react-router-dom";
+import { useSession } from "../hooks/SessionContext";
+import { Link } from "react-router-dom";
 import useFormValidation from "../hooks/FormValidation";
+import Help from "../help/Help";
 
 const INITIAL_STATE = (session) => {
     return {
@@ -85,7 +86,7 @@ const OwnerForm = (props) => {
 							</div>
 						</div>
                         <div className="row mb-2">
-                            <label htmlFor="publicOwner" className="col-md-6 form-check-label">Synlig som ägare för användare av kaninregistret</label>
+                            <label htmlFor="publicOwner" className="col-md-6 form-check-label">Synlig som ägare för användare av kaninregistret <Help topic="publicprivate"/></label>
                             <div className="col-md-6">
                                 <input
                                     id="publicOwner"
@@ -145,7 +146,7 @@ const OwnerForm = (props) => {
 							</div>
 						</div>
                         <div className="row mb-2">
-                            <label htmlFor="publicBreeder" className="col-md-6 form-check-label">Synlig som uppfödare för användare av kaninregistret</label>
+                            <label htmlFor="publicBreeder" className="col-md-6 form-check-label">Synlig som uppfödare för användare av kaninregistret <Help topic="publicprivate"/></label>
                             <div className="col-md-6">
                                 <input 
 									id="publicBreeder"
