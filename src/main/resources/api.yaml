@@ -386,7 +386,7 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: '#/components/schemas/BunnyList'
+                $ref: '#/components/schemas/OwnerBunnyList'
         '401':
           description: Session required, of owner
           
@@ -790,6 +790,14 @@ components:
           items: 
             $ref: '#/components/schemas/BunnyListDTO'
             
+    OwnerBunnyList:
+      type: object
+      properties:
+        bunnies:
+          type: array
+          items: 
+            $ref: '#/components/schemas/OwnerBunnyListDTO'
+            
     BunnyListDTO:
       type: object
       properties:
@@ -809,10 +817,25 @@ components:
         picture:
           description: URL to picture
           type: string
-        claimToken:
-          type: string
-          readOnly: true
           
+    OwnerBunnyListDTO:
+      allOf:
+        - $ref: '#/components/schemas/BunnyListDTO'
+        - type: object
+          properties:
+            claimToken:
+              type: string
+              readOnly: true
+            gender:
+              $ref: '#/components/schemas/BunnyGender'
+
+    BunnyGender:
+      type: string
+      enum:
+        - Unknown
+        - Female
+        - Male
+    
     BunnyTransferDTO:
       type: object
       properties:
@@ -827,7 +850,7 @@ components:
           
     BunnyDTO:
       allOf:
-        - $ref: '#/components/schemas/BunnyListDTO'
+        - $ref: '#/components/schemas/OwnerBunnyListDTO'
         - type: object
           properties:
             owner:
@@ -837,12 +860,6 @@ components:
               readOnly: true
             breeder:
               type: string
-            gender:
-              type: string
-              enum:
-                - Unknown
-                - Female
-                - Male
             neutered:
               type: boolean
             birthDate:

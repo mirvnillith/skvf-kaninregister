@@ -34,7 +34,7 @@ public class GetOwnerBunniesTest extends BunnyRegistryApiTest {
 		
 		when(registry.findBunnies(filterArgument.capture())).thenReturn(singleton(bunny)).thenReturn(emptyList());
 		
-		BunnyList bunnies = api.getOwnerBunnies(owner.getId());
+		OwnerBunnyList bunnies = api.getOwnerBunnies(owner.getId());
 		
 		assertThat(bunnies.getBunnies())
 			.hasSize(1)

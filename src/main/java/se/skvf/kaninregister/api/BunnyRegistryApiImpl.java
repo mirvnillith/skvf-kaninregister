@@ -51,7 +51,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
@@ -62,7 +61,6 @@ import org.springframework.util.CollectionUtils;
 import se.skvf.kaninregister.addo.AddoSigningService;
 import se.skvf.kaninregister.addo.Signature;
 import se.skvf.kaninregister.addo.Signing;
-import se.skvf.kaninregister.api.BunnyDTO.GenderEnum;
 import se.skvf.kaninregister.model.Bunny;
 import se.skvf.kaninregister.model.Bunny.Gender;
 import se.skvf.kaninregister.model.Bunny.IdentifierLocation;
@@ -186,6 +184,19 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setLeftEar(bunny.getLeftEar());
 		dto.setRightEar(bunny.getRightEar());
 		dto.setRing(bunny.getRing());
+		return dto;
+	}
+	
+	private static OwnerBunnyListDTO toOwnerListDTO(Bunny bunny) {
+		OwnerBunnyListDTO dto = new OwnerBunnyListDTO();
+		dto.setId(bunny.getId());
+		dto.setName(bunny.getName());
+		dto.setPicture(bunny.getPicture());
+		dto.setChip(bunny.getChip());
+		dto.setLeftEar(bunny.getLeftEar());
+		dto.setRightEar(bunny.getRightEar());
+		dto.setRing(bunny.getRing());
+		dto.setGender(toGender(bunny.getGender()));
 		return dto;
 	}
 	
@@ -409,27 +420,27 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public BunnyList getOwnerBunnies(String id) {
+	public OwnerBunnyList getOwnerBunnies(String id) {
 		return process(() -> {
 			
 			validateSession(id);
 			validateOwner(id, false);
 			
-			BunnyList bunnies = toBunnyList(registry.findBunnies(byOwner(id)));
+			OwnerBunnyList bunnies = toOwnerBunnyList(registry.findBunnies(byOwner(id)));
 			addTransferBunnies(bunnies, id);
-			bunnies.getBunnies().sort(comparing(BunnyListDTO::getName));
+			bunnies.getBunnies().sort(comparing(OwnerBunnyListDTO::getName));
 			return bunnies;
 		});
 	}
 
-	private void addTransferBunnies(BunnyList bunnies, String id) throws IOException {
+	private void addTransferBunnies(OwnerBunnyList bunnies, String id) throws IOException {
 		Collection<Bunny> transfers = registry.findBunnies(byPreviousOwner(id));
 		if (transfers.size() > 0) {
 			Set<String> newOwners = transfers.stream().map(Bunny::getOwner).collect(toSet());
 			Map<String, Owner> owners = registry.findOwners(newOwners).stream().collect(toMap(Owner::getId, identity()));
 			for (Bunny transfer : transfers) {
 				if (!owners.get(transfer.getOwner()).isActivated()) {
-					BunnyListDTO dto = toListDTO(transfer);
+					OwnerBunnyListDTO dto = toOwnerListDTO(transfer);
 					dto.setClaimToken(transfer.getOwner());
 					bunnies.getBunnies().add(dto);
 				}
@@ -440,6 +451,12 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private BunnyList toBunnyList(Collection<Bunny> bunnies) {
 		BunnyList list = new BunnyList();
 		list.setBunnies(bunnies.stream().map(BunnyRegistryApiImpl::toListDTO).collect(Collectors.toList()));
+		return list;
+	}
+	
+	private OwnerBunnyList toOwnerBunnyList(Collection<Bunny> bunnies) {
+		OwnerBunnyList list = new OwnerBunnyList();
+		list.setBunnies(bunnies.stream().map(BunnyRegistryApiImpl::toOwnerListDTO).collect(Collectors.toList()));
 		return list;
 	}
 
@@ -591,7 +608,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		}
 	}
 	
-	private static Gender toGender(GenderEnum g) {
+	private static Gender toGender(BunnyGender g) {
 		if (g != null) {
 			switch (g) {
 				case FEMALE:
@@ -605,18 +622,18 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		return null;
 	}
 	
-	private static GenderEnum toGender(Gender g) {
+	private static BunnyGender toGender(Gender g) {
 		if (g != null) {
 			switch (g) {
 				case FEMALE:
-					return GenderEnum.FEMALE;
+					return BunnyGender.FEMALE;
 				case MALE:
-					return GenderEnum.MALE;
+					return BunnyGender.MALE;
 			}
 		}
-		return GenderEnum.UNKNOWN;
+		return BunnyGender.UNKNOWN;
 	}
-
+	
 	private static void update(Owner owner, OwnerDTO dto) {
 		ofNullable(dto.getEmail()).ifPresent(owner::setEmail);
 		ofNullable(dto.getAddress()).ifPresent(owner::setAddress);

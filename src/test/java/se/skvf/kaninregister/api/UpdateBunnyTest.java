@@ -13,8 +13,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static se.skvf.kaninregister.api.BunnyDTO.GenderEnum.FEMALE;
-import static se.skvf.kaninregister.api.BunnyDTO.GenderEnum.UNKNOWN;
+import static se.skvf.kaninregister.api.BunnyGender.FEMALE;
+import static se.skvf.kaninregister.api.BunnyGender.UNKNOWN;
 
 import java.io.IOException;
 

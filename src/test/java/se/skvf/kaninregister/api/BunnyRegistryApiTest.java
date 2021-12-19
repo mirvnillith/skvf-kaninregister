@@ -5,9 +5,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,6 +31,7 @@ import org.mockito.Mock;
 import se.skvf.kaninregister.BunnyTest;
 import se.skvf.kaninregister.addo.AddoSigningService;
 import se.skvf.kaninregister.model.Bunny;
+import se.skvf.kaninregister.model.Bunny.Gender;
 import se.skvf.kaninregister.model.Owner;
 import se.skvf.kaninregister.model.Registry;
 
@@ -151,7 +150,8 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				() -> assertThat(actual.getLeftEar()).isEqualTo(expected.getLeftEar()),
 				() -> assertThat(actual.getRightEar()).isEqualTo(expected.getRightEar()),
 				() -> assertThat(actual.getChip()).isEqualTo(expected.getChip()),
-				() -> assertThat(actual.getRing()).isEqualTo(expected.getRing())
+				() -> assertThat(actual.getRing()).isEqualTo(expected.getRing()),
+				() -> assertGender(actual.getGender(), expected.getGender()) 
 				);
 	}
 	
@@ -164,6 +164,38 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				() -> assertThat(actual.getChip()).isEqualTo(expected.getChip()),
 				() -> assertThat(actual.getRing()).isEqualTo(expected.getRing())
 				);
+	}
+	
+	protected static void assertBunny(Bunny expected, OwnerBunnyListDTO actual) {
+		assertAll(
+				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
+				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
+				() -> assertThat(actual.getLeftEar()).isEqualTo(expected.getLeftEar()),
+				() -> assertThat(actual.getRightEar()).isEqualTo(expected.getRightEar()),
+				() -> assertThat(actual.getChip()).isEqualTo(expected.getChip()),
+				() -> assertThat(actual.getRing()).isEqualTo(expected.getRing()),
+				() -> assertGender(actual.getGender(), expected.getGender())
+				);
+	}
+
+	private static void assertGender(BunnyGender actual, Gender expected) {
+		if (expected == Gender.MALE) {
+			assertThat(actual).isEqualTo(BunnyGender.MALE);
+		} else if (expected == Gender.FEMALE) {
+			assertThat(actual).isEqualTo(BunnyGender.FEMALE);
+		} else {
+			assertThat(actual).isEqualTo(BunnyGender.UNKNOWN);
+		}
+	}
+	
+	private static void assertGender(Gender actual, BunnyGender expected) {
+		if (expected == BunnyGender.MALE) {
+			assertThat(actual).isEqualTo(Gender.MALE);
+		} else if (expected == BunnyGender.FEMALE) {
+			assertThat(actual).isEqualTo(Gender.FEMALE);
+		} else {
+			assertThat(actual).isNull();
+		}
 	}
 
 	protected static void assertOwner(OwnerDTO expected, Owner actual) {
