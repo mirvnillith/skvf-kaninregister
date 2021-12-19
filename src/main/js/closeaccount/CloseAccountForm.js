@@ -52,8 +52,7 @@ const CloseAccountForm = (props) => {
 			Du har {session.user.approved ? "tre":"två"} alternativ när det gäller att avsluta ditt konto som ägare i kaninregistret:
 			<p/>
 			{session.user.approved && <div>
-				<b>Avsignera</b>
-				<p/>
+				<h4>Avsignera</h4>
 				<ul>
 				<li> Alla dina kontouppgifter tas bort och du visas som Okänd ägare </li>
 				<li> Du behåller din inloggning till Kaninregistret, men behöver åter godkänna datahantering för att kunna ändra på något </li>
@@ -72,8 +71,7 @@ const CloseAccountForm = (props) => {
 					</div>
 				}
 			</div>}
-			<b>Deaktivera</b>
-			<p/>
+			<h4>Deaktivera</h4>
 			<ul>
 			<li> Alla dina kontouppgifter tas bort och du visas som Okänd ägare </li>
 			<li> Din inloggning till Kaninregistret tas bort och du behöver kontakta Kaninregistret för att kunna återaktivera </li>
@@ -91,7 +89,7 @@ const CloseAccountForm = (props) => {
 					<button className="btn btn-warning me-2 float-end mt-auto" onClick={confirmDeactivate} disabled={isConfirming}>Deaktivera</button>
 				</div>
 			}
-			<b>Radera</b>
+			<h4>Radera</h4>
 			<ul>
 			<li> Ditt konto tas helt bort ur Kaninregistret</li>
 			<li> Du får inte ha några kaniner registrerade för att kunna göra detta </li>

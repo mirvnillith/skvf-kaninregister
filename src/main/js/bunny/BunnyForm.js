@@ -1,5 +1,6 @@
 import React from 'react';
 import useFormValidation from "../hooks/FormValidation";
+import Help from "../help/Help";
 import { useSession} from "../hooks/SessionContext";
 
 const validate = (values) => {
@@ -179,7 +180,7 @@ const BunnyForm = (props) => {
 					<fieldset>
                         <legend>Utseende</legend>
                         <div className="row mb-2">
-                            <label htmlFor="picture" className="col-md-6 col-form-label">Länk till bild</label>
+                            <label htmlFor="picture" className="col-md-6 col-form-label">Länk till bild <Help topic="picture"/></label>
                             <div className="col-md-6">
                                 <input
                                     id="picture"
