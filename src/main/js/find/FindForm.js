@@ -35,7 +35,7 @@ const validate = (values) => {
     return errors;
 }
 
-const Find = (props) => {
+const Found = (props) => {
 	
     const [loadingDetails, setLoadingDetails] = useState(false);
     const [details, setDetails] = useState();
@@ -58,6 +58,25 @@ const Find = (props) => {
 			<div className="bunny-name extra-large">
 				{props.bunny.name}
 			</div>
+					<fieldset className="fw-normal">
+                        <legend>Märkning</legend>
+                        <div className="row">
+                            <label htmlFor="chip" className="col-md-6 col-form-label">Chipnummer</label>
+                            <label id="chip" className="col-md-6 col-form-label">{props.bunny.chip}</label>
+                        </div>
+                        <div className="row">
+                            <label htmlFor="leftEar" className="col-md-6 col-form-label">Vänster öra</label>
+                            <label id="leftEar" className="col-md-6 col-form-label">{props.bunny.leftEar}</label>
+                        </div>
+                        <div className="row">
+                            <label htmlFor="rightEar" className="col-md-6 col-form-label">Höger öra</label>
+                            <label id="rightEar" className="col-md-6 col-form-label">{props.bunny.rightEar}</label>
+                        </div>
+                        <div className="row">
+                            <label htmlFor="ring" className="col-md-6 col-form-label">Ringnummer</label>
+                            <label id="ring" className="col-md-6 col-form-label">{props.bunny.ring}</label>
+                        </div>
+					</fieldset>
 			<div className="bunny-buttons">
 			{details
 			?	<div className="h-100 fw-normal">
@@ -65,19 +84,19 @@ const Find = (props) => {
 				<div className="col-md-12">
 				<fieldset>
 				<legend>Ägare</legend>
-						<div className="row mb-2">
+						<div className="row">
 							<label htmlFor="ownerName" className="col-md-6 col-form-label">Namn</label>
 			       	 		<label id="ownerName" className="col-md-6 col-form-label">{details.owner.name}</label>
 						</div>
-						<div className="row mb-2">
+						<div className="row">
 							<label htmlFor="ownerEmail" className="col-md-6 col-form-label">E-post</label>
 			       	 		<label id="ownerEmail" className="col-md-6 col-form-label">{details.owner.email}</label>
 						</div>
-						<div className="row mb-2">
+						<div className="row">
 							<label htmlFor="ownerPhone" className="col-md-6 col-form-label">Telefon</label>
 			       	 		<label id="ownerPhone" className="col-md-6 col-form-label">{details.owner.phone}</label>
 						</div>
-						<div className="row mb-2">
+						<div className="row">
 							<label htmlFor="ownerAddress" className="col-md-6 col-form-label">Adress</label>
 			       	 		<label id="ownerAddress" className="col-md-6 col-form-label">{details.owner.address}</label>
 						</div>
@@ -105,7 +124,7 @@ const FindList = (props) => {
 		{ props.bunnies.length == 0
 		?	<h2>Inga kaniner hittades</h2>
 		:	props.bunnies.map(bunny => {
-        		return (<Find bunny={bunny} key={bunny.id} loadDetails={props.loadDetails}/>)
+        		return (<Found bunny={bunny} key={bunny.id} loadDetails={props.loadDetails}/>)
         	})}
 	</div>
     );
