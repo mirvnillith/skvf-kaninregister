@@ -62,6 +62,9 @@ const Bunny = (props) => {
 						?	'Okänt kön'
 						:	(props.bunny.neutered?'Kastrerad ':'Ej kastrerad ') +
 							(props.bunny.gender==='Female'?'hona':'hane');
+	const bunnyBirthDate = props.bunny.birthDate
+						?	', födelsedag '+props.bunny.birthDate
+						:	'';
 					
 	const bunnyDetails = <div>
 							<Identifiers bunny={props.bunny} />
@@ -94,8 +97,8 @@ const Bunny = (props) => {
 	}
 	
 	const bunnyContacts = contacts && <div>
-							<Contact title='Uppfödare' contact={contacts.breeder} />
 							<Contact title='Föregående ägare' contact={contacts.previousOwner} />
+							<Contact title='Uppfödare' contact={contacts.breeder} />
 						</div>;
 				
 	return (
@@ -113,7 +116,7 @@ const Bunny = (props) => {
 				{props.bunny.name}
 			</div>
 			<div className="fw-normal">
-			{bunnyGender}
+			{bunnyGender}{bunnyBirthDate}
 			{showDetails && bunnyDetails}
 			{showDetails && showContacts && <div><p/></div>}
 			{showContacts && bunnyContacts}

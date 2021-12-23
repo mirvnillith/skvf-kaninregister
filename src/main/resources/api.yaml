@@ -896,6 +896,8 @@ components:
             claimToken:
               type: string
               readOnly: true
+            birthDate:
+              type: string
 
     BunnyGender:
       type: string
@@ -927,8 +929,6 @@ components:
               type: string
               readOnly: true
             breeder:
-              type: string
-            birthDate:
               type: string
               
     OfflineSignatureDTO:

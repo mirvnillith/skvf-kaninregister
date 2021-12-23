@@ -224,6 +224,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setColourMarkings(bunny.getColourMarkings());
 		dto.setRace(bunny.getRace());
 		dto.setFeatures(bunny.getFeatures());
+		dto.setBirthDate(bunny.getBirthDate());
 		return dto;
 	}
 	
