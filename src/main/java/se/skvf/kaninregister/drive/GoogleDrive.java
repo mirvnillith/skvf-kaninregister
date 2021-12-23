@@ -46,7 +46,6 @@ public class GoogleDrive {
 	private String folder;
 	private Drive drive;
 	private Sheets sheets;
-	private long lastSheets;
 
 	@Value("${skvf.google.credentials}")
 	public void setJsonCredentials(String jsonCredentials) {
@@ -76,37 +75,9 @@ public class GoogleDrive {
 		sheets = new Sheets.Builder(httpTransport, JSON_FACTORY, credential)
 				.setApplicationName(APPLICATION_NAME)
 				.build();
-		lastSheets = System.currentTimeMillis();
 	}
 
-	private static ThreadLocal<Boolean> skipDelay = new ThreadLocal<Boolean>();
-	
-	public interface Skipper {
-		void skip() throws IOException;
-	}
-	
-	public static void skipDelay(Skipper skipper) throws IOException {
-		skipDelay.set(true);
-		try {
-			skipper.skip();
-		} finally {
-			skipDelay.remove();
-		}
-	}
-	
 	public synchronized Sheets getSheets() {
-		Boolean skip = skipDelay.get();
-		if (skip == null || !skip) {
-			long sinceLast = currentTimeMillis() - lastSheets;
-			if (sinceLast < 1000) {
-				try {
-					Thread.sleep(1000 - sinceLast);
-				} catch (InterruptedException ignored) {
-				}
-			}
-		}
-		lastSheets = currentTimeMillis();
-		
 		return sheets;
 	}
 

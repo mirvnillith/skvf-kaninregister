@@ -14,6 +14,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.OK;
 import static javax.ws.rs.core.Response.Status.PRECONDITION_FAILED;
+import static javax.ws.rs.core.Response.Status.TOO_MANY_REQUESTS;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -51,12 +52,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 
 import se.skvf.kaninregister.addo.AddoSigningService;
 import se.skvf.kaninregister.addo.Signature;
@@ -118,6 +122,13 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	private static <T> T process(Callable<T> call) {
 		try {
 			return call.call();
+		} catch (GoogleJsonResponseException g) {
+			LOG.info("Google error", g);
+			if (g.getStatusCode() == TOO_MANY_REQUESTS.getStatusCode()) {
+				throw new WebApplicationException(g, TOO_MANY_REQUESTS);	
+			} else {
+				throw new WebApplicationException(g, INTERNAL_SERVER_ERROR);
+			}
 		} catch (WebApplicationException e) {
 			LOG.info("Application error", e);
 			throw e;

@@ -23,6 +23,8 @@ paths:
                 $ref: '#/components/schemas/OwnerDTO'
         '204':
           description: Session required
+        '429':
+          description: Google API limit reached
 
   /login:
     post:
@@ -46,6 +48,8 @@ paths:
           description: Authentication failed
         '409':
           description: Already in session
+        '429':
+          description: Google API limit reached
           
   /logout:
     post:
@@ -76,6 +80,8 @@ paths:
       responses:
         '204':
           description: Signature stored
+        '429':
+          description: Google API limit reached
           
   /owners:
     post:
@@ -101,6 +107,8 @@ paths:
           description: Session NOT allowed
         '409':
           description: User name already in use
+        '429':
+          description: Google API limit reached
                 
   /owners/{id}:
     get:
@@ -126,6 +134,8 @@ paths:
           description: Session required
         '404':
           description: Owner not found
+        '429':
+          description: Google API limit reached
     put:
       tags: [BunnyRegistry]
       operationId: updateOwner
@@ -159,6 +169,8 @@ paths:
           description: User name already in use
         '412':
           description: Owner not approved
+        '429':
+          description: Google API limit reached
     delete:
       tags: [BunnyRegistry]
       operationId: deleteOwner
@@ -178,6 +190,8 @@ paths:
           description: Session required, of owner
         '404':
           description: Owner not found
+        '429':
+          description: Google API limit reached
           
   /owners/{id}/activate:
     post:
@@ -209,6 +223,8 @@ paths:
           description: Session NOT allowed
         '409':
           description: User name already in use
+        '429':
+          description: Google API limit reached
           
   /owners/{id}/deactivate:
     post:
@@ -232,6 +248,8 @@ paths:
           description: Session required, of activated owner
         '404':
           description: Owner not found
+        '429':
+          description: Google API limit reached
           
   /owners/{id}/approve:
     post:
@@ -255,6 +273,8 @@ paths:
           description: Session required, of owner
         '404':
           description: Owner not found
+        '429':
+          description: Google API limit reached
           
   /owners/{id}/unapprove:
     post:
@@ -280,6 +300,8 @@ paths:
           description: Owner not found
         '412':
           description: Owner not approved
+        '429':
+          description: Google API limit reached
           
   /owners/{id}/password:
     put:
@@ -307,6 +329,8 @@ paths:
           description: Session required, of owner
         '404':
           description: Owner not found
+        '429':
+          description: Google API limit reached
           
   /owners/{userName}/recover:
     put:
@@ -334,6 +358,8 @@ paths:
           description: Session NOT allowed
         '404':
           description: Owner not found
+        '429':
+          description: Google API limit reached
           
   /owners/{id}/bunnies:
     post:
@@ -369,6 +395,8 @@ paths:
           description: Duplicate identifier
         '412':
           description: Owner not approved
+        '429':
+          description: Google API limit reached
     get:
       tags: [BunnyRegistry]
       operationId: getOwnerBunnies
@@ -389,6 +417,8 @@ paths:
                 $ref: '#/components/schemas/OwnerBunnyList'
         '401':
           description: Session required, of owner
+        '429':
+          description: Google API limit reached
           
   /owners/{owner}/bunnies/claim:
     post:
@@ -420,6 +450,8 @@ paths:
           description: Owner or bunny not found
         '412':
           description: Owner not approved
+        '429':
+          description: Google API limit reached
           
   /owners/{owner}/bunnies/{bunny}:
     put:
@@ -458,6 +490,8 @@ paths:
           description: Owner or bunny not found
         '409':
           description: Duplicate identifier
+        '429':
+          description: Google API limit reached
     delete:
       tags: [BunnyRegistry]
       operationId: deleteBunny
@@ -480,6 +514,8 @@ paths:
           description: Session required
         '404':
           description: Owner or bunny not found
+        '429':
+          description: Google API limit reached
       
   /owners/{owner}/bunnies/{bunny}/transfer:
     put:
@@ -508,6 +544,8 @@ paths:
           description: Session required
         '404':
           description: Owner or bunny not found
+        '429':
+          description: Google API limit reached
 
   /bunnies:
     get:
@@ -543,6 +581,8 @@ paths:
           description: More than 10 bunnies found
         '400':
           description: Location/identifier not provided or more than 2 wildcards
+        '429':
+          description: Google API limit reached
                 
   /bunnies/{id}:
     get:
@@ -565,6 +605,8 @@ paths:
                 $ref: '#/components/schemas/BunnyDTO'
         '404':
           description: Bunny not found
+        '429':
+          description: Google API limit reached
           
   /bunnies/{id}/reclaim:
     put:
@@ -593,6 +635,8 @@ paths:
           description: Bunny not found
         '409':
           description: Current owner activated
+        '429':
+          description: Google API limit reached
           
   /bunnies/{id}/owner:
     get:
@@ -617,6 +661,8 @@ paths:
           description: Bunny has no public owner
         '404':
           description: Bunny not found or has no owner
+        '429':
+          description: Google API limit reached
   /bunnies/{id}/previousOwner:
     get:
       tags: [BunnyRegistry]
@@ -642,6 +688,8 @@ paths:
           description: Session required, of current owner
         '404':
           description: Bunny not found or has no previous owner
+        '429':
+          description: Google API limit reached
           
   /bunnies/{id}/breeder:
     get:
@@ -666,6 +714,8 @@ paths:
           description: Bunny has no public breeder
         '404':
           description: Bunny not found or has no breeder
+        '429':
+          description: Google API limit reached
 
 components:
   schemas:

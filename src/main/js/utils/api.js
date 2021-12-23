@@ -19,6 +19,9 @@ const createOwner = async (user, pwd, successHandler, errorHandler) => {
     else if (response.status === 409) {
         errorHandler("Användarnamnet finns redan!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid registrering!")
     }
@@ -55,6 +58,9 @@ const updateOwner = async (id, owner, successHandler, errorHandler) => {
     else if (response.status === 412) {
         errorHandler("Du måste ha godkänt datahantering!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid uppdatering!")
     }
@@ -81,6 +87,9 @@ const activateOwner = async (id, user, pwd, successHandler, errorHandler) => {
     else if (response.status === 409) {
         errorHandler("Användarnamnet finns redan!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid aktivering!")
     }
@@ -105,6 +114,9 @@ const changeUserPassword = async (id, currentPassword, newPassword, successHandl
     }
     else if (response.status === 404) {
         errorHandler("Okänd användare!")
+    }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
     }
     else {
         errorHandler("Något gick fel vid updatering av lösenord!")
@@ -134,6 +146,9 @@ const recoverUser = async (user, pwd, bunnyIdentifiers, successHandler, errorHan
     else if (response.status === 404) {
         errorHandler("Okänd användare eller kanin!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid återställning!")
     }
@@ -158,6 +173,9 @@ const getOwner = async (id, successHandler, errorHandler) => {
     else if (response.status === 404) {
         errorHandler("Okänd ägare!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid hämtning!")
     }
@@ -176,6 +194,9 @@ const getBunny = async (id, successHandler, errorHandler) => {
     else if (response.status === 404) {
         errorHandler("Okänd kanin!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid hämtning!")
     }
@@ -193,6 +214,9 @@ const getBunnies = async (owner, successHandler, errorHandler) => {
     }
     else if (response.status === 401) {
         errorHandler("Du måste vara inloggad!")
+    }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
     }
     else {
         errorHandler("Något gick fel vid hämtning!")
@@ -242,6 +266,9 @@ const createBunny = async (owner, bunny, successHandler, errorHandler) => {
     else if (response.status === 412) {
         errorHandler("Du måste ha godkänt datahantering!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid skapande!")
     }
@@ -290,6 +317,9 @@ const updateBunny = async (owner, bunny, successHandler, errorHandler) => {
     else if (response.status === 412) {
         errorHandler("Du måste ha godkänt datahantering!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid sparande!")
     }
@@ -312,6 +342,9 @@ const transferBunny = async (owner, bunny, successHandler, errorHandler) => {
     }
     else if (response.status === 404) {
         errorHandler("Okänd kanin!")
+    }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
     }
     else {
         errorHandler("Något gick fel vid överföring!")
@@ -338,6 +371,9 @@ const claimBunny = async (owner, token, successHandler, errorHandler) => {
     }
     else if (response.status === 412) {
         errorHandler("Du måste ha godkänt datahantering!")
+    }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
     }
     else {
         errorHandler("Något gick fel vid mottagning!")
@@ -371,6 +407,9 @@ const reclaimBunny = async (id, successHandler, errorHandler) => {
     else if (response.status === 409) {
         errorHandler("Kaninen har en aktiv ägare!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid återtagning!")
     }
@@ -397,6 +436,9 @@ const findBunnies = async (identifiers, successHandler, errorHandler) => {
     else if (response.status === 400) {
         errorHandler("Felaktig sökning!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid sökning!")
     }
@@ -416,6 +458,9 @@ const deleteBunny = async (owner, bunny, successHandler, errorHandler) => {
     }
     else if (response.status === 404) {
         errorHandler("Okänd kanin!")
+    }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
     }
     else {
         errorHandler("Något gick fel vid borttagning!")
@@ -438,6 +483,9 @@ const getBunnyOwner = async (id, successHandler, errorHandler) => {
     else if (response.status === 404) {
         errorHandler("Okänd kanin!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid hämtning!")
     }
@@ -458,6 +506,9 @@ const getBunnyBreeder = async (id, successHandler, errorHandler) => {
     }
     else if (response.status === 404) {
         errorHandler("Okänd kanin!")
+    }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
     }
     else {
         errorHandler("Något gick fel vid hämtning!")
@@ -483,6 +534,9 @@ const getBunnyPreviousOwner = async (id, successHandler, errorHandler) => {
     else if (response.status === 404) {
         errorHandler("Okänd kanin!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid hämtning!")
     }
@@ -506,6 +560,9 @@ const deleteOwner = async (id, successHandler, errorHandler) => {
     else if (response.status === 404) {
         errorHandler("Okänd ägare!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid borttagning!")
     }
@@ -528,6 +585,9 @@ const deactivateOwner = async (id, successHandler, errorHandler) => {
     }
     else if (response.status === 404) {
         errorHandler("Okänd ägare!")
+    }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
     }
     else {
         errorHandler("Något gick fel vid deaktivering!")
@@ -554,6 +614,9 @@ const unapproveOwner = async (id, successHandler, errorHandler) => {
     }
     else if (response.status === 412) {
         errorHandler("Du måste ha godkänt datahantering!")
+    }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
     }
     else {
         errorHandler("Något gick fel vid deaktivering!")
@@ -590,6 +653,9 @@ const loginUser = async (user, pwd, successHandler, errorHandler) => {
     else if (response.status === 409) {
         errorHandler("Du är redan inloggad!")
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid inloggning!")
     }
@@ -622,6 +688,9 @@ const signOffline = async (token, signature, successHandler, errorHandler) => {
     if (response.status === 204) {
         successHandler();
     }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
+    }
     else {
         errorHandler("Något gick fel vid signering!")
     }
@@ -649,6 +718,9 @@ const approve = async (id, approvedOwnerHandler, approvalFailedHandler, approval
     }
     else if (response.status === 404) {
         errorHandler("Ägaren kunde inte hittas")
+    }
+    else if (response.status === 429) {
+        errorHandler("Tillfällig överbelastning, försök igen om ett tag!")
     }
     else {
         errorHandler("Något gick fel när signeringen skulle verifieras")
