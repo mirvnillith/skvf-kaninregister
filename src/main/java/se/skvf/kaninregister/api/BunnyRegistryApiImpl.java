@@ -4,6 +4,7 @@ import static java.util.Collections.singleton;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static javax.ws.rs.core.Response.Status.ACCEPTED;
@@ -44,7 +45,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.Cookie;
@@ -55,6 +55,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,6 +147,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		checkUniqueIdentifier(CHIP, dto.getChip());
 		checkUniqueIdentifier(RING, dto.getRing());
 		
+		if (dto.getGender() == null) {
+			dto.setGender(BunnyGender.UNKNOWN);
+		}
+		
 		return new Bunny().setId(dto.getId())
 				.setName(dto.getName())
 				.setOwner(dto.getOwner())
@@ -195,6 +200,12 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setLeftEar(bunny.getLeftEar());
 		dto.setRightEar(bunny.getRightEar());
 		dto.setRing(bunny.getRing());
+		dto.setGender(toGender(bunny.getGender()));
+		dto.setNeutered(bunny.isNeutered());
+		dto.setCoat(bunny.getCoat());
+		dto.setColourMarkings(bunny.getColourMarkings());
+		dto.setRace(bunny.getRace());
+		dto.setFeatures(bunny.getFeatures());
 		return dto;
 	}
 	
@@ -208,6 +219,11 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setRightEar(bunny.getRightEar());
 		dto.setRing(bunny.getRing());
 		dto.setGender(toGender(bunny.getGender()));
+		dto.setNeutered(bunny.isNeutered());
+		dto.setCoat(bunny.getCoat());
+		dto.setColourMarkings(bunny.getColourMarkings());
+		dto.setRace(bunny.getRace());
+		dto.setFeatures(bunny.getFeatures());
 		return dto;
 	}
 	
@@ -222,6 +238,8 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		dto.setPublicOwner(owner.isPublicOwner());
 		dto.setBreederName(owner.getBreederName());
 		dto.setBreederEmail(owner.getBreederEmail());
+		dto.setBreederPhone(owner.getBreederPhone());
+		dto.setBreederAddress(owner.getBreederAddress());
 		dto.setPublicBreeder(owner.isPublicBreeder());
 		dto.setApproved(owner.isApproved());
 		return dto;
@@ -242,6 +260,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				.orElse(owner.getName()));
 		dto.setEmail(ofNullable(owner.getBreederEmail())
 				.orElse(owner.getEmail()));
+		dto.setPhone(ofNullable(owner.getBreederPhone())
+				.orElse(owner.getPhone()));
+		dto.setAddress(ofNullable(owner.getBreederAddress())
+				.orElse(owner.getAddress()));
 		return dto;
 	}
 	
@@ -330,11 +352,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				throw new WebApplicationException(NO_CONTENT);
 			}
 			
-			BunnyList list = new BunnyList();
-			bunnies.stream()
-				.map(BunnyRegistryApiImpl::toListDTO)
-				.forEach(list.getBunnies()::add);
-			return list;
+			return toBunnyList(bunnies);
 		});
 	}
 
@@ -347,7 +365,12 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	public BunnyBreederDTO getBunnyBreeder(String id) {
 		return process(() -> {
 			
-			Owner breeder = validateOwner(validateBunny(id).getBreeder(), false);
+			Bunny bunny = validateBunny(id);
+			
+			if (StringUtils.isEmpty(bunny.getBreeder())) {
+				return new BunnyBreederDTO();
+			}
+			Owner breeder = validateOwner(bunny.getBreeder(), false);
 			if (breeder.isNotPublicBreeder()) {
 				throw new WebApplicationException(NO_CONTENT);
 			}
@@ -403,6 +426,9 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			}
 			validateSession(bunny.getOwner());
 			
+			if (StringUtils.isEmpty(bunny.getPreviousOwner())) {
+				return new BunnyOwnerDTO();
+			}
 			Owner previousOwner = validateOwner(bunny.getPreviousOwner(), false);
 			if (previousOwner.isNotPublicOwner()) {
 				throw new WebApplicationException(NO_CONTENT);
@@ -459,15 +485,19 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		}
 	}
 
-	private BunnyList toBunnyList(Collection<Bunny> bunnies) {
+	private static BunnyList toBunnyList(Collection<Bunny> bunnies) {
 		BunnyList list = new BunnyList();
-		list.setBunnies(bunnies.stream().map(BunnyRegistryApiImpl::toListDTO).collect(Collectors.toList()));
+		list.setBunnies(bunnies.stream()
+				.map(BunnyRegistryApiImpl::toListDTO)
+				.collect(toList()));
 		return list;
 	}
 	
 	private OwnerBunnyList toOwnerBunnyList(Collection<Bunny> bunnies) {
 		OwnerBunnyList list = new OwnerBunnyList();
-		list.setBunnies(bunnies.stream().map(BunnyRegistryApiImpl::toOwnerListDTO).collect(Collectors.toList()));
+		list.setBunnies(bunnies.stream()
+				.map(BunnyRegistryApiImpl::toOwnerListDTO)
+				.collect(toList()));
 		return list;
 	}
 
@@ -653,6 +683,8 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		ofNullable(dto.getPublicOwner()).ifPresent(owner::setPublicOwner);
 		ofNullable(dto.getBreederName()).ifPresent(owner::setBreederName);
 		ofNullable(dto.getBreederEmail()).ifPresent(owner::setBreederEmail);
+		ofNullable(dto.getBreederPhone()).ifPresent(owner::setBreederPhone);
+		ofNullable(dto.getBreederAddress()).ifPresent(owner::setBreederAddress);
 		ofNullable(dto.getPublicBreeder()).ifPresent(owner::setPublicBreeder);
 	}
 

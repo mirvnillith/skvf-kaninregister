@@ -14,6 +14,8 @@ const INITIAL_STATE = (session) => {
         phone: session.user.phone ? session.user.phone : "",
         breederName: session.user.breederName ? session.user.breederName : "",
         breederEmail: session.user.breederEmail ? session.user.breederEmail : "",
+        breederPhone: session.user.breederPhone ? session.user.breederPhone : "",
+        breederAddress: session.user.breederAddress ? session.user.breederAddress : "",
         publicBreeder: session.user.publicBreeder ? session.user.publicBreeder : ""
     }
 };
@@ -142,7 +144,8 @@ const OwnerForm = (props) => {
                         <legend>Uppfödare</legend>
                         <div className="row mb-2">
                             <div className="col-md-12 fst-italic">
-							När du är angiven som uppfödare av en kanin kan du här välja att visas upp med annat namn och/eller e-post.
+							När du är angiven som uppfödare av en kanin kan du här välja att visas upp med annat namn och/eller kontaktuppgifter.
+							Om du alltså inte vill att din information som ägare även ska användas som uppfödare kan du sätta -.
 							</div>
 						</div>
                         <div className="row mb-2">
@@ -180,6 +183,34 @@ const OwnerForm = (props) => {
                                     name="breederEmail"
                                     type="text"
                                     value={values.breederEmail}
+                                    className="form-control"
+                                    onChange={handleChange}
+                                />
+                            </div>
+						</div>
+                        <div className="row mb-2">
+                            <label htmlFor="breederPhone" className="col-md-6 col-form-label">Telefon som
+                                uppfödare</label>
+                            <div className="col-md-6">
+                                <input
+                                    id="breederPhone"
+                                    name="breederPhone"
+                                    type="text"
+                                    value={values.breederPhone}
+                                    className="form-control"
+                                    onChange={handleChange}
+                                />
+                            </div>
+						</div>
+                        <div className="row mb-2">
+                            <label htmlFor="breederAddress" className="col-md-6 col-form-label">Adress som
+                                uppfödare</label>
+                            <div className="col-md-6">
+                                <input
+                                    id="breederAddress"
+                                    name="breederAddress"
+                                    type="text"
+                                    value={values.breederAddress}
                                     className="form-control"
                                     onChange={handleChange}
                                 />

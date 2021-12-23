@@ -133,14 +133,14 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 			});
 	}
 
-	protected static void assertBunny(BunnyDTO expected, Bunny actual) {
+	protected static void assertBunny(BunnyDTO actual, Bunny expected) {
 		assertAll(
 				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
 				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
 				() -> assertThat(actual.getOwner()).isEqualTo(expected.getOwner()),
 				() -> assertThat(actual.getPreviousOwner()).isEqualTo(expected.getPreviousOwner()),
 				() -> assertThat(actual.getBreeder()).isEqualTo(expected.getBreeder()),
-				() -> assertThat(actual.isNeutered()).isEqualTo(ofNullable(expected.getNeutered()).orElse(false)),
+				() -> assertThat(ofNullable(actual.getNeutered()).orElse(false)).isEqualTo(expected.isNeutered()),
 				() -> assertThat(actual.getBirthDate()).isEqualTo(expected.getBirthDate()),
 				() -> assertThat(actual.getRace()).isEqualTo(expected.getRace()),
 				() -> assertThat(actual.getCoat()).isEqualTo(expected.getCoat()),
@@ -155,18 +155,7 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				);
 	}
 	
-	protected static void assertBunny(Bunny expected, BunnyListDTO actual) {
-		assertAll(
-				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
-				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
-				() -> assertThat(actual.getLeftEar()).isEqualTo(expected.getLeftEar()),
-				() -> assertThat(actual.getRightEar()).isEqualTo(expected.getRightEar()),
-				() -> assertThat(actual.getChip()).isEqualTo(expected.getChip()),
-				() -> assertThat(actual.getRing()).isEqualTo(expected.getRing())
-				);
-	}
-	
-	protected static void assertBunny(Bunny expected, OwnerBunnyListDTO actual) {
+	protected static void assertBunny(BunnyListDTO actual, Bunny expected) {
 		assertAll(
 				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
 				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
@@ -174,7 +163,29 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				() -> assertThat(actual.getRightEar()).isEqualTo(expected.getRightEar()),
 				() -> assertThat(actual.getChip()).isEqualTo(expected.getChip()),
 				() -> assertThat(actual.getRing()).isEqualTo(expected.getRing()),
-				() -> assertGender(actual.getGender(), expected.getGender())
+				() -> assertGender(actual.getGender(), expected.getGender()),
+				() -> assertThat(ofNullable(actual.getNeutered()).orElse(false)).isEqualTo(expected.isNeutered()),
+				() -> assertThat(actual.getRace()).isEqualTo(expected.getRace()),
+				() -> assertThat(actual.getCoat()).isEqualTo(expected.getCoat()),
+				() -> assertThat(actual.getColourMarkings()).isEqualTo(expected.getColourMarkings()),
+				() -> assertThat(actual.getFeatures()).isEqualTo(expected.getFeatures())
+				);
+	}
+	
+	protected static void assertBunny(OwnerBunnyListDTO actual, Bunny expected) {
+		assertAll(
+				() -> assertThat(actual.getId()).isEqualTo(expected.getId()),
+				() -> assertThat(actual.getName()).isEqualTo(expected.getName()),
+				() -> assertThat(actual.getLeftEar()).isEqualTo(expected.getLeftEar()),
+				() -> assertThat(actual.getRightEar()).isEqualTo(expected.getRightEar()),
+				() -> assertThat(actual.getChip()).isEqualTo(expected.getChip()),
+				() -> assertThat(actual.getRing()).isEqualTo(expected.getRing()),
+				() -> assertGender(actual.getGender(), expected.getGender()),
+				() -> assertThat(ofNullable(actual.getNeutered()).orElse(false)).isEqualTo(expected.isNeutered()),
+				() -> assertThat(actual.getRace()).isEqualTo(expected.getRace()),
+				() -> assertThat(actual.getCoat()).isEqualTo(expected.getCoat()),
+				() -> assertThat(actual.getColourMarkings()).isEqualTo(expected.getColourMarkings()),
+				() -> assertThat(actual.getFeatures()).isEqualTo(expected.getFeatures())
 				);
 	}
 
@@ -208,6 +219,9 @@ public abstract class BunnyRegistryApiTest extends BunnyTest {
 				() -> assertThat(actual.getPhone()).isEqualTo(expected.getPhone()),
 				() -> assertThat(actual.isPublicOwner()).isEqualTo(expected.getPublicOwner()),
 				() -> assertThat(actual.getBreederName()).isEqualTo(expected.getBreederName()),
+				() -> assertThat(actual.getBreederEmail()).isEqualTo(expected.getBreederEmail()),
+				() -> assertThat(actual.getBreederPhone()).isEqualTo(expected.getBreederPhone()),
+				() -> assertThat(actual.getBreederAddress()).isEqualTo(expected.getBreederAddress()),
 				() -> assertThat(actual.isPublicBreeder()).isEqualTo(expected.getPublicBreeder())
 				);
 	}

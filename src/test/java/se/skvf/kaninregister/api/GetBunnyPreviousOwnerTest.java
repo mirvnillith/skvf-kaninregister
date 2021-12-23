@@ -5,12 +5,12 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-
-import javax.ws.rs.core.Response.Status;
 
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +58,7 @@ public class GetBunnyPreviousOwnerTest extends BunnyRegistryApiTest {
 		Bunny bunny = mockBunny();
 		mockSession(bunny.getOwner());
 		
-		assertError(NOT_FOUND, () -> api.getBunnyPreviousOwner(bunny.getId()));
+		assertThat(api.getBunnyPreviousOwner(bunny.getId()).getName()).isNull();
 	}
 	
 	@Test
@@ -81,7 +81,8 @@ public class GetBunnyPreviousOwnerTest extends BunnyRegistryApiTest {
 	@Test
 	public void getBunnyPreviousOwner_notFound() throws IOException {
 		
-		Bunny bunny = mockBunny();
+		Bunny bunny = mockBunny()
+				.setPreviousOwner(randomUUID().toString());
 		mockSession(bunny.getOwner());
 		
 		assertError(NOT_FOUND, () -> api.getBunnyPreviousOwner(bunny.getId()));

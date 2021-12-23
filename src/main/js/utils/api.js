@@ -35,6 +35,8 @@ const updateOwner = async (id, owner, successHandler, errorHandler) => {
     if (owner.phone !== undefined) data.phone = owner.phone;
     if (owner.breederName !== undefined) data.breederName = owner.breederName;
     if (owner.breederEmail !== undefined) data.breederEmail = owner.breederEmail;
+    if (owner.breederPhone !== undefined) data.breederPhone = owner.breederPhone;
+    if (owner.breederAddress !== undefined) data.breederAddress = owner.breederAddress;
     if (owner.userName !== undefined) data.userName = owner.userName;
     if (owner.publicOwner !== undefined) data.publicOwner = owner.publicOwner;
     if (owner.publicBreeder !== undefined) data.publicBreeder = owner.publicBreeder;

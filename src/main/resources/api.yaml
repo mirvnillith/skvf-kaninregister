@@ -727,6 +727,10 @@ components:
           type: string
         email:
           type: string
+        address:
+          type: string
+        phone:
+          type: string
           
     BunnyOwnerDTO:
       type: object
@@ -751,6 +755,10 @@ components:
             breederName:
               type: string
             breederEmail:
+              type: string
+            breederPhone:
+              type: string
+            breederAddress:
               type: string
             userName:
               type: string
@@ -867,6 +875,18 @@ components:
         picture:
           description: URL to picture
           type: string
+        neutered:
+          type: boolean
+        gender:
+          $ref: '#/components/schemas/BunnyGender'
+        race:
+          type: string
+        coat:
+          type: string
+        colourMarkings:
+          type: string
+        features:
+          type: string
           
     OwnerBunnyListDTO:
       allOf:
@@ -876,8 +896,6 @@ components:
             claimToken:
               type: string
               readOnly: true
-            gender:
-              $ref: '#/components/schemas/BunnyGender'
 
     BunnyGender:
       type: string
@@ -910,17 +928,7 @@ components:
               readOnly: true
             breeder:
               type: string
-            neutered:
-              type: boolean
             birthDate:
-              type: string
-            race:
-              type: string
-            coat:
-              type: string
-            colourMarkings:
-              type: string
-            features:
               type: string
               
     OfflineSignatureDTO:

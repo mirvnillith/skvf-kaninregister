@@ -34,7 +34,7 @@ public class FindBunniesTest extends BunnyRegistryApiTest {
 		
 		assertThat(bunnies.getBunnies())
 			.hasSize(1)
-			.allSatisfy(b -> assertBunny(bunny, b));
+			.allSatisfy(b -> assertBunny(b, bunny));
 		assertThat(filterArgument.getValue().values())
 			.allSatisfy(f -> assertThat(f).accepts(identifier));
 	}

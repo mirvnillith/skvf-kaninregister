@@ -31,7 +31,9 @@ public class Owner extends Entity<Owner> {
 			"Signatur",
 			"Adress",
 			"Telefon",
-			"Uppfödarepost");
+			"Uppfödarepost",
+			"Uppfödartelefon",
+			"Uppfödaradress");
 
 	private String name;
 	private boolean publicOwner;
@@ -44,6 +46,8 @@ public class Owner extends Entity<Owner> {
 	private String address;
 	private String phone;
 	private String breederEmail;
+	private String breederPhone;
+	private String breederAddress;
 	
 	@Override
 	public Owner setId(String id) {
@@ -113,6 +117,24 @@ public class Owner extends Entity<Owner> {
 		return breederEmail;
 	}
 	
+	public Owner setBreederPhone(String breederPhone) {
+		this.breederPhone = breederPhone;
+		return this;
+	}
+	
+	public String getBreederPhone() {
+		return breederPhone;
+	}
+	
+	public Owner setBreederAddress(String breederAddress) {
+		this.breederAddress = breederAddress;
+		return this;
+	}
+	
+	public String getBreederAddress() {
+		return breederAddress;
+	}
+	
 	@Override
 	protected void toMap(Map<String, String> map) {
 		if (name == null) {
@@ -131,6 +153,8 @@ public class Owner extends Entity<Owner> {
 		values.add(address);
 		values.add(phone);
 		values.add(breederEmail);
+		values.add(breederPhone);
+		values.add(breederAddress);
 		
 		addToMap(map, COLUMNS, values);
 	}
@@ -153,7 +177,9 @@ public class Owner extends Entity<Owner> {
 				Owner::setSignature,
 				Owner::setAddress,
 				Owner::setPhone,
-				Owner::setBreederEmail
+				Owner::setBreederEmail,
+				Owner::setBreederPhone,
+				Owner::setBreederAddress
 				);
 
 		return setFromMap(map, COLUMNS, setters);
@@ -244,6 +270,9 @@ public class Owner extends Entity<Owner> {
 		name = "Okänd";
 		publicOwner = false;
 		breederName = null;
+		breederEmail = null;
+		breederPhone = null;
+		breederAddress = null;
 		publicBreeder = false;
 		email = null;
 		signature = null;

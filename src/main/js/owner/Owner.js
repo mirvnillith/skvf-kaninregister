@@ -28,6 +28,8 @@ const Owner = (_) => {
             phone: values.phone,
             breederName: values.breederName,
             breederEmail: values.breederEmail,
+            breederPhone: values.breederPhone,
+            breederAddress: values.breederAddress,
             publicBreeder: values.publicBreeder
         }
 

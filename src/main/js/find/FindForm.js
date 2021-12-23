@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import useFormValidation from "../hooks/FormValidation";
-import Help from "../help/Help";
+import Identifiers from "../common/Identifiers";
+import Contact from "../common/Contact";
+import Details from "../common/Details";
+import { getBunnyOwner, getBunnyBreeder, getBunnyPreviousOwner } from "../utils/api";
 
 const INITIAL_STATE = {
     chip: "",
@@ -37,82 +40,85 @@ const validate = (values) => {
 
 const Found = (props) => {
 	
-    const [loadingDetails, setLoadingDetails] = useState(false);
-    const [details, setDetails] = useState();
+    const [showDetails, setShowDetails] = useState(false);
+    const [showContacts, setShowContacts] = useState(false);
+    const [loadingContacts, setLoadingContacts] = useState(false);
+    const [contacts, setContacts] = useState();
 
 	const picture = props.bunny.picture
 					? props.bunny.picture
 					: '/assets/bunny.jpg';
 			
+	const bunnyDetails = <div>
+							<Details bunny={props.bunny}/>
+						 </div>;
+			
+	const bunnyGender = props.bunny.gender==='Unknown'
+						?	'Okänt kön'
+						:	(props.bunny.neutered?'Kastrerad ':'Ej kastrerad ') +
+							(props.bunny.gender==='Female'?'hona':'hane');
 	
-    const loadDetails = async (_) => {
-		setLoadingDetails(true);
-		props.loadDetails(props.bunny, setDetails);
+    const setBunnyOwner = (owner) => {
+		if (owner === undefined) {
+			owner = nonPublic();
+		}
+		const onLoad = setBunnyBreeder(owner);
+		getBunnyBreeder(props.bunny.id, onLoad, () => onLoad({ name: "Hämtning misslyckades"}));
 	}
 	
+    const setBunnyBreeder = (owner) => (breeder) => {
+		if (breeder === undefined) {
+			breeder = nonPublic();
+		}
+		const onLoad = setBunnyPreviousOwner(owner, breeder);
+		getBunnyPreviousOwner(props.bunny.id, onLoad, () => onLoad({ name: "Hämtning misslyckades"}));
+	}
+	
+    const setBunnyPreviousOwner = (owner, breeder) => (previousOwner) => {
+		if (previousOwner === undefined) {
+			previousOwner = nonPublic();
+		}
+		setContacts({owner, breeder, previousOwner});
+		setLoadingContacts(false);
+	}
+	
+	const loadContacts = async (_) => {
+		if (contacts === undefined) {
+			setLoadingContacts(true);
+			getBunnyOwner(props.bunny.id, setBunnyOwner, () => setBunnyOwner({ name: "Hämtning misslyckades"}));
+		}
+		
+		setShowContacts(!showContacts);
+	}
+	
+	const bunnyContacts = contacts && <div>
+							<Contact title='Ägare' contact={contacts.owner} />
+							<Contact title='Uppfödare' contact={contacts.breeder} />
+							<Contact title='Föregående ägare' contact={contacts.previousOwner} />
+						</div>;
+
 	return (
 	<div>
 		<div className="bunny-row d-flex">
+			<div className="bunny-picture-sidebar">
 			<a href={picture} rel="noopener noreferrer" target="_blank"><img className="bunny-picture self-align-start" src={picture}/></a>
-			<span className="w-100">
+			<button className="btn btn-info w-100 mt-1 shadow-none" onClick={(_) => setShowDetails(!showDetails)} >Detaljer</button>
+			<button className="btn btn-info w-100 mt-1 shadow-none" onClick={loadContacts} disabled={loadingContacts}>
+				{ loadingContacts && <span className="spinner-border spinner-border-sm me-1" /> }
+				Kontakter</button>
+			</div>
+			<div className="w-100">
 			<div className="bunny-name extra-large">
 				{props.bunny.name}
 			</div>
-					<fieldset className="fw-normal">
-                        <legend>Märkning</legend>
-                        <div className="row">
-                            <label htmlFor="chip" className="col-md-6 col-form-label">Chipnummer</label>
-                            <label id="chip" className="col-md-6 col-form-label">{props.bunny.chip}</label>
-                        </div>
-                        <div className="row">
-                            <label htmlFor="leftEar" className="col-md-6 col-form-label">Vänster öra</label>
-                            <label id="leftEar" className="col-md-6 col-form-label">{props.bunny.leftEar}</label>
-                        </div>
-                        <div className="row">
-                            <label htmlFor="rightEar" className="col-md-6 col-form-label">Höger öra</label>
-                            <label id="rightEar" className="col-md-6 col-form-label">{props.bunny.rightEar}</label>
-                        </div>
-                        <div className="row">
-                            <label htmlFor="ring" className="col-md-6 col-form-label">Ringnummer</label>
-                            <label id="ring" className="col-md-6 col-form-label">{props.bunny.ring}</label>
-                        </div>
-					</fieldset>
-			<div className="bunny-buttons">
-			{details
-			?	<div className="h-100 fw-normal">
-				<form>
-				<div className="col-md-12">
-				<fieldset>
-				<legend>Ägare</legend>
-						<div className="row">
-							<label htmlFor="ownerName" className="col-md-6 col-form-label">Namn</label>
-			       	 		<label id="ownerName" className="col-md-6 col-form-label">{details.owner.name} 
-							&nbsp;{details.owner.nonPublic && <Help topic="publicprivate"/>}</label>
-						</div>
-						<div className="row">
-							<label htmlFor="ownerEmail" className="col-md-6 col-form-label">E-post</label>
-			       	 		<label id="ownerEmail" className="col-md-6 col-form-label">{details.owner.email}</label>
-						</div>
-						<div className="row">
-							<label htmlFor="ownerPhone" className="col-md-6 col-form-label">Telefon</label>
-			       	 		<label id="ownerPhone" className="col-md-6 col-form-label">{details.owner.phone}</label>
-						</div>
-						<div className="row">
-							<label htmlFor="ownerAddress" className="col-md-6 col-form-label">Adress</label>
-			       	 		<label id="ownerAddress" className="col-md-6 col-form-label">{details.owner.address}</label>
-						</div>
-					</fieldset>
-					</div>
-					</form>
-				</div>
-			:	<div className="h-100 d-flex justify-content-end">
-					<button className="btn btn-info me-2 float-end mt-auto" disabled={loadingDetails} onClick={loadDetails}>
-						{ loadingDetails && <span className="spinner-border spinner-border-sm me-1"/> }
-						Detaljer</button>
-				</div>
-			}
+			<div className="fw-normal">
+			{bunnyGender}
+			<Identifiers bunny={props.bunny} />
+			{showDetails && bunnyDetails}
+			<div><p/></div>
+			{showContacts && bunnyContacts}
 			</div>
-            </span>
+			</div>
 		</div>
 	</div>
 	);
