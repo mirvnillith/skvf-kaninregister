@@ -15,13 +15,18 @@ const Bunnies = (_) => {
         setBunnies(bunnies.bunnies);
     }
 
+    const onBunniesError = (msg) => {
+        setBunnies([]);
+		notifyError(msg);
+    }
+
     const onRemovedBunny = () => {
         setBunnies(undefined);
     }
 
 	useEffect(() => {
 		if (bunnies === undefined) {
-			getBunnies(session.user.id, onBunnies, notifyError);
+			getBunnies(session.user.id, onBunnies, onBunniesError);
 		}
 	});
 	

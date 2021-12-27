@@ -6,8 +6,8 @@ const createOwner = async (user, pwd, successHandler, errorHandler) => {
         body: JSON.stringify({userName: user, password: pwd})
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 400) {
@@ -47,8 +47,8 @@ const updateOwner = async (id, owner, successHandler, errorHandler) => {
         body: JSON.stringify(data)
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
@@ -76,8 +76,8 @@ const activateOwner = async (id, user, pwd, successHandler, errorHandler) => {
         body: JSON.stringify({userName: user, password: pwd})
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 400) {
@@ -162,8 +162,8 @@ const getOwner = async (id, successHandler, errorHandler) => {
         method: 'GET'
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 204) {
@@ -189,8 +189,8 @@ const getBunny = async (id, successHandler, errorHandler) => {
         method: 'GET'
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 404) {
@@ -210,8 +210,8 @@ const getBunnies = async (owner, successHandler, errorHandler) => {
         method: 'GET'
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
@@ -249,8 +249,8 @@ const createBunny = async (owner, bunny, successHandler, errorHandler) => {
         body: JSON.stringify(data)
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 400) {
@@ -300,8 +300,8 @@ const updateBunny = async (owner, bunny, successHandler, errorHandler) => {
         body: JSON.stringify(data)
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 400) {
@@ -335,8 +335,8 @@ const transferBunny = async (owner, bunny, successHandler, errorHandler) => {
         body: JSON.stringify({})
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
@@ -361,8 +361,8 @@ const claimBunny = async (owner, token, successHandler, errorHandler) => {
         body: JSON.stringify({claimToken: token})
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
@@ -390,8 +390,8 @@ const reclaimBunny = async (id, successHandler, errorHandler) => {
         body: JSON.stringify({})
     });
 
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 204) {
@@ -645,8 +645,8 @@ const loginUser = async (user, pwd, successHandler, errorHandler) => {
         headers: new Headers({'content-type': 'application/json'}),
         body: JSON.stringify({userName: user, password: pwd})
     });
-    const responseMsg = await response.json();
     if (response.status === 200) {
+    	const responseMsg = await response.json();
         successHandler(responseMsg);
     }
     else if (response.status === 401) {
