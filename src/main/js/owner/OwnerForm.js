@@ -85,6 +85,7 @@ const OwnerForm = (props) => {
                         <div className="row mb-2">
                             <div className="col-md-12 fst-italic">
 							Detta är vad upphittare av din kanin ska använda för att försöka nå dig, så var frikostig.
+							Du kan skriva flera e-postadresser och telefonnummer.
 							</div>
 						</div>
                         <div className="row mb-2">
