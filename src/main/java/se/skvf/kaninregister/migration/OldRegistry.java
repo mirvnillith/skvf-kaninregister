@@ -108,6 +108,7 @@ public class OldRegistry {
 			LOG.info(cnt + " of " + ownerMap.size());
 			cnt++;
 			registry.add(owner);
+			pause();
 		}
 		
 		LOG.info("Bunnies ...");
@@ -117,6 +118,15 @@ public class OldRegistry {
 			cnt++;
 			bunny.getValue().setOwner(ownerMap.get(bunny.getKey()).getId());
 			registry.add(bunny.getValue());
+			pause();
+		}
+	}
+
+	private static void pause() {
+		try {
+			Thread.sleep(1000L);
+		} catch (InterruptedException ignored) {
+			ignored.printStackTrace();
 		}
 	}
 

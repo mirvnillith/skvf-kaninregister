@@ -139,10 +139,14 @@ public class GoogleDrive {
 	}
 
 	public static void main(String[] args) throws IOException {
-		System.out.println(readLines(new FileInputStream("credentials.json"), Charset.forName("UTF-8")).stream()
+		if (args.length == 0) {
+			System.out.println(readLines(new FileInputStream("credentials.json"), Charset.forName("UTF-8")).stream()
 				.map(line -> line.replace('"', '§'))
 				.map(line -> line.replace('\\', '¤'))
 				.collect(Collectors.joining("")));
+		} else {
+			System.out.println(decode(args[0]));
+		}
 	}
 
 	private static String decode(String credentials) {
