@@ -756,6 +756,9 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			validateNoSession();
 			
 			Owner owner = validateOwner(id, false);
+			if (isTransferOwner(owner)) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
 			if (isNotEmpty(owner.getUserName())) {
 				throw new WebApplicationException(BAD_REQUEST);
 			}

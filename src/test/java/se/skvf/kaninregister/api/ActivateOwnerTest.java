@@ -12,6 +12,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.skvf.kaninregister.api.BunnyRegistryApiImpl.TRANSFER_OWNER;
 
 import java.io.IOException;
 
@@ -51,6 +52,19 @@ public class ActivateOwnerTest extends BunnyRegistryApiTest {
 		dto.setPassword(randomUUID().toString());
 		
 		assertError(BAD_REQUEST, () -> api.activateOwner(owner.getId(), dto));
+	}
+	
+	@Test
+	public void activate_transferOwner() throws IOException {
+		
+		Owner owner = mockOwner()
+				.setName(TRANSFER_OWNER);
+		
+		CreateOwnerDTO dto = new CreateOwnerDTO();
+		dto.setUserName(randomUUID().toString());
+		dto.setPassword(randomUUID().toString());
+		
+		assertError(NOT_FOUND, () -> api.activateOwner(owner.getId(), dto));
 	}
 	
 	@Test
