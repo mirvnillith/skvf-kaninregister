@@ -71,6 +71,12 @@ public class OldRegistry {
 	@Value("${skvf.dev.migration:}")
 	private String oldRegistry;
 
+	private static long pause = 1000L;
+	
+	static void setPause(long pause) {
+		OldRegistry.pause = pause;
+	}
+	
 	void setOldRegistry(String oldRegistry) {
 		this.oldRegistry = oldRegistry;
 	}
@@ -124,7 +130,7 @@ public class OldRegistry {
 
 	private static void pause() {
 		try {
-			Thread.sleep(1000L);
+			Thread.sleep(pause);
 		} catch (InterruptedException ignored) {
 			ignored.printStackTrace();
 		}

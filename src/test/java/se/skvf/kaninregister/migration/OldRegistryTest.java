@@ -82,6 +82,7 @@ public class OldRegistryTest extends BunnyTest {
 	
 	@BeforeEach
 	public void setup() throws IOException {
+		OldRegistry.setPause(0L);
 		old.setOldRegistry("Old Registry");
 		when(drive.getSpreadsheet("Old Registry")).thenReturn(spreadsheet);
 		when(spreadsheet.getSheet(OWNERS_SHEET)).thenReturn(ownerSheet);
