@@ -9,6 +9,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static se.skvf.kaninregister.api.BunnyRegistryApiImpl.TRANSFER_OWNER;
 
 import java.io.IOException;
 
@@ -22,7 +23,7 @@ public class ReclaimBunnyTest extends BunnyRegistryApiTest {
 	@Test
 	public void reclaimBunny() throws IOException {
 		
-		Owner owner = mockOwner();
+		Owner owner = mockOwner().setName(TRANSFER_OWNER);
 		Owner previousOwner = mockOwner();
 		mockSession(previousOwner.getId());
 		
@@ -43,7 +44,7 @@ public class ReclaimBunnyTest extends BunnyRegistryApiTest {
 	@Test
 	public void reclaimBunny_error() throws IOException {
 		
-		Owner owner = mockOwner();
+		Owner owner = mockOwner().setName(TRANSFER_OWNER);
 		Owner previousOwner = mockOwner();
 		mockSession(previousOwner.getId());
 		
@@ -57,10 +58,9 @@ public class ReclaimBunnyTest extends BunnyRegistryApiTest {
 	}
 	
 	@Test
-	public void reclaimBunny_activatedOwner() throws IOException {
+	public void reclaimBunny_notTransferOwner() throws IOException {
 		
 		Owner owner = mockOwner();
-		owner.setPassword(randomUUID().toString());
 		Owner previousOwner = mockOwner();
 		mockSession(previousOwner.getId());
 		

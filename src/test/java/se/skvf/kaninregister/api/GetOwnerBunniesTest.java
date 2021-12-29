@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.skvf.kaninregister.api.BunnyRegistryApiImpl.TRANSFER_OWNER;
 
 import java.io.IOException;
 
@@ -47,7 +48,8 @@ public class GetOwnerBunniesTest extends BunnyRegistryApiTest {
 		Owner owner = mockOwner();
 		mockSession(owner.getId());
 		
-		Owner newOwner = mockOwner();
+		Owner newOwner = mockOwner()
+				.setName(TRANSFER_OWNER);
 		Bunny bunny = mockBunny()
 				.setOwner(newOwner.getId())
 				.setPreviousOwner(owner.getId());

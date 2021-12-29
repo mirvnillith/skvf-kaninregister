@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.skvf.kaninregister.api.BunnyRegistryApiImpl.TRANSFER_OWNER;
 
 import java.io.IOException;
 
@@ -28,7 +29,7 @@ public class ClaimBunnyTest extends BunnyRegistryApiTest {
 		Owner owner = mockOwner()
 				.setSignature(randomUUID().toString());
 		mockSession(owner.getId());
-		Owner tempOwner = mockOwner();
+		Owner tempOwner = mockOwner().setName(TRANSFER_OWNER);
 		Owner previousOwner = mockOwner();
 		
 		Bunny bunny = mockBunny();
@@ -54,7 +55,7 @@ public class ClaimBunnyTest extends BunnyRegistryApiTest {
 		Owner owner = mockOwner()
 				.setSignature(randomUUID().toString());
 		mockSession(owner.getId());
-		Owner tempOwner = mockOwner();
+		Owner tempOwner = mockOwner().setName(TRANSFER_OWNER);
 		Owner previousOwner = mockOwner();
 		
 		Bunny bunny = mockBunny();
@@ -70,13 +71,12 @@ public class ClaimBunnyTest extends BunnyRegistryApiTest {
 	}
 	
 	@Test
-	public void claimBunny_activatedOwner() throws IOException {
+	public void claimBunny_notTransferOwner() throws IOException {
 		
 		Owner owner = mockOwner()
 				.setSignature(randomUUID().toString());
 		mockSession(owner.getId());
-		Owner tempOwner = mockOwner()
-				.setPassword(randomUUID().toString());
+		Owner tempOwner = mockOwner();
 		Owner previousOwner = mockOwner();
 		
 		Bunny bunny = mockBunny();

@@ -75,6 +75,8 @@ import se.skvf.kaninregister.model.Registry;
 @Provider
 public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 
+	static final String TRANSFER_OWNER = "Ägarbyte";
+
 	private static final Log LOG = LogFactory.getLog(BunnyRegistryApiImpl.class);
 
 	static final String SESSION_SIGNING = "signing";
@@ -477,7 +479,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			Set<String> newOwners = transfers.stream().map(Bunny::getOwner).collect(toSet());
 			Map<String, Owner> owners = registry.findOwners(newOwners).stream().collect(toMap(Owner::getId, identity()));
 			for (Bunny transfer : transfers) {
-				if (!owners.get(transfer.getOwner()).isActivated()) {
+				if (isTransferOwner(owners.get(transfer.getOwner()))) {
 					OwnerBunnyListDTO dto = toOwnerListDTO(transfer);
 					dto.setClaimToken(transfer.getOwner());
 					bunnies.getBunnies().add(dto);
@@ -792,7 +794,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			Owner currentOwner = validateOwner(bunny.getOwner(), false);
 			
-			if (currentOwner.isActivated()) {
+			if (!isTransferOwner(currentOwner)) {
 				throw new WebApplicationException(CONFLICT);
 			}
 			
@@ -804,6 +806,10 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			return toDTO(bunny);
 		});
+	}
+
+	private static boolean isTransferOwner(Owner owner) {
+		return owner.getName().equals(TRANSFER_OWNER) && !owner.isActivated();
 	}
 
 	@Override
@@ -934,12 +940,12 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			validateSession(owner);
 			Owner newOwner = validateOwner(owner, true);
-			Owner tempOwner = validateOwner(claim.getClaimToken(), false);
-			if (tempOwner.isActivated()) {
+			Owner currentOwner = validateOwner(claim.getClaimToken(), false);
+			if (!isTransferOwner(currentOwner)) {
 				throw new WebApplicationException(NOT_FOUND);
 			}
 			
-			Collection<Bunny> bunnies = registry.findBunnies(byOwner(tempOwner.getId()));
+			Collection<Bunny> bunnies = registry.findBunnies(byOwner(currentOwner.getId()));
 			if (bunnies.isEmpty()) {
 				throw new WebApplicationException(NOT_FOUND);
 			}
@@ -947,7 +953,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			bunny.setOwner(newOwner.getId());
 			registry.update(bunny);
-			registry.remove(tempOwner);
+			registry.remove(currentOwner);
 			
 			return toDTO(bunny);
 		});
@@ -965,7 +971,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				throw new WebApplicationException(NOT_FOUND);
 			}
 			
-			String newOwnerId = registry.add(newOwner().setName("Ägarbyte"));
+			String newOwnerId = registry.add(newOwner().setName(TRANSFER_OWNER));
 			bunny.setPreviousOwner(ownerId);
 			bunny.setOwner(newOwnerId);
 			registry.update(bunny);
