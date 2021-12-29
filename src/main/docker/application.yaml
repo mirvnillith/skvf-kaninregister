@@ -10,4 +10,5 @@ skvf:
     password: "${ADDO_PASSWORD}"
   approval:
     url: "${APPROVAL_URL}"
+  variant: "${VARIANT:}"
   
