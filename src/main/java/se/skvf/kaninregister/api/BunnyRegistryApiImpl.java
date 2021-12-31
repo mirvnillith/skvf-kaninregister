@@ -427,7 +427,6 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			if (bunny == null) {
 				throw new WebApplicationException(NOT_FOUND);
 			}
-			validateSession(bunny.getOwner());
 			
 			if (StringUtils.isEmpty(bunny.getPreviousOwner())) {
 				return new BunnyOwnerDTO();
