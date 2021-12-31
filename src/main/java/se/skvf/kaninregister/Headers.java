@@ -14,22 +14,32 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VariantHeader implements Filter {
+public class Headers implements Filter {
 
-	static final String HEADER = "skvf-variant";
+	static final String VARIANT = "skvf-variant";
+	static final String FEEDBACK = "skvf-feedback";
 	
 	@Value("${skvf.variant:}")
 	private String variant;
+	@Value("${skvf.feedback:kaninregistret@skvf.se}")
+	private String feedback;
 
 	void setVariant(String variant) {
 		this.variant = variant;
 	}
 	
+	void setFeedback(String feedback) {
+		this.feedback = feedback;
+	}
+	
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
+		
+		((HttpServletResponse)response).addHeader(FEEDBACK, feedback);
+		
 		if (StringUtils.isNotEmpty(variant)) {
-			((HttpServletResponse)response).addHeader(HEADER, variant);
+			((HttpServletResponse)response).addHeader(VARIANT, variant);
 		}
 		chain.doFilter(request, response);
 	}

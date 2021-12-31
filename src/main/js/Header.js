@@ -3,7 +3,7 @@ import Logout from './Logout';
 import Edit from './owner/Edit';
 import Finder from './find/Finder';
 
-const variant = {};
+const headers = { loaded: false};
 
 const Header = (props) => {
 	
@@ -13,12 +13,13 @@ const Header = (props) => {
 	const showButtons = !noButtons;
 	
 	useEffect(() => {
-		if (variant.header === undefined) {
+		if (!headers.loaded) {
 			const request = new XMLHttpRequest();
 			request.open('GET', '/', false);
 			request.send(null);
-			variant.header = true;
-			variant.headerText = request.getResponseHeader('skvf-variant');
+			headers.variant = request.getResponseHeader('skvf-variant');
+			headers.feedback = request.getResponseHeader('skvf-feedback');
+			headers.loaded = true;
 		}
 	});
 	
@@ -30,7 +31,7 @@ const Header = (props) => {
            <div className="col-sm-4 align-self-center">
 				{showButtons  && <Finder />}
 				<h1 className="text-center green"> Kaninregister </h1>
-				{variant.headerText && <h1 className="text-center large"><code>{variant.headerText}</code></h1>}
+				{headers.variant && <h1 className="text-center large"><code>{headers.variant}</code></h1>}
 		   </div>
 			{showButtons
 			? 	<div className="col-sm-4 align-self-right">
@@ -40,13 +41,13 @@ const Header = (props) => {
 					</div>
 					<div className="mt-5">
 						<br/>
-						<span className="float-end"><a href="mailto:jonas201973@gmail.com?Subject=Åsikter om kaninregistret">Åsikter?</a></span>
+						<span className="float-end"><a href={'mailto:'+headers.feedback+'?Subject=Åsikter om kaninregistret'}>Åsikter?</a></span>
 					</div>
            		</div>
 			:	<div className="col-sm-4 align-self-right">
 					<div className="mt-5">
 						<br/>
-						<span className="float-end"><a href="mailto:jonas201973@gmail.com?Subject=Åsikter om kaninregistret">Åsikter?</a></span>
+						<span className="float-end"><a href={'mailto:'+headers.feedback+'?Subject=Åsikter om kaninregistret'}>Åsikter?</a></span>
 					</div>
 				</div>
 			}
