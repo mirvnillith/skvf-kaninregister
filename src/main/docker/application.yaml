@@ -11,4 +11,5 @@ skvf:
   approval:
     url: "${APPROVAL_URL}"
   variant: "${VARIANT:}"
+  feedback: "${FEEDBACK:kaninregistret@skvf.se}"
   
