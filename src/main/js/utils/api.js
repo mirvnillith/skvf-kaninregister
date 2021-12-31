@@ -530,9 +530,6 @@ const getBunnyPreviousOwner = async (id, successHandler, errorHandler) => {
 	else if (response.status === 204) {
         successHandler();
     }
-    else if (response.status === 401) {
-        errorHandler("Du måste vara inloggad som kaninens ägare!")
-    }
     else if (response.status === 404) {
         errorHandler("Okänd kanin!")
     }

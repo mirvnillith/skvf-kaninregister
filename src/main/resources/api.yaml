@@ -684,8 +684,6 @@ paths:
                 $ref: '#/components/schemas/BunnyOwnerDTO'
         '204':
           description: Bunny has no public owner
-        '401':
-          description: Session required, of current owner
         '404':
           description: Bunny not found or has no previous owner
         '429':

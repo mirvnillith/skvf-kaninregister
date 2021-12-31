@@ -32,7 +32,6 @@ public class GetBunnyPreviousOwnerTest extends BunnyRegistryApiTest {
 		bunny.setOwner(owner.getId());
 		bunny.setPreviousOwner(owner.getId());
 		
-		mockSession(owner.getId());
 		BunnyOwnerDTO dto = api.getBunnyPreviousOwner(bunny.getId());
 		
 		assertOwner(owner, dto);
@@ -59,23 +58,6 @@ public class GetBunnyPreviousOwnerTest extends BunnyRegistryApiTest {
 		mockSession(bunny.getOwner());
 		
 		assertThat(api.getBunnyPreviousOwner(bunny.getId()).getName()).isNull();
-	}
-	
-	@Test
-	public void getBunnyPreviousOwner_notLoggedIn() throws IOException {
-		
-		Bunny bunny = mockBunny();
-		
-		assertError(UNAUTHORIZED, () -> api.getBunnyPreviousOwner(bunny.getId()));
-	}
-	
-	@Test
-	public void getBunnyPreviousOwner_notLoggedInOwner() throws IOException {
-		
-		Bunny bunny = mockBunny();
-		mockSession(randomUUID().toString());
-		
-		assertError(UNAUTHORIZED, () -> api.getBunnyPreviousOwner(bunny.getId()));
 	}
 	
 	@Test
