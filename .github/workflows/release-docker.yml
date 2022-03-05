@@ -1,0 +1,51 @@
+name: Release Branch
+
+on:
+  push:
+    branches:
+      - 'release/**'
+
+jobs:
+          
+  docker:
+    name: Publish Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11.0.4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: 'java'
+      - name: Maven install
+        run: mvn -B clean install
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+      - name: Get version
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      - name: Docker Hub Login
+        if: ${{ !contains($VERSION, 'SNAPSHOT' }}
+        run: docker login -u mirvnillith -p ${{ secrets.DOCKER_TOKEN }}
+      - name: Docker Hub Push
+        if: ${{ !contains($VERSION, 'SNAPSHOT' }}
+        run: docker push mirvnillith/skvf-kaninregister:$VERSION
+      - name: GCP Tag
+        if: ${{ !contains($VERSION, 'SNAPSHOT' }}
+        run: docker tag mirvnillith/skvf-kaninregister:$VERSION eu.gcr.io/${{ secrets.GCP_PROJECTID_RELEASE }}/kaninregister:$VERSION
+      - name: GCP Login
+        if: ${{ !contains($VERSION, 'SNAPSHOT' }}
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECTID_RELEASE }}
+          service_account_email: ${{ secrets.GCP_EMAIL_RELEASE }}
+          service_account_key: ${{ secrets.GCP_CREDENTIALS_RELEASE }}
+      - name: GCP Configure
+        if: ${{ !contains($VERSION, 'SNAPSHOT' }}
+        run: gcloud auth configure-docker --quiet
+      - name: GCP Push
+        if: ${{ !contains($VERSION, 'SNAPSHOT' }}
+        run: docker push eu.gcr.io/${{ secrets.GCP_PROJECTID_RELEASE }}/kaninregister:$VERSION    
