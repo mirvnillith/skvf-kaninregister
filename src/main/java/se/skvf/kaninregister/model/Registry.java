@@ -31,8 +31,6 @@ public class Registry {
 
 	@Value("${skvf.dev.test:false}")
 	private boolean test;
-	@Value("${skvf.dev.performance:false}")
-	private boolean performance;
 	
 	@PostConstruct
 	public void setup() throws Exception {
@@ -43,9 +41,6 @@ public class Registry {
 		RegistryRuntimeTest runtimeTest = new RegistryRuntimeTest();
 		if (test) {
 			runtimeTest.test(this);
-		}
-		if (performance) {
-			runtimeTest.performance(this);
 		}
 	}
 

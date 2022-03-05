@@ -8,6 +8,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static se.skvf.kaninregister.data.Database.NAME;
 
@@ -37,7 +40,7 @@ public class DatabaseTest extends BunnyTest {
 	@Test
 	public void setup() throws IOException {
 		database.setup();
-		verify(drive).getSpreadsheet(NAME);
+		verifyNoInteractions(drive);
 	}
 	
 	@Test
@@ -48,6 +51,8 @@ public class DatabaseTest extends BunnyTest {
 		String column2 = randomUUID().toString();
 		
 		when(drive.getSpreadsheet(NAME)).thenReturn(spreadsheet);
+		database.setup();
+		
 		when(spreadsheet.getSheet(name)).thenReturn(sheet);
 		when(sheet.getColumns(any())).thenAnswer(i -> {
 			Collection<String> names = i.getArgument(0);
@@ -56,6 +61,6 @@ public class DatabaseTest extends BunnyTest {
 		String sheetName = randomUUID().toString();
 		when(sheet.getName()).thenReturn(sheetName);
 		
-		assertThat(database.getTable(name, asList(column1, column2)).toString()).isEqualTo(sheetName);
+		assertThat(database.getTable(name, asList(column1, column2)).setup().toString()).isEqualTo(sheetName);
 	}
 }
