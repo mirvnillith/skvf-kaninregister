@@ -1,0 +1,28 @@
+name: Feature/Bugfix Branches
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - 'bugfix/**'
+
+jobs:
+          
+  maven:
+    name: Build Maven
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11.0.4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: 'java'
+      - name: Maven install
+        run: mvn -B clean install
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
