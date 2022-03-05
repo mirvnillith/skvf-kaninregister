@@ -23,15 +23,18 @@ public class Database {
 	@Autowired
 	private GoogleDrive drive;
 	
-	private GoogleSpreadsheet spreadsheet;
+	private DelayedSetup<GoogleSpreadsheet> spreadsheet;
 	
 	@PostConstruct
 	public void setup() throws IOException {
-		spreadsheet = drive.getSpreadsheet(NAME);
-		LOG.info(spreadsheet);
+		spreadsheet = new DelayedSetup<>(() -> {
+			GoogleSpreadsheet sheet = drive.getSpreadsheet(NAME);
+			LOG.info(sheet);
+			return sheet;
+		});
 	}
 	
-	public Table getTable(String name, Collection<String> columns) throws IOException {
-		return new Table(spreadsheet.getSheet(name), columns);
+	public DelayedSetup<Table> getTable(String name, Collection<String> columns) {
+		return new DelayedSetup<>(() -> new Table(spreadsheet.setup().getSheet(name), columns));
 	}
 }

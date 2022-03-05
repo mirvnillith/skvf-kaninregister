@@ -29,6 +29,7 @@ import org.mockito.Mock;
 
 import se.skvf.kaninregister.BunnyTest;
 import se.skvf.kaninregister.data.Database;
+import se.skvf.kaninregister.data.DelayedSetupMock;
 import se.skvf.kaninregister.data.Table;
 
 public class RegistryTest extends BunnyTest {
@@ -47,8 +48,8 @@ public class RegistryTest extends BunnyTest {
 	
 	@BeforeEach
 	public void setup() throws Exception {
-		when(database.getTable(BUNNIES_TABLE, Bunny.COLUMNS)).thenReturn(bunnies);
-		when(database.getTable(OWNERS_TABLE, Owner.COLUMNS)).thenReturn(owners);
+		when(database.getTable(BUNNIES_TABLE, Bunny.COLUMNS)).thenReturn(new DelayedSetupMock<>(bunnies));
+		when(database.getTable(OWNERS_TABLE, Owner.COLUMNS)).thenReturn(new DelayedSetupMock<>(owners));
 		registry.setup();
 	}
 	

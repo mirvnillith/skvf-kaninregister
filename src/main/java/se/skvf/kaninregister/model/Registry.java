@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import se.skvf.kaninregister.data.Database;
+import se.skvf.kaninregister.data.DelayedSetup;
 import se.skvf.kaninregister.data.Table;
 
 @Component
@@ -25,8 +26,8 @@ public class Registry {
 	@Autowired
 	private Database database;
 	
-	private Table bunnies;
-	private Table owners;
+	private DelayedSetup<Table> bunnies;
+	private DelayedSetup<Table> owners;
 
 	@Value("${skvf.dev.test:false}")
 	private boolean test;
@@ -49,43 +50,43 @@ public class Registry {
 	}
 
 	public String add(Owner owner) throws IOException {
-		return add(owners, owner);
+		return add(owners.setup(), owner);
 	}
 	
 	public Collection<Owner> findOwners(Collection<String> ids) throws IOException {
-		return owners.find(ids).stream().map(Owner::from).collect(toList());
+		return owners.setup().find(ids).stream().map(Owner::from).collect(toList());
 	}
 	
 	public Collection<Owner> findOwners(Map<String, Predicate<String>> filters) throws IOException {
-		return owners.find(filters).stream().map(Owner::from).collect(toList());
+		return owners.setup().find(filters).stream().map(Owner::from).collect(toList());
 	}
 
 	public void update(Owner owner) throws IOException {
-		update(owners, owner);
+		update(owners.setup(), owner);
 	}
 	
 	public void remove(Owner owner) throws IOException {
-		remove(owners, owner);
+		remove(owners.setup(), owner);
 	}
 	
 	public String add(Bunny bunny) throws IOException {
-		return add(bunnies, bunny);
+		return add(bunnies.setup(), bunny);
 	}
 	
 	public Collection<Bunny> findBunnies(Collection<String> ids) throws IOException {
-		return bunnies.find(ids).stream().map(Bunny::from).collect(toList());
+		return bunnies.setup().find(ids).stream().map(Bunny::from).collect(toList());
 	}
 	
 	public Collection<Bunny> findBunnies(Map<String, Predicate<String>> filters) throws IOException {
-		return bunnies.find(filters).stream().map(Bunny::from).collect(toList());
+		return bunnies.setup().find(filters).stream().map(Bunny::from).collect(toList());
 	}
 	
 	public void update(Bunny bunny) throws IOException {
-		update(bunnies, bunny);
+		update(bunnies.setup(), bunny);
 	}
 	
 	public void remove(Bunny bunny) throws IOException {
-		remove(bunnies, bunny);
+		remove(bunnies.setup(), bunny);
 	}
 	
 	private void remove(Table table, Entity<?> entity) throws IOException {
