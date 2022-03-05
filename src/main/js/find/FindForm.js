@@ -5,6 +5,7 @@ import Identifiers from "../common/Identifiers";
 import Contact from "../common/Contact";
 import Details from "../common/Details";
 import { getBunnyOwner, getBunnyBreeder, getBunnyPreviousOwner } from "../utils/api";
+import { nonPublic } from "../utils/data.js";
 
 const INITIAL_STATE = {
     chip: "",
