@@ -13,13 +13,14 @@ const ApprovalOngoing = (props) => {
 
     return (
 		<div>
-			<h2 className="text-center dark"> Godkännande av datahantering </h2>
+			<h2 className="text-center dark"> Samtycke av personuppgiftshantering </h2>
 		
-			För att kunna använda kaninregistret måste du signera vår hantering av den information du kommer att skriva in.
+			För att kunna använda kaninregistret måste du signera ett samtycke av vår hantering av den information du kommer att skriva in.
 			<p/>
-			Länken nedan kommer att öppnas i ett nytt fönster där själva singeringen kommer att ske, med hjälp av BankID.
-			Det är den som signerar som därmed godkänner att vi hanterar all information om denna ägare och dess kaniner
+			Länken nedan kommer att öppnas i ett nytt fönster där själva signeringen kommer att ske, med hjälp av BankID.
+			Det är den som signerar som samtycker till att vi hanterar all information om denna ägare och dess kaniner
 			enligt den beskrivning som kommer att visas.
+			För barn, utan BankID, krävs därmed att en förälder deltar i skapandet av kontot och då står som samtyckande.
 			<p/>
 			Efter du har signerat ska du gå tillbaka till det här fönstret för att komma vidare in till kaninregistret.
 			<p/>
