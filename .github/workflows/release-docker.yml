@@ -27,7 +27,16 @@ jobs:
         uses: github/codeql-action/analyze@v1
       - name: Get version
         run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-      - name: Docker Hub Login
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{env.VERSION}}',
+              sha: context.sha
+            })      - name: Docker Hub Login
         if: ${{ !contains(env.VERSION, 'SNAPSHOT') }}
         run: docker login -u mirvnillith -p ${{ secrets.DOCKER_TOKEN }}
       - name: Docker Hub Push
