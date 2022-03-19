@@ -27,38 +27,53 @@ public class Table {
 
 	public static final String ID = "ID";
 	
-	private final GoogleSheet sheet;
-	private final Map<String, String> attributeColumns;
-	private final Map<String, String> columnAttributes;
+	private final Database database;
+	private final String name;
+	private final Set<String> tableColumns;
+	private GoogleSheet sheet;
+	private Map<String, String> attributeColumns;
+	private Map<String, String> columnAttributes;
 
 	public static final Map<String, Predicate<String>> ALL = Maps.toMap(singleton(ID), k -> ((Predicate<String>)Objects::nonNull));
 	
-	public Table(GoogleSheet sheet, Collection<String> columns) throws IOException {
-		this.sheet = sheet;
-		Set<String> tableColumns = new HashSet<>(columns);
+	Table(Database database, String name, Collection<String> columns) {
+		this.database = database;
+		this.name = name;
+		tableColumns = new HashSet<>(columns);
 		tableColumns.add(ID);
-		attributeColumns = sheet.getColumns(tableColumns);
-		columnAttributes = attributeColumns.entrySet().stream().collect(toMap(Map.Entry::getValue, Map.Entry::getKey));
-		LOG.info(sheet);
+	}
+	
+	private synchronized GoogleSheet getSheet() throws IOException {
+		if (sheet == null) {
+			sheet = database.getSpreadsheet().getSheet(name);
+			attributeColumns = sheet.getColumns(tableColumns);
+			columnAttributes = attributeColumns.entrySet().stream().collect(toMap(Map.Entry::getValue, Map.Entry::getKey));
+			LOG.info(sheet);
+		}
+		return sheet;
 	}
 
 	public void remove(String id) throws IOException {
-		sheet.removeRow(attributeColumns.get(ID), id);
+		getSheet().removeRow(attributeColumns.get(ID), id);
 		
 		LOG.info("Removed " + id + " from " + this);
 		
 	}
 
 	@Override
-	public String toString() {
-		return sheet.getName();
+	public synchronized String toString() {
+		if (sheet == null) {
+			return name;
+		} else {
+			return sheet.getName();
+		}
 	}
 
 	public String add(Map<String, String> entity) throws IOException {
 		
 		String id = randomUUID().toString();
 		
-		sheet.addRow(attributeColumns.get(ID), mapEntity(entity, id));
+		getSheet().addRow(attributeColumns.get(ID), mapEntity(entity, id));
 		
 		LOG.info("Added " + id + " to " + this);
 		entity.put(ID, id);
@@ -77,11 +92,11 @@ public class Table {
 	}
 
 	public Collection<Map<String, String>> find(Collection<String> ids) throws IOException {
-		return sheet.findRows(attributeColumns.get(ID), ids).stream().map(this::mapRow).collect(toList());
+		return getSheet().findRows(attributeColumns.get(ID), ids).stream().map(this::mapRow).collect(toList());
 	}
 	
 	public Collection<Map<String, String>> find(Map<String, Predicate<String>> filters) throws IOException {
-		return sheet.findRows(mapFilters(filters)).stream().map(this::mapRow).collect(toList());
+		return getSheet().findRows(mapFilters(filters)).stream().map(this::mapRow).collect(toList());
 	}
 	
 	private Map<String, Predicate<String>> mapFilters(Map<String, Predicate<String>> filters) {
@@ -96,9 +111,8 @@ public class Table {
 		
 		String id = entity.get(ID);
 		
-		sheet.updateRow(attributeColumns.get(ID), id, mapEntity(entity, null));
+		getSheet().updateRow(attributeColumns.get(ID), id, mapEntity(entity, null));
 		
 		LOG.info("Updated " + id + " in " + this);
-		
 	}
 }

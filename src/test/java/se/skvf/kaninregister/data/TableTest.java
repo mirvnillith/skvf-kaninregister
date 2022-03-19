@@ -9,17 +9,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static se.skvf.kaninregister.data.Table.ID;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,11 +27,16 @@ import org.mockito.Mock;
 
 import se.skvf.kaninregister.BunnyTest;
 import se.skvf.kaninregister.drive.GoogleSheet;
+import se.skvf.kaninregister.drive.GoogleSpreadsheet;
 
 public class TableTest extends BunnyTest {
 
 	private Table table;
 	
+	@Mock
+	private Database database;
+	@Mock
+	private GoogleSpreadsheet spreadsheet;
 	@Mock
 	private GoogleSheet sheet;
 	@Captor
@@ -55,7 +58,11 @@ public class TableTest extends BunnyTest {
 			return names.stream().collect(toMap(identity(), "Column"::concat));
 		});
 		
-		table = new Table(sheet, asList(attribute1, attribute2));
+		String name = randomUUID().toString();
+		when(database.getSpreadsheet()).thenReturn(spreadsheet);
+		when(spreadsheet.getSheet(name)).thenReturn(sheet);
+		table = new Table(database, name, asList(attribute1, attribute2));
+		verifyNoInteractions(database);
 		
 		entity = new HashMap<>();
 		entity.put(attribute1, randomUUID().toString());

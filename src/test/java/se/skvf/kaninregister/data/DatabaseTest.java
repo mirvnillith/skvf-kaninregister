@@ -6,17 +6,19 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static se.skvf.kaninregister.data.Database.NAME;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -33,14 +35,14 @@ public class DatabaseTest extends BunnyTest {
 	@Mock
 	private GoogleDrive drive;
 	@Mock
-	private GoogleSpreadsheet spreadsheet;
-	@Mock
 	private GoogleSheet sheet;
 	
-	@Test
-	public void setup() throws IOException {
-		database.setup();
-		verifyNoInteractions(drive);
+	private GoogleSpreadsheet spreadsheet;
+	
+	@BeforeEach
+	public void mockSpreadsheet() throws IOException {
+		spreadsheet = mock(GoogleSpreadsheet.class);
+		when(drive.getSpreadsheet(NAME)).thenReturn(spreadsheet);
 	}
 	
 	@Test
@@ -50,9 +52,6 @@ public class DatabaseTest extends BunnyTest {
 		String column1 = randomUUID().toString();
 		String column2 = randomUUID().toString();
 		
-		when(drive.getSpreadsheet(NAME)).thenReturn(spreadsheet);
-		database.setup();
-		
 		when(spreadsheet.getSheet(name)).thenReturn(sheet);
 		when(sheet.getColumns(any())).thenAnswer(i -> {
 			Collection<String> names = i.getArgument(0);
@@ -61,6 +60,15 @@ public class DatabaseTest extends BunnyTest {
 		String sheetName = randomUUID().toString();
 		when(sheet.getName()).thenReturn(sheetName);
 		
-		assertThat(database.getTable(name, asList(column1, column2)).setup().toString()).isEqualTo(sheetName);
+		Table table = database.getTable(name, asList(column1, column2));
+		verifyNoInteractions(drive);
+		assertThat(table.toString()).isEqualTo(name);
+		
+		table.add(new HashMap<>());
+		verify(drive).getSpreadsheet(NAME);
+		verify(spreadsheet).getSheet(name);
+		verify(sheet).addRow(eq("ColumnID"), anyMap());
+		
+		assertThat(table.toString()).isEqualTo(sheetName);
 	}
 }
