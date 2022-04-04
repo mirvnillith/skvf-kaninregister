@@ -34,7 +34,7 @@ jobs:
       - name: GCP Tag
         run: docker tag mirvnillith/skvf-kaninregister:$VERSION eu.gcr.io/${{ secrets.GCP_PROJECTID }}/kaninregister:$VERSION
       - name: GCP Login
-        uses: google-github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GCP_PROJECTID }}
           service_account_email: ${{ secrets.GCP_EMAIL }}
