@@ -1,12 +1,12 @@
 
 const genericErrors = (status, errorHandler, operation) => {
-	if (response.status === 401) {
+	if (status === 401) {
         errorHandler("Du måste vara inloggad!")
     }
-    else if (response.status === 409) {
+    else if (status === 409) {
         errorHandler("Användarnamnet finns redan!")
     }
-    else if (response.status === 412) {
+    else if (status === 412) {
         errorHandler("Du måste ha godkänt datahantering!")
     }
     else if (status == 429) {
