@@ -1,6 +1,7 @@
 package se.skvf.kaninregister.migration;
 
 import static java.util.Arrays.asList;
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -11,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -262,7 +264,7 @@ public class OldRegistry {
 				.setColourMarkings(values.apply(COLOUR_MARKINGS))
 				.setFeatures(values.apply(FEATURES));
 		 
-		 String[] ears = values.apply(EARS).split(",");
+		 String[] ears = ofNullable(values.apply(EARS)).orElse("").split(",");
 		 switch (ears.length) {
 			case 1:
 				bunny.setLeftEar(ears[0].replace("vö","").trim());
