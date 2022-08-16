@@ -24,13 +24,13 @@ const Header = (props) => {
 	});
 	
     return (
-        <div className="row">
+        <div className="row mt-2">
            <div className="col-sm-4 gx-4">
             <a href="https://skvf.se/" rel="noopener noreferrer" target="_blank"><img className="logo" src="/assets/logo.jpg"/></a>
            </div>
            <div className="col-sm-4 align-self-center">
-				{showButtons  && <Finder />}
 				<h1 className="text-center green"> Kaninregister </h1>
+				{showButtons  && <Finder />}
 				{headers.variant && <h1 className="text-center large"><code>{headers.variant}</code></h1>}
 		   </div>
 			{showButtons
