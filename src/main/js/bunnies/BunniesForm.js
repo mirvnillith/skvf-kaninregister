@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useSession } from "../hooks/SessionContext";
 import Spinner from "react-bootstrap/Spinner";
 import { getBunnyBreeder, getBunnyPreviousOwner } from "../utils/api";
@@ -7,6 +7,7 @@ import { nonPublic } from "../utils/data";
 import Contact from "../common/Contact";
 import Identifiers from "../common/Identifiers";
 import Details from "../common/Details";
+import Help from "../help/Help";
 
 const Bunny = (props) => {
 	
@@ -110,6 +111,11 @@ const Bunny = (props) => {
 			<button className="btn btn-info w-100 mt-1 shadow-none" onClick={loadContacts} disabled={loadingContacts}>
 				{ loadingContacts && <span className="spinner-border spinner-border-sm me-1" /> }
 				Kontakter</button>
+			<div className="m-1">
+				<Link className="link-primary" to={'/bunny/'+props.bunny.id+'/profile'} target='_blank'>Profil</Link>
+				&nbsp;
+				<Help topic="profile"/>
+			</div>
 			</div>
 			<div className="w-100">
 			<div className={"bunny-name extra-large"+(props.bunny.claimToken?" fst-italic":"")}>

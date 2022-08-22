@@ -8,6 +8,7 @@ import Header from './Header'
 import Activation from './activation/Activation'
 import Bunnies from './bunnies/Bunnies'
 import Bunny from './bunny/Bunny'
+import Profile from './profile/Profile'
 import Owner from './owner/Owner'
 import CloseAccount from './closeaccount/CloseAccount'
 import Transfer from './transfer/Transfer'
@@ -16,6 +17,7 @@ import Claim from './transfer/Claim'
 import Find from './find/Find'
 import HelpPicture from './help/HelpPicture'
 import HelpPublicPrivate from './help/HelpPublicPrivate'
+import HelpProfile from './help/HelpProfile'
 import {
     BrowserRouter,
     Routes,
@@ -88,6 +90,7 @@ const App = () => {
                     <Route path="/changepassword" element={<RequiresSession element={ <ChangePassword /> }/>}/>
                     <Route path="/bunnies" element={<RequiresSession element={ <Bunnies /> }/>}/>
                     <Route path="/bunny" element={<RequiresSession element={ <Bunny /> }/>}/>
+                    <Route path="/bunny/:bunnyId/profile" element={<Profile />}/>
                     <Route path="/bunny/:bunnyId" element={<RequiresSession element={ <Bunny /> }/>}/>
                     <Route path="/transfer/:bunnyId" element={<RequiresSession element={ <Transfer /> }/>}/>
                     <Route path="/reclaim/:bunnyId" element={<RequiresSession element={ <Reclaim /> }/>}/>
@@ -97,6 +100,7 @@ const App = () => {
                     <Route path="/find" element={<Find />} />
                     <Route path="/help/picture" element={<HelpPicture />} />
                     <Route path="/help/publicprivate" element={<HelpPublicPrivate />} />
+                    <Route path="/help/profile" element={<HelpProfile />} />
                     <Route path="/*" element={<Navigate replace to="/" />} />
                 </Route>
               </Routes>

@@ -31,6 +31,10 @@ a {
 	font-size: 4rem;
 }
 
+.mega-large {
+	font-size: 6rem;
+}
+
 .col-form-label.large {
 	font-weight: bold;
 }
@@ -51,6 +55,10 @@ legend {
 	font-weight: bold;
 }
 
+.bunny-name {
+	font-weight: bold;
+}
+
 .bunny-picture {
 	max-width: 100px;
 	max-height: 100px;
@@ -64,6 +72,12 @@ legend {
 .align-picture {
 	margin-right: 10px;	
 	width: 100px;
+}
+
+.bunny-picture-profile {
+	max-width: 400px;
+	height: 200%;
+	max-height: 400px;
 }
 
 .alert {
