@@ -3,7 +3,7 @@ import Help from "../help/Help";
 
 const Contact = (props) => {
 
-    return 	props.contact.name
+    return 	props.contact && props.contact.name
 				?	<div className="fw-normal mt-2">
 						<b>{props.title}:</b> {props.contact.name}&nbsp;{props.contact.nonPublic && <Help topic="publicprivate"/>}
 						<br/>&nbsp;
