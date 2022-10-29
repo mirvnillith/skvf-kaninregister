@@ -1,5 +1,7 @@
 package se.skvf.kaninregister.migration;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
 import static java.util.UUID.randomUUID;
 import static java.util.function.Function.identity;
@@ -8,29 +10,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.skvf.kaninregister.migration.OldRegistry.BIRTHDATE;
 import static se.skvf.kaninregister.migration.OldRegistry.BREEDERS_SHEET;
+import static se.skvf.kaninregister.migration.OldRegistry.BREEDER_COAT;
+import static se.skvf.kaninregister.migration.OldRegistry.BREEDER_EARS;
+import static se.skvf.kaninregister.migration.OldRegistry.BREEDER_EMAIL;
+import static se.skvf.kaninregister.migration.OldRegistry.BREEDER_NAME;
+import static se.skvf.kaninregister.migration.OldRegistry.BREEDER_OWNERNAME;
+import static se.skvf.kaninregister.migration.OldRegistry.BREEDER_PHONE;
+import static se.skvf.kaninregister.migration.OldRegistry.BREEDER_PUBLIC;
+import static se.skvf.kaninregister.migration.OldRegistry.BREEDER_RING;
+import static se.skvf.kaninregister.migration.OldRegistry.BREEDER_STREET_ADDRESS;
 import static se.skvf.kaninregister.migration.OldRegistry.BUNNY_NAME;
 import static se.skvf.kaninregister.migration.OldRegistry.CHIP;
-import static se.skvf.kaninregister.migration.OldRegistry.COAT;
 import static se.skvf.kaninregister.migration.OldRegistry.COLOUR_MARKINGS;
-import static se.skvf.kaninregister.migration.OldRegistry.EARS;
-import static se.skvf.kaninregister.migration.OldRegistry.EMAIL;
 import static se.skvf.kaninregister.migration.OldRegistry.FEATURES;
 import static se.skvf.kaninregister.migration.OldRegistry.GENDER;
 import static se.skvf.kaninregister.migration.OldRegistry.OWNERS_SHEET;
+import static se.skvf.kaninregister.migration.OldRegistry.OWNER_COAT;
+import static se.skvf.kaninregister.migration.OldRegistry.OWNER_EARS;
+import static se.skvf.kaninregister.migration.OldRegistry.OWNER_EMAIL;
 import static se.skvf.kaninregister.migration.OldRegistry.OWNER_NAME;
+import static se.skvf.kaninregister.migration.OldRegistry.OWNER_PHONE;
+import static se.skvf.kaninregister.migration.OldRegistry.OWNER_PUBLIC;
+import static se.skvf.kaninregister.migration.OldRegistry.OWNER_RING;
+import static se.skvf.kaninregister.migration.OldRegistry.OWNER_STREET_ADDRESS;
 import static se.skvf.kaninregister.migration.OldRegistry.PERSONNUMMER;
-import static se.skvf.kaninregister.migration.OldRegistry.PHONE;
 import static se.skvf.kaninregister.migration.OldRegistry.POSTAL_ADDRESS;
-import static se.skvf.kaninregister.migration.OldRegistry.PUBLIC;
+import static se.skvf.kaninregister.migration.OldRegistry.POSTAL_CITY;
+import static se.skvf.kaninregister.migration.OldRegistry.POSTAL_CODE;
 import static se.skvf.kaninregister.migration.OldRegistry.RACE;
-import static se.skvf.kaninregister.migration.OldRegistry.RING;
-import static se.skvf.kaninregister.migration.OldRegistry.STREET_ADDRESS;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -93,19 +105,30 @@ public class OldRegistryTest extends BunnyTest {
 		columns.put(BIRTHDATE, randomUUID().toString());
 		columns.put(BUNNY_NAME, randomUUID().toString());
 		columns.put(CHIP, randomUUID().toString());
-		columns.put(COAT, randomUUID().toString());
+		columns.put(OWNER_COAT, randomUUID().toString());
+		columns.put(BREEDER_COAT, randomUUID().toString());
 		columns.put(COLOUR_MARKINGS, randomUUID().toString());
-		columns.put(EARS, randomUUID().toString());
-		columns.put(EMAIL, randomUUID().toString());
+		columns.put(OWNER_EARS, randomUUID().toString());
+		columns.put(BREEDER_EARS, randomUUID().toString());
+		columns.put(OWNER_EMAIL, randomUUID().toString());
+		columns.put(BREEDER_EMAIL, randomUUID().toString());
 		columns.put(FEATURES, randomUUID().toString());
 		columns.put(GENDER, randomUUID().toString());
 		columns.put(OWNER_NAME, randomUUID().toString());
-		columns.put(PHONE, randomUUID().toString());
+		columns.put(BREEDER_OWNERNAME, randomUUID().toString());
+		columns.put(BREEDER_NAME, randomUUID().toString());
+		columns.put(OWNER_PHONE, randomUUID().toString());
+		columns.put(BREEDER_PHONE, randomUUID().toString());
 		columns.put(POSTAL_ADDRESS, randomUUID().toString());
-		columns.put(PUBLIC, randomUUID().toString());
+		columns.put(POSTAL_CODE, randomUUID().toString());
+		columns.put(POSTAL_CITY, randomUUID().toString());
+		columns.put(OWNER_PUBLIC, randomUUID().toString());
+		columns.put(BREEDER_PUBLIC, randomUUID().toString());
 		columns.put(RACE, randomUUID().toString());
-		columns.put(RING, randomUUID().toString());
-		columns.put(STREET_ADDRESS, randomUUID().toString());
+		columns.put(OWNER_RING, randomUUID().toString());
+		columns.put(BREEDER_RING, randomUUID().toString());
+		columns.put(OWNER_STREET_ADDRESS, randomUUID().toString());
+		columns.put(BREEDER_STREET_ADDRESS, randomUUID().toString());
 		
 		when(ownerSheet.getColumns(any())).thenAnswer(i -> {
 			Collection<String> names = i.getArgument(0);
@@ -137,7 +160,7 @@ public class OldRegistryTest extends BunnyTest {
 	@Test
 	public void bunnyCoat() throws IOException {
 		
-		assertBunny(COAT, Bunny::getCoat);
+		assertBunny(OWNER_COAT, BREEDER_COAT, Bunny::getCoat);
 	}
 	
 	@Test
@@ -149,7 +172,7 @@ public class OldRegistryTest extends BunnyTest {
 	@Test
 	public void bunnyFeatures() throws IOException {
 		
-		assertBunny(FEATURES, Bunny::getFeatures);
+		assertBunny(FEATURES, null, Bunny::getFeatures);
 	}
 	
 	@Test
@@ -167,25 +190,25 @@ public class OldRegistryTest extends BunnyTest {
 	@Test
 	public void bunnyRing() throws IOException {
 		
-		assertBunny(RING, Bunny::getRing);
+		assertBunny(OWNER_RING, BREEDER_RING, Bunny::getRing);
 	}
 	
 	@Test
 	public void ownerName() throws IOException {
 		
-		assertOwner(OWNER_NAME, Owner::getName);
+		assertOwner(OWNER_NAME, BREEDER_OWNERNAME, Owner::getName);
 	}
 	
 	@Test
 	public void ownerEmail() throws IOException {
 		
-		assertOwner(EMAIL, Owner::getEmail);
+		assertOwner(OWNER_EMAIL, BREEDER_EMAIL, Owner::getEmail);
 	}
 	
 	@Test
 	public void ownerPhone() throws IOException {
 		
-		assertOwner(PHONE, Owner::getPhone);
+		assertOwner(OWNER_PHONE, BREEDER_PHONE, Owner::getPhone);
 	}
 	
 	@ParameterizedTest
@@ -193,7 +216,7 @@ public class OldRegistryTest extends BunnyTest {
 	public void ownerAddress(String streetAddress, String postalAddress, String address) throws IOException {
 		
 		Map<String, String> row = defaultRow();
-		row.put(columns.get(STREET_ADDRESS), streetAddress);
+		row.put(columns.get(OWNER_STREET_ADDRESS), streetAddress);
 		row.put(columns.get(POSTAL_ADDRESS), postalAddress);
 		
 		when(ownerSheet.findRows(anyMap())).thenReturn(singleton(row));
@@ -217,8 +240,10 @@ public class OldRegistryTest extends BunnyTest {
 	public void ownerPublic(String value, boolean expected) throws IOException {
 		
 		Map<String, String> row = defaultRow();
-		row.put(columns.get(PUBLIC), value);
+		row.put(columns.get(OWNER_PUBLIC), value);
+		row.put(columns.get(BREEDER_PUBLIC), value);
 		
+		when(ownerSheet.findRows(anyMap())).thenReturn(singleton(row));
 		when(breederSheet.findRows(anyMap())).thenReturn(singleton(row));
 		
 		old.setup();
@@ -245,7 +270,7 @@ public class OldRegistryTest extends BunnyTest {
 	public void bunnyEars(String ears, String leftEar, String rightEar) throws IOException {
 		
 		Map<String, String> row = defaultRow();
-		row.put(columns.get(EARS), ears);
+		row.put(columns.get(OWNER_EARS), ears);
 		
 		when(ownerSheet.findRows(anyMap())).thenReturn(singleton(row));
 		
@@ -299,97 +324,138 @@ public class OldRegistryTest extends BunnyTest {
 	@Test
 	public void nameConflict() throws IOException {
 		
-		assertConflict(OWNER_NAME);
+		assertOwnerConflict(OWNER_NAME);
+		assertBreederConflict(BREEDER_OWNERNAME);
+		assertBreederConflict(BREEDER_NAME);
 	}
 	
 	@Test
 	public void streetAddressConflict() throws IOException {
 		
-		assertConflict(STREET_ADDRESS);
+		assertOwnerConflict(OWNER_STREET_ADDRESS);
+		assertBreederConflict(BREEDER_STREET_ADDRESS);
 	}
 	
 	@Test
 	public void postalAddressConflict() throws IOException {
 		
-		assertConflict(POSTAL_ADDRESS);
+		assertOwnerConflict(POSTAL_ADDRESS);
+		assertBreederConflict(POSTAL_CODE);
+		assertBreederConflict(POSTAL_CITY);
 	}
 	
 	@Test
 	public void phoneConflict() throws IOException {
 		
-		assertConflict(PHONE);
+		assertOwnerConflict(OWNER_PHONE);
+		assertBreederConflict(BREEDER_PHONE);
 	}
 	
 	@Test
 	public void emailConflict() throws IOException {
 		
-		assertConflict(EMAIL);
+		assertOwnerConflict(OWNER_EMAIL);
+		assertBreederConflict(BREEDER_EMAIL);
 	}
 	
 	@Test
 	public void publicConflict() throws IOException {
 		
 		Map<String, String> owner1 = defaultRow();
-		owner1.put(columns.get(PUBLIC), "Ja");
+		owner1.put(columns.get(OWNER_PUBLIC), "Ja");
+		owner1.put(columns.get(BREEDER_PUBLIC), "Ja");
 		Map<String, String> owner2 = defaultRow();
 		owner2.put(columns.get(PERSONNUMMER), owner1.get(columns.get(PERSONNUMMER)));
-		owner2.put(columns.get(PUBLIC), "Nej");
+		owner2.put(columns.get(OWNER_PUBLIC), "Nej");
+		owner2.put(columns.get(BREEDER_PUBLIC), "Nej");
 		
-		when(ownerSheet.findRows(anyMap())).thenReturn(singleton(owner1));
-		when(breederSheet.findRows(anyMap())).thenReturn(singleton(owner2));
+		when(ownerSheet.findRows(anyMap())).thenReturn(asList(owner1, owner2));
+		
+		assertThrows(IllegalStateException.class, () -> old.setup());
+		
+		when(ownerSheet.findRows(anyMap())).thenReturn(emptyList());
+		when(breederSheet.findRows(anyMap())).thenReturn(asList(owner1, owner2));
 		
 		assertThrows(IllegalStateException.class, () -> old.setup());
 	}
 
-	private void assertConflict(String attribute) throws IOException {
+	private void assertOwnerConflict(String attribute) throws IOException {
 		Map<String, String> owner1 = defaultRow();
 		owner1.put(columns.get(attribute), randomUUID().toString());
 		Map<String, String> owner2 = defaultRow();
 		owner2.put(columns.get(PERSONNUMMER), owner1.get(columns.get(PERSONNUMMER)));
 		owner2.put(columns.get(attribute), randomUUID().toString());
 		
-		when(ownerSheet.findRows(anyMap())).thenReturn(singleton(owner1));
-		when(breederSheet.findRows(anyMap())).thenReturn(singleton(owner2));
+		when(ownerSheet.findRows(anyMap())).thenReturn(asList(owner1, owner2));
+		
+		assertThrows(IllegalStateException.class, () -> old.setup());
+	}
+	
+	private void assertBreederConflict(String attribute) throws IOException {
+		Map<String, String> owner1 = defaultRow();
+		owner1.put(columns.get(attribute), randomUUID().toString());
+		Map<String, String> owner2 = defaultRow();
+		owner2.put(columns.get(PERSONNUMMER), owner1.get(columns.get(PERSONNUMMER)));
+		owner2.put(columns.get(attribute), randomUUID().toString());
+		
+		when(breederSheet.findRows(anyMap())).thenReturn(asList(owner1, owner2));
 		
 		assertThrows(IllegalStateException.class, () -> old.setup());
 	}
 	
 	private void assertBunny(String attribute, Function<Bunny, String> getter) throws IOException {
+		assertBunny(attribute, attribute, getter);
+	}
+	
+	private void assertBunny(String ownerAttribute, String breederAttribute, Function<Bunny, String> getter) throws IOException {
 		
 		Map<String, String> row = defaultRow();
 		
-		String value = randomUUID().toString();
-		row.put(columns.get(attribute), value);
+		String ownerValue = randomUUID().toString();
+		row.put(columns.get(ownerAttribute), ownerValue);
 		
 		when(ownerSheet.findRows(anyMap())).thenReturn(singleton(row));
 		
 		old.setup();
 		
 		verify(registry).add(bunny.capture());
-		assertThat(getter.apply(bunny.getValue())).isEqualTo(value);
+		assertThat(getter.apply(bunny.getValue())).isEqualTo(ownerValue);
 		
-		reset(ownerSheet, registry);
-		when(breederSheet.findRows(anyMap())).thenReturn(singleton(row));
-		
-		old.setup();
-		
-		verify(registry).add(bunny.capture());
-		assertThat(getter.apply(bunny.getValue())).isEqualTo(value);
+		if (breederAttribute != null) {
+			reset(ownerSheet, registry);
+			
+			String breederValue = randomUUID().toString();
+			row.put(columns.get(breederAttribute), breederValue);
+			
+			when(breederSheet.findRows(anyMap())).thenReturn(singleton(row));
+			
+			old.setup();
+			
+			verify(registry).add(bunny.capture());
+			assertThat(getter.apply(bunny.getValue())).isEqualTo(breederValue);
+		}
 	}
 	
 	private void assertOwner(String attribute, Function<Owner, String> getter) throws IOException {
+		assertOwner(attribute, attribute, getter);
+	}
+	
+	private void assertOwner(String ownerAttribute, String breederAttribute, Function<Owner, String> getter) throws IOException {
 		
 		Map<String, String> row = defaultRow();
 		
-		String value = randomUUID().toString();
-		row.put(columns.get(attribute), value);
+		String ownerValue = randomUUID().toString();
+		row.put(columns.get(ownerAttribute), ownerValue);
 		
 		when(ownerSheet.findRows(anyMap())).thenReturn(singleton(row));
 		
 		old.setup();
 		
 		verify(registry).add(owner.capture());
-		assertThat(getter.apply(owner.getValue())).isEqualTo(value);
+		assertThat(getter.apply(owner.getValue())).isEqualTo(ownerValue);
+		
+		String breederValue = randomUUID().toString();
+		row.put(columns.get(breederAttribute), breederValue);
 		
 		reset(ownerSheet, registry);
 		when(breederSheet.findRows(anyMap())).thenReturn(singleton(row));
@@ -397,13 +463,14 @@ public class OldRegistryTest extends BunnyTest {
 		old.setup();
 		
 		verify(registry).add(owner.capture());
-		assertThat(getter.apply(owner.getValue())).isEqualTo(value);
+		assertThat(getter.apply(owner.getValue())).isEqualTo(breederValue);
 	}
 
 	private Map<String, String> defaultRow() {
 		Map<String, String> row = new HashMap<>();
 		row.put(columns.get(PERSONNUMMER), randomUUID().toString());
-		row.put(columns.get(EARS), randomUUID().toString());
+		row.put(columns.get(OWNER_EARS), randomUUID().toString());
+		row.put(columns.get(BREEDER_EARS), randomUUID().toString());
 		row.put(columns.get(GENDER), randomUUID().toString());
 		return row;
 	}

@@ -38,22 +38,33 @@ import se.skvf.kaninregister.model.Registry;
 @Component
 public class OldRegistry {
 
-	static final String PUBLIC = "godkänner uppgiftsutlämning till privatperson";
-	static final String EMAIL = "Mailadress";
-	static final String PHONE = "telefon";
+	static final String OWNER_PUBLIC = "godkänner uppgiftsutlämning till privatperson";
+	static final String BREEDER_PUBLIC = "Godkänner att privatpersoner får ta del av uppgifterna";
+	static final String OWNER_EMAIL = "Mailadress";
+	static final String BREEDER_EMAIL = "E-mail";
+	static final String OWNER_PHONE = "telefon";
+	static final String BREEDER_PHONE = "Telefonnr";
 	static final String POSTAL_ADDRESS = "postadress";
-	static final String STREET_ADDRESS = "adress";
+	static final String POSTAL_CODE = "Postnr.";
+	static final String POSTAL_CITY = "Ort";
+	static final String OWNER_STREET_ADDRESS = "adress";
+	static final String BREEDER_STREET_ADDRESS = "Adress";
 	static final String OWNER_NAME = "ägare";
+	static final String BREEDER_OWNERNAME = "Namn";
+	static final String BREEDER_NAME = "Uppfödningens namn";
 	static final String FEATURES = "kännetecken";
 	static final String COLOUR_MARKINGS = "teckning och färg";
-	static final String COAT = "hårlag";
+	static final String OWNER_COAT = "hårlag";
+	static final String BREEDER_COAT = "pälsvariant";
 	static final String RACE = "ras";
 	static final String GENDER = "kön";
 	static final String BUNNY_NAME = "kaninens namn";
 	static final String BIRTHDATE = "födelsedatum";
-	static final String RING = "ringnr + uppfödarnummer";
+	static final String OWNER_RING = "ringnr + uppfödarnummer";
+	static final String BREEDER_RING = "ringnr";
 	static final String CHIP = "mikrochipnr";
-	static final String EARS = "öronnummer, vä först";
+	static final String OWNER_EARS = "öronmärkning (V, H)";
+	static final String BREEDER_EARS = "Örontatuering vö, hö";
 	static final String PERSONNUMMER = "Personnummer";
 
 	private static final Log LOG = LogFactory.getLog(OldRegistry.class);
@@ -103,10 +114,10 @@ public class OldRegistry {
 		Map<String, Owner> ownerMap = new HashMap<>();
 		Multimap<String, Bunny> bunnyMap = MultimapBuilder.hashKeys().arrayListValues().build();
 		
-		boolean valid = collectOwners(ownerMap, bunnyMap) &&
-				collectBreeders(ownerMap, bunnyMap);
+		boolean validOwners = collectOwners(ownerMap, bunnyMap);
+		boolean validBreeders = collectBreeders(ownerMap, bunnyMap);
 		
-		if (!valid) {
+		if (!validOwners || !validBreeders) {
 			throw new IllegalStateException(oldRegistry + " is not valid");
 		}
 		
@@ -143,22 +154,23 @@ public class OldRegistry {
 		LOG.info(breeders.getName() + " ...");
 		Map<String, String> columns = mapColumns(breeders, 
 				PERSONNUMMER, 
-				EARS,
+				BREEDER_EARS,
 				CHIP,
-				RING,
+				BREEDER_RING,
 				BIRTHDATE,
 				BUNNY_NAME,
 				GENDER,
 				RACE,
-				COAT,
+				BREEDER_COAT,
 				COLOUR_MARKINGS,
-				FEATURES,
-				OWNER_NAME,
-				STREET_ADDRESS,
-				POSTAL_ADDRESS,
-				PHONE,
-				EMAIL,
-				PUBLIC);
+				BREEDER_OWNERNAME,
+				BREEDER_NAME,
+				BREEDER_STREET_ADDRESS,
+				POSTAL_CODE,
+				POSTAL_CITY,
+				BREEDER_PHONE,
+				BREEDER_EMAIL,
+				BREEDER_PUBLIC);
 		return migrateOwners(loadAll(breeders, columns), columns, ownerMap, bunnyMap);
 	}
 
@@ -175,22 +187,22 @@ public class OldRegistry {
 		LOG.info(owners.getName() + " ...");
 		Map<String, String> columns = mapColumns(owners,
 				PERSONNUMMER, 
-				EARS,
+				OWNER_EARS,
 				CHIP,
-				RING,
+				OWNER_RING,
 				BIRTHDATE,
 				BUNNY_NAME,
 				GENDER,
 				RACE,
-				COAT,
+				OWNER_COAT,
 				COLOUR_MARKINGS,
 				FEATURES,
 				OWNER_NAME,
-				STREET_ADDRESS,
+				OWNER_STREET_ADDRESS,
 				POSTAL_ADDRESS,
-				PHONE,
-				EMAIL,
-				PUBLIC);
+				OWNER_PHONE,
+				OWNER_EMAIL,
+				OWNER_PUBLIC);
 		return migrateOwners(loadAll(owners, columns), columns, ownerMap, bunnyMap);
 	}
 
@@ -221,6 +233,9 @@ public class OldRegistry {
 			if (!merge(pnr, existing, "name", existing.getName(), owner.getName(), Owner::setName)) {
 				valid = false;
 			}
+			if (!merge(pnr, existing, "breederName", existing.getBreederName(), owner.getBreederName(), Owner::setBreederName)) {
+				valid = false;
+			}
 			if (!merge(pnr, existing, "address", existing.getAddress(), owner.getAddress(), Owner::setAddress)) {
 				valid = false;
 			}
@@ -230,7 +245,7 @@ public class OldRegistry {
 			if (!merge(pnr, existing, "email", existing.getEmail(), owner.getEmail(), Owner::setEmail)) {
 				valid = false;
 			}
-			if (!merge(pnr, existing, "public", ""+existing.isPublicOwner(), ""+owner.isPublicOwner(), null)) {
+			if (!merge(pnr, existing, "publicOwner", ""+existing.isPublicOwner(), ""+owner.isPublicOwner(), null)) {
 				valid = false;
 			}
 			return valid;
@@ -257,14 +272,15 @@ public class OldRegistry {
 		 Bunny bunny = new Bunny()
 				.setName(values.apply(BUNNY_NAME))
 				.setChip(values.apply(CHIP))
-				.setRing(values.apply(RING))
+				.setRing(ofNullable(values.apply(OWNER_RING)).orElse(values.apply(BREEDER_RING)))
 				.setBirthDate(values.apply(BIRTHDATE))
 				.setRace(values.apply(RACE))
-				.setCoat(values.apply(COAT))
+				.setCoat(ofNullable(values.apply(OWNER_COAT)).orElse(values.apply(BREEDER_COAT)))
 				.setColourMarkings(values.apply(COLOUR_MARKINGS))
 				.setFeatures(values.apply(FEATURES));
 		 
-		 String[] ears = ofNullable(values.apply(EARS)).orElse("").split(",");
+		 String earsValue = ofNullable(values.apply(OWNER_EARS)).orElse(values.apply(BREEDER_EARS));
+		 String[] ears = ofNullable(earsValue).orElse("").split(",");
 		 switch (ears.length) {
 			case 1:
 				bunny.setLeftEar(ears[0].replace("vö","").trim());
@@ -298,17 +314,28 @@ public class OldRegistry {
 	private static Owner owner(Function<String, String> values) {
 		
 		Owner owner = new Owner()
-				.setName(values.apply(OWNER_NAME))
-				.setPhone(values.apply(PHONE))
-				.setEmail(values.apply(EMAIL));
-		
-		String address = values.apply(STREET_ADDRESS);
+				.setName(ofNullable(values.apply(OWNER_NAME)).orElse(values.apply(BREEDER_OWNERNAME)))
+				.setPhone(ofNullable(values.apply(OWNER_PHONE)).orElse(values.apply(BREEDER_PHONE)))
+				.setEmail(ofNullable(values.apply(OWNER_EMAIL)).orElse(values.apply(BREEDER_EMAIL)));
+		owner.setBreederName(values.apply(BREEDER_NAME));
+		String address = ofNullable(values.apply(OWNER_STREET_ADDRESS)).orElse(values.apply(BREEDER_STREET_ADDRESS));
 		if (isNotBlank(values.apply(POSTAL_ADDRESS))) {
 			address += ", " + values.apply(POSTAL_ADDRESS);
 		}
+		if (isNotBlank(values.apply(POSTAL_CODE))) {
+			address += ", " + values.apply(POSTAL_CODE);
+			if (isNotBlank(values.apply(POSTAL_CITY))) {
+				address += " " + values.apply(POSTAL_CITY);
+			}
+		} else {
+			if (isNotBlank(values.apply(POSTAL_CITY))) {
+				address += ", " + values.apply(POSTAL_CITY);
+			}
+		}
 		owner.setAddress(address);
 		
-		if ("ja".equalsIgnoreCase(values.apply(PUBLIC))) {
+		if ("ja".equalsIgnoreCase(values.apply(OWNER_PUBLIC)) ||
+				"ja".equalsIgnoreCase(values.apply(BREEDER_PUBLIC))) {
 			owner.setPublicOwner(true)
 				.setPublicBreeder(true);
 		}
