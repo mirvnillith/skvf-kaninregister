@@ -84,7 +84,7 @@ public class OldRegistry {
 	@Value("${skvf.dev.migration:}")
 	private String oldRegistry;
 
-	private static long pause = 1000L;
+	private static long pause = 5000L;
 	
 	static void setPause(long pause) {
 		OldRegistry.pause = pause;

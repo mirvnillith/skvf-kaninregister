@@ -68,7 +68,7 @@ public class GoogleSheet {
 		}
 			
 		Map<String, String> columns = new HashMap<>();
-		List<Object> row = data.getValues().get(0);
+		List<Object> row = values.get(0);
 		for (int i = 0; i < row.size(); i++) {
 			if (columnNames.contains(row.get(i).toString())) {
 				columns.put(row.get(i).toString(), column(i));
