@@ -126,7 +126,12 @@ public class OldRegistry {
 		for (Owner owner : ownerMap.values()) {
 			LOG.info(cnt + " of " + ownerMap.size());
 			cnt++;
-			registry.add(owner);
+			try {
+				registry.add(owner);
+			} catch (IllegalStateException illegal) {
+				System.err.println(owner.getName());
+				illegal.printStackTrace();
+			}
 			pause();
 		}
 		
@@ -136,7 +141,12 @@ public class OldRegistry {
 			LOG.info(cnt + " of " + bunnyMap.size());
 			cnt++;
 			bunny.getValue().setOwner(ownerMap.get(bunny.getKey()).getId());
-			registry.add(bunny.getValue());
+			try {
+				registry.add(bunny.getValue());
+			} catch (IllegalStateException illegal) {
+				System.err.println(bunny.getValue().getName());
+				illegal.printStackTrace();
+			}
 			pause();
 		}
 	}
