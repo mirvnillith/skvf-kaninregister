@@ -121,6 +121,8 @@ public class OldRegistry {
 			throw new IllegalStateException(oldRegistry + " is not valid");
 		}
 		
+		boolean failure = false;
+		
 		LOG.info("Owners ...");
 		int cnt = 1;
 		for (Owner owner : ownerMap.values()) {
@@ -131,6 +133,7 @@ public class OldRegistry {
 			} catch (IllegalStateException illegal) {
 				System.err.println(owner.getName());
 				illegal.printStackTrace();
+				failure = true;
 			}
 			pause();
 		}
@@ -146,8 +149,13 @@ public class OldRegistry {
 			} catch (IllegalStateException illegal) {
 				System.err.println(bunny.getValue().getName());
 				illegal.printStackTrace();
+				failure = true;
 			}
 			pause();
+		}
+		
+		if (failure) {
+			throw new IllegalStateException("Migration failed");
 		}
 	}
 
