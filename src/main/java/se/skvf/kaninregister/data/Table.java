@@ -6,12 +6,12 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
@@ -29,7 +29,7 @@ public class Table {
 	
 	private final Database database;
 	private final String name;
-	private final Set<String> tableColumns;
+	private final List<String> tableColumns;
 	private GoogleSheet sheet;
 	private Map<String, String> attributeColumns;
 	private Map<String, String> columnAttributes;
@@ -39,8 +39,9 @@ public class Table {
 	Table(Database database, String name, Collection<String> columns) {
 		this.database = database;
 		this.name = name;
-		tableColumns = new HashSet<>(columns);
+		tableColumns = new ArrayList<>(columns);
 		tableColumns.add(ID);
+		tableColumns.addAll(columns);
 	}
 	
 	private synchronized GoogleSheet getSheet() throws IOException {
