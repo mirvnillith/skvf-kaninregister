@@ -39,7 +39,7 @@ public class Table {
 	Table(Database database, String name, Collection<String> columns) {
 		this.database = database;
 		this.name = name;
-		tableColumns = new ArrayList<>(columns);
+		tableColumns = new ArrayList<>();
 		tableColumns.add(ID);
 		tableColumns.addAll(columns);
 	}
