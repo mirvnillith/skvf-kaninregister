@@ -6,7 +6,7 @@ const Notification = (props) => {
 
 	const Content = (props) => {
 		return (<div>
-				{props.message.length > 0
+				{Array.isArray(props.message)
 				? <p>{props.message[0]} <Alert.Link href={props.message[1]}>{props.message[2]}</Alert.Link> {props.message[3]}</p>
 				: <p>{props.message}</p>
 				}
