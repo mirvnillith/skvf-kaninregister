@@ -621,6 +621,9 @@ const approve = async (id, approvedOwnerHandler, approvalFailedHandler, approval
     else if (response.status === 401) {
         errorHandler("Något gick fel när signeringen skulle verifieras, prova att logga ut och logga in igen.")
     }
+    else if (response.status === 402) {
+        errorHandler(["Det saknas krediter för BankID-signering. Vänligen informera ","mailto:kaninregistret@skvf.se?Subject=BankID-krediter","kaninregistret@skvf.se","."])
+    }
     else if (response.status === 404) {
         errorHandler("Ägaren kunde inte hittas")
     }

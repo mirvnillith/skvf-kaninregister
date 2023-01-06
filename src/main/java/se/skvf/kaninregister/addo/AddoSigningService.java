@@ -7,6 +7,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
+import static javax.ws.rs.core.Response.Status.PAYMENT_REQUIRED;
 import static net.vismaaddo.api.DocumentDTO.MimeTypeEnum.PDF;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.commons.codec.digest.DigestUtils.digest;
@@ -26,7 +27,9 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -61,10 +64,11 @@ import net.vismaaddo.api.VismaAddoApi;
 public class AddoSigningService {
 
 	static final String ONE_DAY = "P1D";
-	static final String SIGNING_NAME = "Datahantering i SKVFs kaninregister";
+	static final String SIGNING_NAME = "Samtyckesavtal för SKVFs kaninregister";
 	static final String SIGNING_COMMENT = "Detta dokument beskriver hur vi hanterar din information i vårt register";
 
 	private static final Log LOG = LogFactory.getLog(AddoSigningService.class);
+	private static final String NOT_ENOUGH_CREDITS = "\"FaultCode\":304";
 	
 	private VismaAddoApi addo;
 	
@@ -79,6 +83,8 @@ public class AddoSigningService {
 	private URL testUrl;
 	@Value("${skvf.dev.addo:false}")
 	private boolean test;
+	@Value("${skvf.dev.log:false}")
+	private boolean log;
 	
 	private String templateId;
 	
@@ -119,11 +125,14 @@ public class AddoSigningService {
 		
 		addo = JAXRSClientFactory.create(url, VismaAddoApi.class, asList(jsonProvider));
 		
-		if (test) {
+		if (log) {
 			ClientConfiguration config = WebClient.getConfig(addo);
 			config.getInInterceptors().add(new LoggingInInterceptor());
 			LoggingOutInterceptor loggingOutInterceptor = new LoggingOutInterceptor();
 			config.getOutInterceptors().add(loggingOutInterceptor);
+		}
+		
+		if (test) {
 			new AddoRuntimeTest().test(this);
 		}
 	}
@@ -178,7 +187,16 @@ public class AddoSigningService {
 			request.setTemplateOverride(template);
 			
 			LOG.info("initiateSigning(" + session + ")");
-			String token = addo.initiateSigning(request).getSigningToken();
+			String token;
+			try {
+				token = addo.initiateSigning(request).getSigningToken();
+			} catch (BadRequestException badRequest) {
+				String payload = badRequest.getResponse().readEntity(String.class);
+				if (payload.contains(NOT_ENOUGH_CREDITS)) {
+					throw new WebApplicationException(PAYMENT_REQUIRED);
+				}
+				throw badRequest;
+			}
 			LOG.info("initiateSigning(" + session + "): " + token);
 			
 			SigningStatusDTO status = getSigningStatus(session, token);
