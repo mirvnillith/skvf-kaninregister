@@ -16,7 +16,8 @@ const HelpPicture = (_) => {
 			<p/>
 			<h4>Bild på datorn</h4>
 			Givetvis kan inte Kaninregistret hämta bilder från din dator, men det finns ett antal gratistjänster på nätet där du enkelt kan lägga upp dem
-			för att få en länk att använda här:
+			för att få en länk att använda här (tänk på att det är länken till bilden du vill ha och inte länken till sidan med bilden på):
+			<p/>
 			<ul>
 			<li><a href="https://sv.imgbb.com/" rel="noopener noreferrer" target="_blank">ImgBB</a></li>
 			<li><a href="https://postimages.org/" rel="noopener noreferrer" target="_blank">Postimages</a></li>
