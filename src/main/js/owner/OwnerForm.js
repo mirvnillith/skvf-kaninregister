@@ -51,10 +51,20 @@ const OwnerForm = (props) => {
             <form onSubmit={handleSubmit}>
                 <div className="col-md-12">
                     <div className="row mb-2">
+                        <div className="col-sm-12">
+                            <button type="submit" className="btn btn-primary float-end" disabled={isSubmitting}>
+                                {isSubmitting && <span className="spinner-border spinner-border-sm me-1"/>}
+                                Spara
+                            </button>
+                            <button type="cancel" className="btn btn-secondary float-end me-2" disabled={isSubmitting}
+                                    onClick={props.cancelHandler}>Avbryt
+                            </button>
+                        </div>
+                    </div>
+                    <div className="row mb-2">
                         <label htmlFor="name" className="col-md-6 col-form-label large">Namn</label>
                         <div className="col-md-6">
-                            <input autoFocus
-                                   id="name"
+                            <input id="name"
                                    name="name"
                                    type="text"
                                    value={values.name}
@@ -68,8 +78,7 @@ const OwnerForm = (props) => {
                     <div className="row mb-2">
                         <label htmlFor="userName" className="col-md-6 col-form-label">Användarnamn</label>
                         <div className="col-md-6">
-                            <input autoFocus
-                                   type="text"
+                            <input type="text"
                                    id="userName"
                                    name="userName"
                                    value={values.userName}

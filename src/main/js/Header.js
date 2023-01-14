@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import Logout from './Logout';
 import Edit from './owner/Edit';
+import ToBunnies from './bunnies/ToBunnies';
 import Finder from './find/Finder';
 
 const headers = { loaded: false};
@@ -38,6 +39,7 @@ const Header = (props) => {
 					<div className="w-100">
                			<Logout />
                			<Edit />
+               			<ToBunnies />
 					</div>
 					<div className="mt-5">
 						<br/>
