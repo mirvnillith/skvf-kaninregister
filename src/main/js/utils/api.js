@@ -99,6 +99,24 @@ const activateOwner = async (id, user, pwd, successHandler, errorHandler) => {
     }
 }
 
+const isOwnerActivated = async (id, successHandler, errorHandler) => {
+
+    const response = await fetch(`/api/owners/${id}/activated`, {
+        method: 'GET'
+    });
+
+    if (response.status === 200) {
+    	const responseMsg = await response.json();
+        successHandler(responseMsg);
+    }
+    else if (response.status === 401) {
+        errorHandler("Du är redan inloggad!")
+    }
+    else {
+		genericErrors(response.status, errorHandler, "aktivering")
+    }
+}
+
 const changeUserPassword = async (id, currentPassword, newPassword, successHandler, errorHandler) => {
 
     const response = await fetch(`/api/owners/${id}/password`, {
@@ -658,5 +676,6 @@ export {
 	getBunnyOwner,
 	getBunnyBreeder,
 	getBunnyPreviousOwner,
-	getBunny
+	getBunny,
+	isOwnerActivated
 }

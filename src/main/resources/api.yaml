@@ -193,6 +193,31 @@ paths:
         '429':
           description: Google API limit reached
           
+  /owners/{id}/activated:
+    get:
+      tags: [BunnyRegistry]
+      operationId: isOwnerActivated
+      summary: Checks if an existing owner is activated.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Owner active status
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ActivatedStatusDTO'
+        '400':
+          description: Invalid user name
+        '401':
+          description: Session NOT allowed
+        '429':
+          description: Google API limit reached
+          
   /owners/{id}/activate:
     post:
       tags: [BunnyRegistry]
@@ -729,6 +754,12 @@ components:
           type: string
         phone:
           type: string
+          
+    ActivatedStatusDTO:
+      type: object
+      properties:
+        activated:
+          type: boolean
           
     BunnyOwnerDTO:
       type: object

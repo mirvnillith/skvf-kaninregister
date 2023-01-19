@@ -792,6 +792,23 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			return toDTO(owner);
 		});
 	}
+	
+	@Override
+	public ActivatedStatusDTO isOwnerActivated(String id) {
+		return process(() -> {
+			
+			validateNoSession();
+			
+			Owner owner = validateOwner(id, false);
+			if (isTransferOwner(owner)) {
+				throw new WebApplicationException(NOT_FOUND);
+			}
+
+			ActivatedStatusDTO dto = new ActivatedStatusDTO();
+			dto.setActivated(owner.isActivated());
+			return dto;
+		});
+	}
 
 	private void validateNewUser(String userName, String password) throws IOException {
 		if (isBlank(userName)) {
@@ -809,7 +826,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		if (isTransferOwner(owner)) {
 			throw new WebApplicationException(NOT_FOUND);
 		}
-		if (isNotEmpty(owner.getUserName())) {
+		if (owner.isActivated()) {
 			throw new WebApplicationException(BAD_REQUEST);
 		}
 		return owner;
