@@ -42,10 +42,10 @@ public class ActivateOwnerTest extends BunnyRegistryApiTest {
 	}
 	
 	@Test
-	public void activate_withUserName() throws IOException {
+	public void activate_alreadyActivated() throws IOException {
 		
 		Owner owner = mockOwner()
-				.setUserName(randomUUID().toString());
+				.setPassword(randomUUID().toString());
 		
 		CreateOwnerDTO dto = new CreateOwnerDTO();
 		dto.setUserName(randomUUID().toString());
