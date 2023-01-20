@@ -29,7 +29,7 @@ jobs:
       - name: Get version
         run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Create tag
-        uses: actions/github-script@v5
+        uses: actions/github-script@v6
         with:
           script: |
             github.rest.git.createRef({
