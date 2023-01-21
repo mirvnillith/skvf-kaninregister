@@ -4,6 +4,7 @@ import ActivationForm from './ActivationForm';
 import { activateOwner, loginUser, isOwnerActivated } from '../utils/api';
 import { useSessionUpdater } from "../hooks/SessionContext";
 import { useNotificationUpdater } from "../hooks/NotificationContext";
+import Spinner from "react-bootstrap/Spinner";
 
 const Activation = (props) => {
     const navigate = useNavigate();
