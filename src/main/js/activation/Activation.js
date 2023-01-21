@@ -53,7 +53,7 @@ const Activation = (props) => {
     }
 
     return activated === undefined
-    		? null
+    		? <Spinner animation="border" role="status"> <span className="visually-hidden">laddar innehåll...</span> </Spinner>
     		: activated
     		  ? <Navigate to="/login" />
     		  : <ActivationForm submitHandler={submitHandler}/>

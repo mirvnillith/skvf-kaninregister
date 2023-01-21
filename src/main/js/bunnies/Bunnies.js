@@ -37,7 +37,7 @@ const Bunnies = (_) => {
 	
     return (
 		bunnies === undefined
-		? <BunniesForm />
+		? <Spinner animation="border" role="status"> <span className="visually-hidden">laddar innehåll...</span> </Spinner>
 		: <BunniesForm bunnies={bunnies} removeBunny={removeBunny}/>
     );
 }
