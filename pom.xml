@@ -149,7 +149,7 @@
         		<executions>
           		<execution>
           			<id>index.html</id>
-            		<phase>package</phase>
+            		<phase>prepare-package</phase>
             		<configuration>
               		<target>
               			<fileset id="bundle.js" dir="src/main/resources/static/built" includes="bundle.*.js"/>
