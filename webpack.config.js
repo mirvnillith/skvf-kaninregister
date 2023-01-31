@@ -8,7 +8,7 @@ module.exports = {
     mode: 'development',
     output: {
         path: __dirname,
-        filename: './src/main/resources/static/built/bundle.[contenthash].js'
+        filename: 'target/classes/static/built/bundle.[contenthash].js'
     },
     module: {
         rules: [

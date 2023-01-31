@@ -148,25 +148,11 @@
        			<version>3.1.0</version>
         		<executions>
           		<execution>
-          			<id>clean built</id>
-            		<phase>clean</phase>
-            		<configuration>
-              		<target>
-              			<delete>
-              				<fileset dir="src/main/resources/static/" includes="built/*"/>
-              			</delete>
-              		</target>
-            		</configuration>
-            		<goals>
-              		<goal>run</goal>
-            		</goals>
-          		</execution>
-          		<execution>
           			<id>index.html</id>
             		<phase>prepare-package</phase>
             		<configuration>
               		<target>
-              			<fileset id="bundle.js" dir="src/main/resources/static/built" includes="bundle.*.js"/>
+              			<fileset id="bundle.js" dir="target/classes/static/built" includes="bundle.*.js"/>
               			<echo message="${toString:bundle.js}" file="target/bundle.contenthash.js"/>
               			<replace file="target/bundle.contenthash.js">
               			 	<replacefilter token="bundle." value="contenthash="/>
