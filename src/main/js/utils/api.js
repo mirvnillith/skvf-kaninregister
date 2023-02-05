@@ -393,7 +393,7 @@ const findBunnies = async (identifiers, successHandler, errorHandler) => {
         successHandler(responseMsg);
     }
     else if (response.status === 204) {
-        errorHandler("Sökningen gav för många träffar!")
+        errorHandler(["Sökningen gav för många träffar! Om du inte kan begränsa den ytterligare, kontakta ","mailto:kaninregistret@skvf.se?Subject=Utökad sökning","kaninregistret@skvf.se"," för hjälp."])
     }
     else if (response.status === 400) {
         errorHandler("Felaktig sökning!")
