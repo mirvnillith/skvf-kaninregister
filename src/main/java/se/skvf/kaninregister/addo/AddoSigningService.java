@@ -2,7 +2,9 @@ package se.skvf.kaninregister.addo;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
+import static com.google.common.base.Charsets.UTF_8;
 import static java.lang.System.currentTimeMillis;
+import static java.net.URLDecoder.decode;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.ofNullable;
@@ -22,6 +24,7 @@ import static se.skvf.kaninregister.addo.SigningMethod.SWEDISH_BANKID;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -29,9 +32,7 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.ext.logging.LoggingInInterceptor;
@@ -44,6 +45,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Charsets;
 
 import net.vismaaddo.api.DocumentDTO;
 import net.vismaaddo.api.InitiateSigningRequestDTO;
@@ -319,7 +321,8 @@ public class AddoSigningService {
 		document.setData(encodeBase64String(bytes.toByteArray()));
 		document.setId(randomUUID().toString());
 		document.setMimeType(PDF);
-		document.setName(pdf.getPath().substring(pdf.getPath().lastIndexOf('/')+1));
+		String filename = pdf.getPath().substring(pdf.getPath().lastIndexOf('/')+1);
+		document.setName(decode(filename, UTF_8));
 		document.setIsShared(false);
 		return document;
 	}
