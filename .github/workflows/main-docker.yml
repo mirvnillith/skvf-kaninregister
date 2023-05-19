@@ -41,10 +41,10 @@ jobs:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
           token_format: 'access_token'
       - name: GCP Docker Login
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: 'europe-north1-docker.pkg.dev'
           username: 'oauth2accesstoken'
-          password: '${{ steps.oauth2token.outputs.access.access_token }}'
+          password: '${{ steps.oauth2token.outputs.access_token }}'
       - name: GCP Push
         run: docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECTID }}/images/kaninregister:$VERSION
