@@ -40,7 +40,7 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
           token_format: 'access_token'
-      - name: GCP Docker
+      - name: GCP Docker Login
         uses: docker/login-action@v1
         with:
           registry: 'europe-north1-docker.pkg.dev'
