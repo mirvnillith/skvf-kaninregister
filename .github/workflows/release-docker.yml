@@ -46,18 +46,21 @@ jobs:
         run: docker push mirvnillith/skvf-kaninregister:$VERSION
       - name: GCP Tag
         if: ${{ !contains(env.VERSION, 'SNAPSHOT') }}
-        run: docker tag mirvnillith/skvf-kaninregister:$VERSION eu.gcr.io/${{ secrets.GCP_PROJECTID_RELEASE }}/kaninregister:$VERSION
+        run: docker tag mirvnillith/skvf-kaninregister:$VERSION europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECTID_RELEASE }}/images/kaninregister:$VERSION
       - name: GCP Login
+        id: oauth2token
         if: ${{ !contains(env.VERSION, 'SNAPSHOT') }}
         uses: 'google-github-actions/auth@v1'
         with:
           credentials_json: '${{ secrets.GCP_CREDENTIALS_RELEASE }}'
-      - name: GCP Setup
+          token_format: 'access_token'
+      - name: GCP Docker Login
         if: ${{ !contains(env.VERSION, 'SNAPSHOT') }}
-        uses: google-github-actions/setup-gcloud@v1
-      - name: GCP Configure
-        if: ${{ !contains(env.VERSION, 'SNAPSHOT') }}
-        run: gcloud auth configure-docker --quiet
+        uses: docker/login-action@v2
+        with:
+          registry: 'europe-north1-docker.pkg.dev'
+          username: 'oauth2accesstoken'
+          password: '${{ steps.oauth2token.outputs.access_token }}'
       - name: GCP Push
         if: ${{ !contains(env.VERSION, 'SNAPSHOT') }}
-        run: docker push eu.gcr.io/${{ secrets.GCP_PROJECTID_RELEASE }}/kaninregister:$VERSION
+        run: docker push europe-north1-docker.pkg.dev/${{ secrets.GCP_PROJECTID_RELEASE }}/images/kaninregister:$VERSION
