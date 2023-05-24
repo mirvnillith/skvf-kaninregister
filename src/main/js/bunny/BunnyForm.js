@@ -82,7 +82,7 @@ const BunnyForm = (props) => {
                         </div>
                     </div>
 					<fieldset>
-                        <legend>Märkning</legend>
+                        <legend>Märkning (lämna tomt där ingen finns)</legend>
                         <div className="row mb-2">
                             <label htmlFor="chip" className="col-md-6 col-form-label">Chipnummer</label>
                             <div className="col-md-6">
