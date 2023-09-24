@@ -71,6 +71,9 @@ const Bunny = (_) => {
 	}
 	
     const onBunny = async (bunny) => {
+		if (bunny.owner !== session.user.id) {
+			navigate("/bunnies");
+		}
 		if (bunny.breeder && bunny.breeder !== session.user.id) {
 			await getBunnyBreeder(params.bunnyId, onBunnyBreeder, notifyError);
 		}
