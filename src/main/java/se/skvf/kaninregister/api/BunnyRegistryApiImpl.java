@@ -307,13 +307,11 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	
 	private void setCookies(String sessionId) {
 		Cookie privateCookie = new Cookie(BunnyRegistryApiImpl.class.getSimpleName(), sessionId);
-		//privateCookie.setSecure(true);
 		privateCookie.setHttpOnly(true);
 		privateCookie.setPath("/");
 		privateCookie.setMaxAge(-1);
 		response.addCookie(privateCookie);
 		Cookie publicCookie = new Cookie(BunnyRegistryApi.class.getSimpleName(), BunnyRegistryApi.class.getSimpleName());
-		//publicCookie.setSecure(true);
 		publicCookie.setHttpOnly(false);
 		publicCookie.setPath(privateCookie.getPath());
 		publicCookie.setMaxAge(privateCookie.getMaxAge());
