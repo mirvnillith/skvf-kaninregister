@@ -1,6 +1,7 @@
 package se.skvf.kaninregister.drive;
 
 import static java.lang.System.currentTimeMillis;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singleton;
 import static org.apache.commons.io.IOUtils.readLines;
 
@@ -8,6 +9,8 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,7 +61,7 @@ public class GoogleDrive {
 	}
 
 	@PostConstruct
-	public void setup() throws Exception {
+	public void setup() throws IOException, GeneralSecurityException {
 
 		jsonCredentials = decode(jsonCredentials);
 
@@ -140,10 +143,12 @@ public class GoogleDrive {
 
 	public static void main(String[] args) throws IOException {
 		if (args.length == 0) {
-			System.out.println(readLines(new FileInputStream("credentials.json"), Charset.forName("UTF-8")).stream()
+			try (FileInputStream input = new FileInputStream("credentials.json")) {
+			System.out.println(readLines(input, UTF_8).stream()
 				.map(line -> line.replace('"', '§'))
 				.map(line -> line.replace('\\', '¤'))
 				.collect(Collectors.joining("")));
+			}
 		} else {
 			System.out.println(decode(args[0]));
 		}

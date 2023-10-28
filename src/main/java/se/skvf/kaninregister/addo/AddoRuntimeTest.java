@@ -14,10 +14,10 @@ class AddoRuntimeTest {
 		Signing signing = service.startSigning();
 		System.out.println(signing.getTransactionUrl());
 		
-		Optional<Boolean> status = null;
-		while (status == null || status.isEmpty()) {
+		Optional<Boolean> status = Optional.empty();
+		while (status.isEmpty()) {
 			try {
-				sleep(10 * 1000);
+				sleep(10 * 1000L);
 			} catch (InterruptedException ignored) {
 			}
 			status = service.checkSigning(signing.getToken());

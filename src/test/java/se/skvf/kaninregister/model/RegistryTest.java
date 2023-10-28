@@ -107,13 +107,17 @@ public class RegistryTest extends BunnyTest {
 		find.setId(randomUUID().toString());
 		
 		when(table.find(singleton(find.getId()))).thenReturn(singleton(find.toMap()));
-		assertThat(ids.apply(singleton(find.getId()))).allMatch(f -> f.toMap().equals(find.toMap()));
+		assertThat(ids.apply(singleton(find.getId())))
+			.isNotEmpty()
+			.allMatch(f -> f.toMap().equals(find.toMap()));
 
 		Map<String, Predicate<String>> filter = new HashMap<String, Predicate<String>>();
 		filter.put(find.getId(), find.getId()::equals);
 		
 		when(table.find(filter)).thenReturn(singleton(find.toMap()));
-		assertThat(filters.apply(filter)).allMatch(f -> f.toMap().equals(find.toMap()));
+		assertThat(filters.apply(filter))
+			.isNotEmpty()
+			.allMatch(f -> f.toMap().equals(find.toMap()));
 		
 	}
 	

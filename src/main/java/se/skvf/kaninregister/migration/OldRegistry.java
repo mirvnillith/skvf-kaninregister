@@ -263,7 +263,7 @@ public class OldRegistry {
 			if (!merge(pnr, existing, "email", existing.getEmail(), owner.getEmail(), Owner::setEmail)) {
 				valid = false;
 			}
-			if (!merge(pnr, existing, "publicOwner", ""+existing.isPublicOwner(), ""+owner.isPublicOwner(), null)) {
+			if (!merge(pnr, existing, "publicOwner", "" + existing.isPublicOwner(), "" + owner.isPublicOwner(), Owner::setPublicOwner)) {
 				valid = false;
 			}
 			return valid;

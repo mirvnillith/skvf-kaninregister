@@ -1,5 +1,6 @@
 package se.skvf.kaninregister.model;
 
+import static java.lang.Boolean.parseBoolean;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static se.skvf.kaninregister.data.Table.ID;
@@ -215,6 +216,10 @@ public class Owner extends Entity<Owner> {
 	public Owner setPublicOwner(boolean publicOwner) {
 		this.publicOwner = publicOwner;
 		return this;
+	}
+	
+	public Owner setPublicOwner(String publicOwner) {
+		return setPublicOwner(parseBoolean(publicOwner));
 	}
 	
 	public boolean isPublicOwner() {

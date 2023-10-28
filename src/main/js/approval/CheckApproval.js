@@ -7,7 +7,7 @@ import { useNotificationUpdater } from "../hooks/NotificationContext";
 import { Navigate } from "react-router-dom";
 import ApprovalOngoing from "./ApprovalOngoing";
 
-const checkApprove = (_) => {
+const CheckApproval = (_) => {
     const session = useSession();
     const updateSession = useSessionUpdater();
     const [loading, setLoading] = useState(true);
@@ -70,4 +70,4 @@ const checkApprove = (_) => {
     );
 }
 
-export default checkApprove;
+export default CheckApproval;
