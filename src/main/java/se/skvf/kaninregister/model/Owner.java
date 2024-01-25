@@ -96,7 +96,10 @@ public class Owner extends Entity<Owner> {
 	}
 	
 	public Owner setName(String name) {
-		this.name = name.trim();
+		this.name = name;
+		if (this.name != null) {
+			this.name = this.name.trim();
+		}
 		return this;
 	}
 	
