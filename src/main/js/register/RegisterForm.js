@@ -46,6 +46,11 @@ const RegisterForm = (props) => {
                     <h2>Registrera dig</h2>
 					För att registrera dig som ägare i Kaninregistret behöver du ett användarnamn och ett lösenord.
 					När du väl loggat in kan du komplettera med ditt riktiga namn och kontaktuppgifter.
+					Användarnamnet kan vara vad som helst, så länge det inte redan används av ett existerande konto.
+					<p/>
+					<b>OBS!</b> Om du har kaniner registrerade sedan tidigare ska du <b>inte</b> skapa ett nytt konto här
+					utan aktivera ditt redan förberedda konto.
+					Om du inte har fått någon aktiveringslänk, kontakta <a href="mailto:kaninregistret@skvf.se?Subject=Aktivering">kaninregistret</a>.
                 </div>
                 <div className="col-md-12">
                     <div className="row mb-2">
