@@ -702,6 +702,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 	
 	private static void update(Owner owner, OwnerDTO dto) {
+		ofNullable(dto.getUserName()).ifPresent(owner::setUserName);
 		ofNullable(dto.getEmail()).ifPresent(owner::setEmail);
 		ofNullable(dto.getAddress()).ifPresent(owner::setAddress);
 		ofNullable(dto.getPhone()).ifPresent(owner::setPhone);

@@ -37,7 +37,6 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 		dto.setAddress(randomUUID().toString());
 		dto.setPhone(randomUUID().toString());
 		dto.setName(randomUUID().toString());
-		dto.setUserName(randomUUID().toString());
 		dto.setPublicOwner(false);
 		dto.setBreederName(randomUUID().toString());
 		dto.setBreederEmail(randomUUID().toString());
@@ -49,6 +48,43 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 		assertUpdate(updated, dto, ownerId);
 		assertThat(updated.getUserName()).isEqualTo(userName);
 		assertOwner(updated, ownerArgument.getValue());
+	}
+
+	@Test
+	public void updateOwner_userName() throws IOException {
+		
+		String userName = randomUUID().toString();
+		Owner owner = mockOwner()
+				.setUserName(userName)
+				.setSignature("-");
+		String ownerId = owner.getId();
+		mockSession(ownerId);
+		
+		OwnerDTO dto = new OwnerDTO();
+		dto.setUserName(randomUUID().toString());
+		
+		doNothing().when(registry).update(ownerArgument.capture());
+		OwnerDTO updated = api.updateOwner(ownerId, dto);
+		
+		assertUpdate(updated, dto, ownerId);
+		assertThat(updated.getUserName()).isEqualTo(dto.getUserName());
+		assertOwner(updated, ownerArgument.getValue());
+	}
+
+	@Test
+	public void updateOwner_emptyUserName() throws IOException {
+		
+		String userName = randomUUID().toString();
+		Owner owner = mockOwner()
+				.setUserName(userName)
+				.setSignature("-");
+		String ownerId = owner.getId();
+		mockSession(ownerId);
+		
+		OwnerDTO dto = new OwnerDTO();
+		dto.setUserName(" ");
+		
+		assertError(BAD_REQUEST, () -> api.updateOwner(ownerId, dto));
 	}
 	
 	@Test
@@ -72,6 +108,7 @@ public class UpdateOwnerTest extends BunnyRegistryApiTest {
 
 	private static void assertUpdate(OwnerDTO updated, OwnerDTO dto, String ownerId) {
 		assertThat(updated.getId()).isEqualTo(ownerId);
+		ofNullable(dto.getUserName()).ifPresent(assertThat(updated.getUserName())::isEqualTo);
 		ofNullable(dto.getEmail()).ifPresent(assertThat(updated.getEmail())::isEqualTo);
 		ofNullable(dto.getAddress()).ifPresent(assertThat(updated.getAddress())::isEqualTo);
 		ofNullable(dto.getPhone()).ifPresent(assertThat(updated.getPhone())::isEqualTo);
