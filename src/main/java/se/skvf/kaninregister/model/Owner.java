@@ -87,7 +87,10 @@ public class Owner extends Entity<Owner> {
 	}
 	
 	public Owner setUserName(String userName) {
-		this.userName = userName.trim();
+		this.userName = userName;
+		if (this.userName != null) {
+			this.userName = this.userName.trim();
+		}
 		return this;
 	}
 	

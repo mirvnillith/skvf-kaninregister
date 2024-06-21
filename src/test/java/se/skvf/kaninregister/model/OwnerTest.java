@@ -50,6 +50,17 @@ public class OwnerTest extends EntityTest<Owner> {
 	}
 	
 	@Test
+	public void userName_trim() throws Exception {
+		Owner owner = new Owner();
+		owner.setUserName(null);
+		assertThat(owner.getUserName()).isNull();
+		owner.setUserName(" ");
+		assertThat(owner.getUserName()).isEmpty();
+		owner.setUserName(" user ");
+		assertThat(owner.getUserName()).isEqualTo("user");
+	}
+	
+	@Test
 	public void activated() {
 		
 		Owner owner = create();
