@@ -178,6 +178,81 @@ public class UpdateBunnyTest extends BunnyRegistryApiTest {
 	}
 	
 	@Test
+	public void updateBunny_unknownBreeder() throws IOException {
+		
+		Owner owner = mockOwner()
+				.setSignature(randomUUID().toString());
+		mockSession(owner.getId());
+		reset(registry);
+		when(registry.findOwners(singleton(owner.getId()))).thenReturn(asList(owner));
+		
+		Bunny bunny = mockBunny()
+				.setOwner(owner.getId())
+				.setBreeder(randomUUID().toString());
+		
+		BunnyDTO dto = new BunnyDTO();
+		dto.setName(randomUUID().toString());
+		dto.setBreeder(bunny.getBreeder());
+		
+		dto = api.updateBunny(owner.getId(), bunny.getId(), dto);
+		
+		assertThat(dto.getBreeder()).isEmpty();
+		
+		verify(registry).update(bunnyArgument.capture());
+		assertThat(bunnyArgument.getValue().getBreeder()).isEmpty();
+	}
+	
+	@Test
+	public void updateBunny_noPreviousOwner() throws IOException {
+		
+		Owner owner = mockOwner()
+				.setSignature(randomUUID().toString());
+		mockSession(owner.getId());
+		reset(registry);
+		when(registry.findOwners(anyCollection())).thenReturn(asList(owner));
+		
+		Bunny bunny = mockBunny()
+				.setOwner(owner.getId())
+				.setPreviousOwner(owner.getId());
+		
+		BunnyDTO dto = new BunnyDTO();
+		dto.setName(randomUUID().toString());
+		dto.setPreviousOwner("");
+		
+		dto = api.updateBunny(owner.getId(), bunny.getId(), dto);
+		
+		assertThat(dto.getPreviousOwner()).isEmpty();
+		
+		verify(registry).update(bunnyArgument.capture());
+		assertThat(bunnyArgument.getValue().getPreviousOwner()).isEmpty();
+	}
+	
+	@Test
+	public void updateBunny_unknownPreviousOwner() throws IOException {
+		
+		Owner owner = mockOwner()
+				.setSignature(randomUUID().toString());
+		mockSession(owner.getId());
+		reset(registry);
+		when(registry.findOwners(singleton(owner.getId()))).thenReturn(asList(owner));
+		
+		Bunny bunny = mockBunny()
+				.setOwner(owner.getId())
+				.setPreviousOwner(owner.getId());
+		
+		BunnyDTO dto = new BunnyDTO();
+		dto.setName(randomUUID().toString());
+		dto.setPreviousOwner(randomUUID().toString());
+		
+		dto = api.updateBunny(owner.getId(), bunny.getId(), dto);
+		
+		assertThat(dto.getPreviousOwner()).isEmpty();
+		
+		verify(registry).update(bunnyArgument.capture());
+		assertThat(bunnyArgument.getValue().getPreviousOwner()).isEmpty();
+	}
+	
+	@Test
 	public void updateBunny_duplicateIdentifierOtherBunny() throws IOException {
 		
 		Owner owner = mockOwner()

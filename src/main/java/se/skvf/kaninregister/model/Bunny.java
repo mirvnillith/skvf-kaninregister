@@ -23,9 +23,9 @@ import java.util.stream.Stream;
 
 public class Bunny extends Entity<Bunny> {
 
-	private static final String OWNER = "Ägare";
-	private static final String PREVIOUS_OWNER = "Föregående Ägare";
-	private static final String BREEDER = "Uppfödare";
+	public static final String OWNER = "Ägare";
+	public static final String PREVIOUS_OWNER = "Föregående Ägare";
+	public static final String BREEDER = "Uppfödare";
 
 	public enum IdentifierLocation {
 		LEFT_EAR("Vänster Öra"), RIGHT_EAR("Höger Öra"), CHIP("Chipnummer"), RING("Ringnummer");
