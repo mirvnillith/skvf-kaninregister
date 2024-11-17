@@ -19,6 +19,7 @@ import static javax.ws.rs.core.Response.Status.TOO_MANY_REQUESTS;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static se.skvf.kaninregister.model.Bunny.WILDCARD;
@@ -55,9 +56,9 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -389,19 +390,32 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			Bunny bunny = validateBunny(id);
 			
-			if (StringUtils.isEmpty(bunny.getBreeder())) {
+			if (isEmpty(bunny.getBreeder())) {
 				return new BunnyBreederDTO();
 			}
-			return toBreederDTO(findPublicBreeder(bunny.getBreeder()));
+				
+			Owner publicBreeder = findPublicBreeder(bunny.getBreeder());
+			if (publicBreeder == null) {
+				bunny.setBreeder(null);
+				registry.update(bunny);
+				return new BunnyBreederDTO();
+			}
+			return toBreederDTO(publicBreeder);
 		});
 	}
 
 	private Owner findPublicBreeder(String id) throws IOException {
-		Owner breeder = validateOwner(id, false);
-		if (breeder.isNotPublicBreeder()) {
-			throw new WebApplicationException(NO_CONTENT);
+		Collection<Owner> breeders = registry.findOwners(singleton(id));
+		if (breeders.isEmpty()) {
+			return null;
+		} else {
+			Owner breeder = breeders.iterator().next();
+
+			if (breeder.isNotPublicBreeder()) {
+				throw new WebApplicationException(NO_CONTENT);
+			}
+			return breeder;
 		}
-		return breeder;
 	}
 
 	private Owner validateOwner(String id, boolean requiresApproval) throws IOException {
@@ -452,19 +466,32 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 				throw new WebApplicationException(NOT_FOUND);
 			}
 			
-			if (StringUtils.isEmpty(bunny.getPreviousOwner())) {
+			if (isEmpty(bunny.getPreviousOwner())) {
 				return new BunnyOwnerDTO();
 			}
-			return toOwnerDTO(findPublicPreviousOwner(bunny));
+			
+			Owner publicPreviousOwner = findPublicPreviousOwner(bunny.getPreviousOwner());
+			if (publicPreviousOwner == null) {
+				bunny.setPreviousOwner(null);
+				registry.update(bunny);
+				return new BunnyOwnerDTO();
+			}
+			return toOwnerDTO(publicPreviousOwner);
 		});
 	}
 
-	private Owner findPublicPreviousOwner(Bunny bunny) throws IOException {
-		Owner previousOwner = validateOwner(bunny.getPreviousOwner(), false);
-		if (previousOwner.isNotPublicOwner()) {
-			throw new WebApplicationException(NO_CONTENT);
+	private Owner findPublicPreviousOwner(String id) throws IOException {
+		Collection<Owner> previousOwners = registry.findOwners(singleton(id));
+		if (previousOwners.isEmpty()) {
+			return null;
+		} else {
+			Owner previousOwner = previousOwners.iterator().next();
+
+			if (previousOwner.isNotPublicOwner()) {
+				throw new WebApplicationException(NO_CONTENT);
+			}
+			return previousOwner;
 		}
-		return previousOwner;
 	}
 
 	@Override
@@ -633,6 +660,9 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		checkUniqueIdentifier(bunny, CHIP, dto.getChip());
 		checkUniqueIdentifier(bunny, RING, dto.getRing());
 		
+		dto.setBreeder(checkOwner(dto.getBreeder()));
+		dto.setPreviousOwner(checkOwner(dto.getPreviousOwner()));
+		
 		ofNullable(dto.getBreeder()).ifPresent(bunny::setBreeder);
 		ofNullable(dto.getName()).ifPresent(bunny::setName);
 		ofNullable(dto.getBirthDate()).ifPresent(bunny::setBirthDate);
@@ -648,6 +678,15 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 		ofNullable(dto.getRace()).ifPresent(bunny::setRace);
 		ofNullable(dto.getRightEar()).ifPresent(bunny::setRightEar);
 		ofNullable(dto.getRing()).ifPresent(bunny::setRing);
+	}
+
+	private String checkOwner(String ownerId) throws IOException {
+		
+		if (isNotEmpty(ownerId) &&
+				registry.findOwners(singleton(ownerId)).isEmpty()) {
+			ownerId = "";
+		}
+		return ownerId;
 	}
 
 	private void checkUniqueIdentifier(Bunny bunny, IdentifierLocation location, String newIdentifier) throws IOException {
@@ -889,6 +928,9 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			for (Bunny bunny : registry.findBunnies(byBreeder(id))) {
 				registry.update(bunny.setBreeder(null));
+			}
+			for (Bunny bunny : registry.findBunnies(byPreviousOwner(id))) {
+				registry.update(bunny.setPreviousOwner(null));
 			}
 			
 			registry.remove(owner);

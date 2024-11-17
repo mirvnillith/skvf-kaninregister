@@ -6,6 +6,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -91,7 +92,10 @@ public class GetBunnyBreederTest extends BunnyRegistryApiTest {
 		
 		Bunny bunny = mockBunny();
 		
-		assertError(NOT_FOUND, () -> api.getBunnyBreeder(bunny.getId()));
+		assertThat(api.getBunnyBreeder(bunny.getId()).getName()).isNull();
+		
+		verify(registry).update(bunny);
+		assertThat(bunny.getBreeder()).isNull();
 	}
 	
 	@Test

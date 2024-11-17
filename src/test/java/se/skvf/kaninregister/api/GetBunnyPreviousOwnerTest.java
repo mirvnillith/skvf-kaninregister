@@ -8,6 +8,7 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -67,7 +68,10 @@ public class GetBunnyPreviousOwnerTest extends BunnyRegistryApiTest {
 				.setPreviousOwner(randomUUID().toString());
 		mockSession(bunny.getOwner());
 		
-		assertError(NOT_FOUND, () -> api.getBunnyPreviousOwner(bunny.getId()));
+		assertThat(api.getBunnyPreviousOwner(bunny.getId()).getName()).isNull();
+		
+		verify(registry).update(bunny);
+		assertThat(bunny.getPreviousOwner()).isNull();
 	}
 	
 	@Test

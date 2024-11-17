@@ -10,9 +10,13 @@ import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.skvf.kaninregister.model.Bunny.BREEDER;
+import static se.skvf.kaninregister.model.Bunny.PREVIOUS_OWNER;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +47,7 @@ public class DeleteOwnerTest extends BunnyRegistryApiTest {
 		
 		when(registry.findBunnies(filterArgument.capture())).thenAnswer(i -> {
 			Map<String, Object> filter = i.getArgument(0);
-			if (filter.containsKey("Uppfödare")) {
+			if (filter.containsKey(BREEDER)) {
 				return singleton(bunny);
 			}
 			return emptyList();
@@ -51,9 +55,47 @@ public class DeleteOwnerTest extends BunnyRegistryApiTest {
 		
 		api.deleteOwner(owner.getId());
 		
-		assertThat(filterArgument.getValue().get("Uppfödare")).accepts(owner.getId());
+		Predicate<String> breederFilter = filterArgument.getAllValues().stream()
+			.map(m -> m.get(BREEDER))
+			.filter(Objects::nonNull)
+			.findAny()
+			.orElseThrow(() -> new NullPointerException("Filter " + BREEDER + " not found"));
+		assertThat(breederFilter).accepts(owner.getId());
+		
 		verify(registry).update(bunny);
 		assertThat(bunny.getBreeder()).isNull();
+		
+		verify(registry).remove(owner);
+		assertCookies(sessionId, false);
+	}
+	
+	@Test
+	public void deletePreviousOwner() throws IOException {
+		
+		Owner owner = mockOwner();
+		String sessionId = mockSession(owner.getId());
+		Bunny bunny = mockBunny()
+				.setPreviousOwner(owner.getId());
+		
+		when(registry.findBunnies(filterArgument.capture())).thenAnswer(i -> {
+			Map<String, Object> filter = i.getArgument(0);
+			if (filter.containsKey(PREVIOUS_OWNER)) {
+				return singleton(bunny);
+			}
+			return emptyList();
+		});
+		
+		api.deleteOwner(owner.getId());
+		
+		Predicate<String> previousOwnerFilter = filterArgument.getAllValues().stream()
+				.map(m -> m.get(PREVIOUS_OWNER))
+				.filter(Objects::nonNull)
+				.findAny()
+				.orElseThrow(() -> new NullPointerException("Filter " + PREVIOUS_OWNER + " not found"));
+			assertThat(previousOwnerFilter).accepts(owner.getId());
+
+		verify(registry).update(bunny);
+		assertThat(bunny.getPreviousOwner()).isNull();
 		
 		verify(registry).remove(owner);
 		assertCookies(sessionId, false);
