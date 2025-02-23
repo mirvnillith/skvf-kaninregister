@@ -1,6 +1,5 @@
 package se.skvf.kaninregister.drive;
 
-import static java.lang.System.currentTimeMillis;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singleton;
 import static org.apache.commons.io.IOUtils.readLines;
@@ -8,10 +7,8 @@ import static org.apache.commons.io.IOUtils.readLines;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
-import java.util.List;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -26,13 +23,10 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.Joiner;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
-import com.google.api.services.sheets.v4.model.SpreadsheetProperties;
 
 @SuppressWarnings("deprecation")
 @Component
@@ -94,51 +88,35 @@ public class GoogleDrive {
 
 	private String createSpreadheet(String name) throws IOException {
 
-		Spreadsheet newSheet = new Spreadsheet();
-		newSheet.setProperties(new SpreadsheetProperties().setTitle(name));
-
-		newSheet = sheets.spreadsheets().create(newSheet)
-				.setFields("spreadsheetId")
+		File file = new File()
+				.setName(name)
+				.setMimeType(SPREADSHEET_MIME)
+				.setParents(Collections.singletonList(folder));
+		
+		file = drive.files().create(file)
+				.setFields("id")
 				.execute();
 		
-		LOG.info("createSheet(" + name + "): " + newSheet.getSpreadsheetId());
-
-		return moveToFolder(newSheet.getSpreadsheetId());
-	}
-
-	private String moveToFolder(String fileId) throws IOException {
-
-		File file = drive.files().get(fileId).setFields("parents").execute();
-
-		drive.files().update(fileId, null).setAddParents(folder)
-				.setRemoveParents(Joiner.on(',').join(file.getParents())).execute();
-
-		LOG.info("Moved " + fileId + " to " + folder);
+		LOG.info("createSheet(" + name + "): " + file.getId());
 		
-		return fileId;
+		return file.getId();
 	}
 
 	private String findFile(String name, String mime) throws IOException {
 
 		FileList result = drive.files().list()
 				.setPageSize(10)
+				.setQ(String.format("name = '%s' AND mimeType = '%s' AND '%s' IN parents", name, mime, folder))
 				.setFields("files(id, name, mimeType, parents)")
 				.execute();
-		List<File> files = result.getFiles();
-		if (files != null) {
-			for (File file : files) {
-				if (!file.getParents().contains(folder)) {
-					LOG.info("delete(" + file.getId() + "): " + file.getName() + ":" + file.getMimeType());
-					drive.files().delete(file.getId()).execute();
-				} else {
-					LOG.info(file.getName() + ":" + file.getMimeType() + " (" + file.getId() + ")");
-					if (file.getName().equals(name) && file.getMimeType().equals(mime)) {
-						return file.getId();
-					}
-				}
-			}
+		
+		if (result.getFiles().isEmpty()) {
+			return null;
+		} else {
+			File file = result.getFiles().get(0);
+			LOG.info(file.getName() + ":" + file.getMimeType() + " (" + file.getId() + ")");
+			return file.getId();
 		}
-		return null;
 	}
 
 	public static void main(String[] args) throws IOException {
