@@ -18,17 +18,17 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.sheets.v4.Sheets;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.GoogleCredentials;
 
-@SuppressWarnings("deprecation")
 @Component
 public class GoogleDrive {
 
@@ -59,17 +59,17 @@ public class GoogleDrive {
 
 		jsonCredentials = decode(jsonCredentials);
 
-		final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+		final HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
-		GoogleCredential credential = GoogleCredential
-				.fromStream(new ByteArrayInputStream(jsonCredentials.getBytes()), httpTransport, JSON_FACTORY)
+		GoogleCredentials credentials = GoogleCredentials
+				.fromStream(new ByteArrayInputStream(jsonCredentials.getBytes()))
 				.createScoped(singleton(ACCESS_SCOPE));
 
-		drive = new Drive.Builder(httpTransport, JSON_FACTORY, credential)
+		drive = new Drive.Builder(httpTransport, JSON_FACTORY, new HttpCredentialsAdapter(credentials))
 				.setApplicationName(APPLICATION_NAME)
 				.build();
 
-		sheets = new Sheets.Builder(httpTransport, JSON_FACTORY, credential)
+		sheets = new Sheets.Builder(httpTransport, JSON_FACTORY, new HttpCredentialsAdapter(credentials))
 				.setApplicationName(APPLICATION_NAME)
 				.build();
 	}
