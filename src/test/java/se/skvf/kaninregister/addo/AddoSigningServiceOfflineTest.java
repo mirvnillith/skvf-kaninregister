@@ -2,7 +2,6 @@ package se.skvf.kaninregister.addo;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static se.skvf.kaninregister.addo.OfflineSigning.OFFLINE_URL;

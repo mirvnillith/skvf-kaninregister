@@ -21,13 +21,21 @@ const Bunnies = (_) => {
 		notifyError(msg);
     }
 
+	const changeOrder = (newOrderEvent) => {
+		session.order = newOrderEvent.target.value;
+		setBunnies(undefined);
+	}
+	
     const onRemovedBunny = () => {
         setBunnies(undefined);
     }
 
 	useEffect(() => {
 		if (bunnies === undefined) {
-			getBunnies(session.user.id, onBunnies, onBunniesError);
+			if (!session.order) {
+				session.order = "NAME_ASC"
+			}
+			getBunnies(session.user.id, session.order, onBunnies, onBunniesError);
 		}
 	});
 	
@@ -36,11 +44,7 @@ const Bunnies = (_) => {
         await deleteBunny(session.user.id, id, onRemovedBunny, notifyError);		
 	}
 	
-    return (
-		bunnies === undefined
-		? <Spinner animation="border" role="status"> <span className="visually-hidden">laddar innehåll...</span> </Spinner>
-		: <BunniesForm bunnies={bunnies} removeBunny={removeBunny}/>
-    );
+    return <BunniesForm order={session.order} changeOrder={changeOrder} bunnies={bunnies} removeBunny={removeBunny}/>;
 }
 
 export default Bunnies;

@@ -38,6 +38,7 @@ import static se.skvf.kaninregister.model.Owner.otherByUserName;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -59,6 +61,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -514,7 +517,7 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 	}
 
 	@Override
-	public OwnerBunnyList getOwnerBunnies(String id) {
+	public OwnerBunnyList getOwnerBunnies(String id, String order) {
 		return process(() -> {
 			
 			validateSession(id);
@@ -522,9 +525,62 @@ public class BunnyRegistryApiImpl implements BunnyRegistryApi {
 			
 			OwnerBunnyList bunnies = toOwnerBunnyList(registry.findBunnies(byOwner(id)));
 			addTransferBunnies(bunnies, id);
-			bunnies.getBunnies().sort(comparing(OwnerBunnyListDTO::getName));
+			bunnies.getBunnies().sort(getSortOrder(order).thenComparing(OwnerBunnyListDTO::getName));
 			return bunnies;
 		});
+	}
+	
+	private static Comparator<OwnerBunnyListDTO> getSortOrder(String order) {
+		
+		if (isBlank(order)) {
+			return comparing(OwnerBunnyListDTO::getName);
+		}
+		
+		String[] split = order.toUpperCase().split("_");
+		if (split.length == 1) {
+			split = new String[] { split[0], "ASC" };
+		}
+		
+		Function<OwnerBunnyListDTO, String> attribute = null;
+		switch (split[0]) {
+			case "NAME":
+				attribute = nullIsEmpty(OwnerBunnyListDTO::getName);
+				break;
+			case "BIRTHDATE":
+				attribute = nullIsEmpty(OwnerBunnyListDTO::getBirthDate);
+				break;
+			case "GENDER":
+				attribute = bunny -> toSortString(bunny.getGender());
+				break;
+			case "RACE":
+				attribute = OwnerBunnyListDTO::getRace;
+				break;
+				
+			default:
+				throw new WebApplicationException(BAD_REQUEST);
+		}
+		
+		return split[1].equals("ASC")
+				? comparing(attribute)
+				: comparing(attribute).reversed();
+	}
+
+	private static String toSortString(BunnyGender gender) {
+		if (gender == null) {
+			return "";
+		}
+		switch (gender) {
+			case MALE: return "1";
+			case FEMALE: return "2";
+			case UNKNOWN: return "3";
+		};
+		return "";
+	}
+
+	private static Function<OwnerBunnyListDTO, String> nullIsEmpty(Function<OwnerBunnyListDTO, String> attribute) {
+		return bunny -> attribute.apply(bunny) == null
+				? ""
+				: attribute.apply(bunny);
 	}
 
 	private void addTransferBunnies(OwnerBunnyList bunnies, String id) throws IOException {

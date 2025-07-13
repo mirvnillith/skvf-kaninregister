@@ -166,7 +166,7 @@ const BunniesForm = (props) => {
 		<div className="row">
 			<div className="col-md-12 align-self-center p-4">
 				<h2 className="text-center dark mb-3"> Mina kaniner </h2>
-				{(props.bunnies !== undefined && session.user.approved)
+				{session.user.approved
 					? <span>
 						<button className="btn btn-primary float-end" onClick={() => navigate("/bunny")} disabled={confirm || remove}>Jag har en ny märkt kanin</button>
 						<button className="btn btn-secondary float-end me-2" onClick={() => navigate("/claim")} disabled={confirm || remove}>Jag har tagit över en registrerad kanin</button>
@@ -174,11 +174,33 @@ const BunniesForm = (props) => {
 					: null
 				}
 			</div>
-			{props.bunnies === undefined
-			?	<Spinner animation="border" role="status"> <span className="visually-hidden">laddar innehåll...</span> </Spinner>
-			:	<BunnyList bunnies={props.bunnies} confirm={confirm} setConfirm={setConfirm} removeBunny={props.removeBunny} remove={remove} setRemove={setRemove}/>
-			}
+			<div className="mb-1">
+				<span>
+				    <select
+				        id="order"
+				        name="order"
+				        value={props.order}
+						disabled = {props.bunnies === undefined}
+				        className="float-end"
+				        onChange={props.changeOrder}>
+				            <option value="NAME_ASC">Namn A-Ö</option>
+				            <option value="NAME_DESC">Namn Ö-A</option>
+				            <option value="BIRTHDATE_ASC">Födelsedag 0-9</option>
+				            <option value="BIRTHDATE_DESC">Födelsedag 9-0</option>
+				            <option value="GENDER_ASC">Kön ♂-♀</option>
+				            <option value="GENDER_DESC">Kön ♀-♂</option>
+				            <option value="RACE_ASC">Ras A-Ö</option>
+				            <option value="RACE_DESC">Ras Ö-A</option>
+				    </select>
+					<label htmlFor="order" className="float-end me-2">Sortering:</label>
+				</span>
+			</div>
 		</div>
+
+		{props.bunnies === undefined
+			?	<Spinner animation="border" role="status"> <span className="visually-hidden">laddar innehåll...</span> </Spinner>
+			:	<BunnyList bunnies={props.bunnies} order={props.order} changeOrder={props.changeOrder} confirm={confirm} setConfirm={setConfirm} removeBunny={props.removeBunny} remove={remove} setRemove={setRemove}/>
+		}
 	</div>
     );
 }

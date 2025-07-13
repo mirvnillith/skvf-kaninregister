@@ -433,6 +433,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: order
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: List of bunnies

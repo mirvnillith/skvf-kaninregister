@@ -209,9 +209,9 @@ const getBunny = async (id, successHandler, errorHandler) => {
     }
 }
 
-const getBunnies = async (owner, successHandler, errorHandler) => {
+const getBunnies = async (owner, order, successHandler, errorHandler) => {
 
-    const response = await fetch(`/api/owners/${owner}/bunnies`, {
+    const response = await fetch(`/api/owners/${owner}/bunnies?order=${order}`, {
         method: 'GET'
     });
 
