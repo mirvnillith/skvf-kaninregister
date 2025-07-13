@@ -25,7 +25,7 @@ public abstract class EntityTest<E extends Entity<?>> {
 		map.remove(attribute);
 		E entity = from.apply(map);
 		
-		assertThrows(IllegalStateException.class, () -> entity.toMap());
+		assertThrows(IllegalStateException.class, entity::toMap);
 	}
 	
 	protected void assertAttribute(String name, BiFunction<E, String, E> setter, Function<E, String> getter) throws Exception {

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import Spinner from "react-bootstrap/Spinner";
 import Login from './login/Login'
 import Register from './register/Register'
 import RecoverPassword from './recoverpassword/RecoverPassword'
@@ -53,7 +52,6 @@ const RequiresSession = (props) => {
 }
 	
 const App = () => {
-    const [loading, setLoading] = useState(true);
     const session = useSession();
     const sessionUpdater = useSessionUpdater();
 
@@ -62,23 +60,14 @@ const App = () => {
         if (maybeOngoingSession()) {
             existingSession((sessionContent) => {
                 sessionUpdater(sessionContent);
-                setLoading(false);
             });
         }
         else {
             sessionUpdater(undefined);
-            setLoading(false);
         }
     }, []);
 
-    return (loading
-            ? <div className="container-md px-0">
-            	<Header loading/>
-				<Spinner animation="border" role="status">
-                <span className="visually-hidden">laddar innehåll...</span>
-            	</Spinner>
-			  </div>
-            : <Routes>
+    return (<Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={session === undefined ? <Navigate to="/login" /> : <Navigate to="/bunnies" />} />
                     <Route path="/login" element={<WithoutSession element={ <Login /> }/>}/>
