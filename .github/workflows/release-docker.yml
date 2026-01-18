@@ -19,13 +19,13 @@ jobs:
           distribution: 'zulu'
           java-version: 11.0.4
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: 'java'
       - name: Maven install
         run: mvn -B clean install
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
       - name: Get version
         run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Create tag

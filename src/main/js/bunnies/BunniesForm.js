@@ -8,6 +8,7 @@ import Contact from "../common/Contact";
 import Identifiers from "../common/Identifiers";
 import Details from "../common/Details";
 import Help from "../help/Help";
+import NewOwner from "../owner/NewOwner";
 
 const Bunny = (props) => {
 	
@@ -164,6 +165,9 @@ const BunniesForm = (props) => {
     return (
 	<div>
 		<div className="row">
+			<div className="col-md-12 align-self-center">
+				<NewOwner/>
+			</div>
 			<div className="col-md-12 align-self-center p-4">
 				<h2 className="text-center dark mb-3"> Mina kaniner </h2>
 				{session.user.approved
