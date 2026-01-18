@@ -147,9 +147,24 @@
         		<artifactId>maven-antrun-plugin</artifactId>
        			<version>3.1.0</version>
         		<executions>
+        		<execution>
+        			<id>clean built</id>
+        			<phase>initialize</phase>
+        			<goals>
+              		<goal>run</goal>
+            		</goals>
+            		<configuration>
+        			<target>
+        				<delete dir="target/classes/static/built"/>
+        			</target>
+        			</configuration>
+        		</execution>
           		<execution>
           			<id>index.html</id>
             		<phase>prepare-package</phase>
+            		<goals>
+              		<goal>run</goal>
+            		</goals>
             		<configuration>
               		<target>
               			<fileset id="bundle.js" dir="target/classes/static/built" includes="bundle.*.js"/>
@@ -166,9 +181,7 @@
 						</replace>
               		</target>
             		</configuration>
-            		<goals>
-              		<goal>run</goal>
-            		</goals>
+
           		</execution>
         		</executions>
 	        </plugin>
