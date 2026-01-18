@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM ibmjava:jre
 
 ARG JAR_FILE
 COPY ${JAR_FILE} app.jar
