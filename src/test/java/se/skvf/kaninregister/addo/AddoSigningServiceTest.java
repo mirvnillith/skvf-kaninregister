@@ -8,6 +8,7 @@ import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.commons.io.FileUtils.writeByteArrayToFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static se.skvf.kaninregister.addo.AddoSigningService.ONE_DAY;
 import static se.skvf.kaninregister.addo.AddoSigningService.SIGNING_COMMENT;
@@ -32,6 +33,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -159,6 +161,7 @@ public class AddoSigningServiceTest extends BunnyTest {
 		writeByteArrayToFile(file, content);
 		return file.toURI().toURL();
 	}
+	
 	@Test
 	public void startSigning_apiError() throws Exception {
 		
@@ -437,7 +440,10 @@ public class AddoSigningServiceTest extends BunnyTest {
 	}
 	
 	private WebApplicationException mockLoginError() throws Exception {
-		WebApplicationException error = new WebApplicationException(randomUUID().toString());
+		
+		Response errorResponse = mock(Response.class);
+		when(errorResponse.readEntity(String.class)).thenReturn(randomUUID().toString());
+		WebApplicationException error = new WebApplicationException(randomUUID().toString(), errorResponse);
 		when(addo.login(loginRequest.capture())).thenThrow(error);
 		return error;
 	}

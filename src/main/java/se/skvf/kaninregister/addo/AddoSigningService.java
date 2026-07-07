@@ -24,7 +24,6 @@ import static se.skvf.kaninregister.addo.SigningMethod.SWEDISH_BANKID;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -45,7 +44,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
 
 import net.vismaaddo.api.DocumentDTO;
 import net.vismaaddo.api.InitiateSigningRequestDTO;
@@ -335,21 +333,28 @@ public class AddoSigningService {
 		request.setEmail(email);
 		request.setPassword(sha64(password));
 		LOG.info("login()");
-		String session = addo.login(request);
-		if (session != null) {
-			if (session.startsWith("\"")) {
-				session = session.substring(1);
+		try {
+			
+			String session = addo.login(request);
+			if (session != null) {
+				if (session.startsWith("\"")) {
+					session = session.substring(1);
+				}
+				if (session.endsWith("\"")) {
+					session = session.substring(0, session.length() - 1);
+				}
 			}
-			if (session.endsWith("\"")) {
-				session = session.substring(0, session.length() - 1);
+			if (isBlank(session) || 
+					session.equals("00000000-0000-0000-0000-000000000000")) {
+				throw new IOException("Addo login failed");
 			}
+			LOG.info("login(): " + session);
+			return session;
+			
+		} catch (WebApplicationException error) {
+			LOG.error("Addo login failed: " + error.getResponse().readEntity(String.class));
+			throw error;
 		}
-		if (isBlank(session) || 
-				session.equals("00000000-0000-0000-0000-000000000000")) {
-			throw new IOException("Addo login failed");
-		}
-		LOG.info("login(): " + session);
-		return session;
 	}
 
 	static String sha64(String string) {
